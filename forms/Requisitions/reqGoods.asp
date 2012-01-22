@@ -407,6 +407,18 @@ function vbfVendorList
 	                                    "    FROM tblVendors v) vt " & _
                                         "WHERE 1 = 1 " & _
                                         "and vt.szVendor_Status_CD = 'APPR' " & _
+										"and ( szVendor_Name ='UAA - Anchorage Classes'" & _
+									   "OR szVendor_Name='APU - Alaska Pacific University' " & _
+									   "OR szVendor_Name='KEYSTONE NATIONAL HIGH SCHOOL' " & _
+									   "OR szVendor_Name='MECURY ONLINE ACADEMY' " & _
+									   "OR szVendor_Name='NORTH DAKOTA CDE'" & _
+									   "OR szVendor_Name='Odysseyware'" & _
+									   "OR szVendor_Name='Rosetta stone'" & _
+									   "OR szVendor_Name='The American Academy'" & _
+									   "OR szVendor_Name='University of Missouri -CDIS'" & _
+									   "OR szVendor_Name='Williamsburg Academy'" & _
+									   "OR szVendor_Name='Florida Vitual School'" & _
+									   "or szVendor_Name = 'University of Nebraska')" & _
                                         sql & _
                                         "ORDER BY vt.szVendor_Name  " 
 										
