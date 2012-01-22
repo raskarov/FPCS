@@ -1,0 +1,31 @@
+***************************************************************
+***  Inactivate Teachers for an new School Year		    ***
+***************************************************************
+SELECT     intInstructor_ID, curPay_Rate, intPay_Type_id, bolASD_Full_Time, fltASD_Full_Time_Percent, bolASD_Part_Time, fltASD_Part_Time_Percent, 
+                      fltFPCS_Hours_Goal, dtEffective_Start, intSchool_Year_Start, bolActive
+FROM         tblInstructor_Pay_Data i1
+WHERE     (intInstructor_Pay_Data_ID =
+                          (SELECT     MAX(intInstructor_Pay_Data_ID)
+                            FROM          tblInstructor_Pay_Data i2
+                            WHERE      (intSchool_Year_Start = 2006) AND (bolActive = 1) AND i1.intinstructor_id = i2.intInstructor_ID AND i1.dteffective_end IS NULL))
+ORDER BY intInstructor_ID
+
+
+INSERT INTO tblInstructor_Pay_Data
+                      (intInstructor_ID, curPay_Rate, intPay_Type_id, bolASD_Full_Time, fltASD_Full_Time_Percent, bolASD_Part_Time, fltASD_Part_Time_Percent, 
+                      fltFPCS_Hours_Goal, dtEffective_Start, intSchool_Year_Start, bolActive, szUSER_CREATE, dtCREATE)
+SELECT     intInstructor_ID, curPay_Rate, intPay_Type_id, bolASD_Full_Time, fltASD_Full_Time_Percent, bolASD_Part_Time, fltASD_Part_Time_Percent, 
+                      fltFPCS_Hours_Goal, '07/01/2006' AS Expr1, 2007 AS Expr2, 0 AS Expr3, 'AUTO_INSERT' AS Expr4, CURRENT_TIMESTAMP AS Expr5
+FROM         tblInstructor_Pay_Data i1
+WHERE     (intInstructor_Pay_Data_ID =
+                          (SELECT     MAX(intInstructor_Pay_Data_ID)
+                            FROM          tblInstructor_Pay_Data i2
+                            WHERE      (intSchool_Year_Start = 2006) AND (bolActive = 1) AND i1.intinstructor_id = i2.intInstructor_ID AND i1.dteffective_end IS NULL))
+ORDER BY intInstructor_ID
+
+update       tblInstructor_Pay_Data i1 set i1.dteffective_end = '06/30/2006', szUser_Modify = 'AUTO_UPDATE', dtModify = CURRENT_TIMESTAMP
+WHERE     (intInstructor_Pay_Data_ID =
+                          (SELECT     MAX(intInstructor_Pay_Data_ID)
+                            FROM          tblInstructor_Pay_Data i2
+                            WHERE      (intSchool_Year_Start = 2006) AND (bolActive = 1) AND i1.intinstructor_id = i2.intInstructor_ID AND i1.dteffective_end IS NULL))
+

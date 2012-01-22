@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<package>
+<?component error="true"?>
+
+<comment>
+   *********************************************************
+   Name:	ClassInfo Functions
+   Purpose:	Creates a COM interface for Common Html Functions
+   Date:	June 7 2005
+   Author:	Scott Bacon
+   *********************************************************
+</comment>
+
+<component>
+
+<registration
+	description="ClassInfo"
+	progid="ClassInfo.wsc"
+>
+</registration>
+
+<public>
+	<property name="TeacherCostPerStudent">
+		<get/>
+	</property>
+	<property name="TotalTeacherCost">
+		<get/>
+	</property>
+	<property name="ClassMinEnroll">
+		<get/>
+	</property>
+	<property name="ClassMaxEnroll">
+		<get/>
+	</property>
+	<property name="CurrentEnrollCount">
+		<get/>
+	</property>
+	<property name="ProjectedTeacherCost">
+		<get/>
+	</property>
+   <method name="PopulateObject"/>
+</public>
+
+
+<implements type="ASP" id="ASP"/>
+
+<script language="VBScript">
+<![CDATA[
+' Module Level Variables
+dim mTeacherCostPerStudent,mTotalTeacherCost,mClassMinEnroll,mClassMaxEnroll
+dim mCurrentEnrollCount,mProjectedTeacherCost
+    
+Public Sub PopulateObject(Byref Cnn, pClassId)
+	dim sql, rs
+	
+	sql = "SELECT     tblGUARDIAN.intGUARDIAN_ID, tblGUARDIAN.szFIRST_NAME, tblGUARDIAN.szLAST_NAME, tblClasses.szClass_Name, tblClasses.intMin_Students,  " & _ 
+			"                      tblClasses.intMax_Students, tblClasses.dtClass_Start, tblClasses.dtClass_End, tblClasses.decHours_Planning, tblClasses.dtHrs_Last_Updated,  " & _ 
+			"                      tblClasses.intSchool_Year, tblClasses.intPOS_Subject_ID, tblINSTRUCTOR.intINSTRUCTOR_ID, tblINSTRUCTOR.szFIRST_NAME AS Expr1,  " & _ 
+			"                      tblINSTRUCTOR.szLAST_NAME AS Expr2, DM_TEACHER_CLASS_COST.EnrolledCount, DM_TEACHER_CLASS_COST.HoursChargedPerStudent,  " & _ 
+			"                      DM_TEACHER_CLASS_COST.TeacherCostPerStudent, DM_TEACHER_CLASS_COST.TotalClassCost " & _ 
+			"FROM         DM_TEACHER_CLASS_COST INNER JOIN " & _ 
+			"                      tblINSTRUCTOR ON DM_TEACHER_CLASS_COST.InstructorId = tblINSTRUCTOR.intINSTRUCTOR_ID RIGHT OUTER JOIN " & _ 
+			"                      tblClasses ON tblINSTRUCTOR.intINSTRUCTOR_ID = tblClasses.intInstructor_ID AND  " & _ 
+			"                      DM_TEACHER_CLASS_COST.ClassId = tblClasses.intClass_ID LEFT OUTER JOIN " & _ 
+			"                      tblGUARDIAN ON tblClasses.intGuardian_ID = tblGUARDIAN.intGUARDIAN_ID " & _ 
+			"WHERE     (tblClasses.intClass_ID = " & pClassId & ") "
+	
+	set rs = server.createobject("ADODB.Recordset")
+	rs.cursorlocation = 3
+	rs.open sql, Cnn
+	
+	if rs.recordcount > 0 then
+		mTeacherCostPerStudent = cdbl(CheckNum(rs("TeacherCostPerStudent")))
+		mTotalTeacherCost = cdbl(CheckNum(rs("TotalClassCost")))
+		mClassMinEnroll = cdbl(CheckNum(rs("intMin_Students")))
+		mClassMaxEnroll = cdbl(CheckNum(rs("intMax_Students")))
+		mCurrentEnrollCount = cdbl(CheckNum(rs("EnrolledCount")))
+		if mClassMinEnroll > mCurrentEnrollCount then
+			' mTeacherCostPerStudent is already figured at minimum cost so
+		    ' in this case we use the course minimum expense snce the min enrollment 
+		    ' requirement has not been currently met
+			mProjectedTeacherCost = mTeacherCostPerStudent
+		else
+			mProjectedTeacherCost = mTotalTeacherCost/(mCurrentEnrollCount + 1)
+		end if	
+	end if 
+	
+	rs.close
+	set rs = nothing
+End Sub
+
+function CheckNum(pNum)
+	if not isnumeric(pNum) then
+		pNum = 0
+	else
+		pNum = pNum
+	end if
+	CheckNum = pNum
+end function
+
+function get_TeacherCostPerStudent()
+	get_TeacherCostPerStudent = mTeacherCostPerStudent
+end function
+
+function get_TotalTeacherCost()
+	get_TotalTeacherCost = mTotalTeacherCost
+end function
+
+function get_ClassMinEnroll()
+	get_ClassMinEnroll = mClassMinEnroll
+end function
+
+function get_ClassMaxEnroll()
+	get_ClassMaxEnroll = mClassMaxEnroll
+end function
+
+function get_CurrentEnrollCount()
+	get_CurrentEnrollCount = mCurrentEnrollCount
+end function
+
+function get_ProjectedTeacherCost()
+	get_ProjectedTeacherCost = mProjectedTeacherCost
+end function  			
+]]>
+</script>
+
+</component>
+</package>

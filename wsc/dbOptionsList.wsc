@@ -1,0 +1,703 @@
+<?xml version="1.0"?>
+
+<package>
+<?component error="true"?>
+
+<comment>
+   *********************************************************
+   Name:		dbOptionsList (windows script component)
+   Purpose:	Creates a COM interface for easy dot notation
+				to selected functions
+   Date:		18 April 2002
+   Author:	ThreeShapes.com LLC (Bryan K. Mofley)
+   *********************************************************
+   
+	pstrValue - This parameter is passed into several functions.  Below is a lengthy
+	description of how it can be used
+		pstrValue can have multiple delimited strings that will be
+		turned into an array.
+		MOFLEY|KEITH~MEAGAN~MARIAH::KEITH|MEAGAN
+		element 0 of arSelect will contain everything to the left of "::" in the above example.
+		element 1 of arSelect will contain everything to the right of "::" in the above example.
+		arField will contain all PIPED elements in arSelect(0) which in the above is MOFLEY and KEITH~MEAGAN~MARIAH.
+		arMultiField will contain a "~" delimited array based on everything in the second (1) element of arField.
+		  This allows for multiple criteria in a single field using the OR command.
+		Everything to the right of "::" in arSelect(1) will be used to pre-select multiple values.
+		Here's an English explanation of the above example.  
+			Select where Lastname=MOFLEY and Firstname=KEITH or MEAGAN or MARIAH
+			Now, pre-select KEITH and MEAGAN in the dropdown list   
+			
+</comment>
+
+<component>
+
+<registration
+	description="dbOptionsList"
+	progid="dbOptionsList.WSC"
+>
+</registration>
+
+<public>
+   <method name="Users"/>
+   <method name="Roles"/>
+   <method name="Families"/>
+   <method name="Teachers"/>
+   <method name="Guardians"/>
+   <method name="InactiveTeachers"/>
+   <method name="ActiveTeachers"/>   
+</public>
+
+
+<implements type="ASP" id="ASP"/>
+
+<script language="VBScript">
+<![CDATA[
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Module Level Variables and Statements
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+dim mcnn		'ADODB Connection object
+
+set mcnn = server.CreateObject("ADODB.Connection")
+mcnn.Open Application.Contents("cnnFPCS")
+
+function Users(byval pstrValues)
+'*********************************************************
+'Name:		Users (function)
+'Purpose:	Creates OPTIONS list of web Users
+'
+'Inputs:		pstrValue - User ID (see comments in XML section for description)
+'
+'Outputs:	Users - returns HTML <SELECT id=select1 name=select1> drop down list
+'
+'Calls:		fcnSQLWhere - Dynamic creation of the SQL WHERE clause
+'				fcnCreateSELECTlive - Dynamic creation of the OPTIONS list
+'
+'Date:		20 June 2002
+'Author:		ThreeShapes.com LLC (Bryan K. Mofley)
+'*********************************************************
+dim strSQL			'SQL Statement for main ADO Request
+dim arFields		'Field names and values to supply to WHERE clause (if necessary)
+dim arSelect		'values to preselect in list
+dim strPreSelect	'Preselects a value in the Option List
+dim strWHERE		'WHERE clause (if necessary) for SQL statement
+on error resume next
+
+   arSelect = Split(pstrValues, "::")
+   if UBound(arSelect) < 1 then
+		if Trim(pstrValues) <> "" then
+			strPreSelect = pstrValues
+		else
+			strPreSelect = "0"
+		end if
+	else
+		arFields = Split(arSelect(0), "|")
+		strPreSelect = arSelect(1)
+   end if
+	
+	strSQL = "SELECT     szUser_ID, szName_Last + ', ' + szName_First + CASE blnActive WHEN 1 THEN ' - ACTIVE'  " & _ 
+			"ELSE ' - INACTIVE' END  AS FULLNAME " & _ 
+			"FROM         tblUsers " 
+			
+	strWHERE = ""
+	if IsArray(arFields) then
+		strWHERE = fcnSQLWhere(arFields)
+	end if
+	strSQL = strSQL & strWHERE & " ORDER BY blnActive desc, FULLNAME"
+
+	if Err.number <> 0 then
+		Users = "Error: " & Err.number & " - " & Err.Description
+	else
+		Users = fcnCreateSELECTlive(strSQL, mcnn, "Users", Cstr(strPreSelect))
+	end if
+
+end function
+
+function Roles(byval pstrValues)
+'*********************************************************
+'Name:		Roles (function)
+'Purpose:	Creates OPTIONS list of web Users
+'
+'Inputs:		pstrValue - Role Code (see comments in XML section for description)
+'
+'Outputs:	Roles - returns HTML <SELECT id=select1 name=select1> drop down list
+'
+'Calls:		fcnSQLWhere - Dynamic creation of the SQL WHERE clause
+'				fcnCreateSELECTlive - Dynamic creation of the OPTIONS list
+'
+'Date:		20 June 2002
+'Author:		ThreeShapes.com LLC (Bryan K. Mofley)
+'*********************************************************
+dim strSQL			'SQL Statement for main ADO Request
+dim arFields		'Field names and values to supply to WHERE clause (if necessary)
+dim arSelect		'values to preselect in list
+dim strPreSelect	'Preselects a value in the Option List
+dim strWHERE		'WHERE clause (if necessary) for SQL statement
+on error resume next
+
+   arSelect = Split(pstrValues, "::")
+   if UBound(arSelect) < 1 then
+		if Trim(pstrValues) <> "" then
+			strPreSelect = pstrValues
+		else
+			strPreSelect = "0"
+		end if
+	else
+		arFields = Split(arSelect(0), "|")
+		strPreSelect = arSelect(1)
+   end if
+	
+	strSQL = "SELECT szRole_CD, szRole_Desc FROM tblRoles "
+	strWHERE = ""
+	if IsArray(arFields) then
+		strWHERE = fcnSQLWhere(arFields)
+	end if
+	strSQL = strSQL & strWHERE & " ORDER BY szRole_Desc"
+
+	if Err.number <> 0 then
+		Roles = "Error: " & Err.number & " - " & Err.Description
+	else
+		Roles = fcnCreateSELECTlive(strSQL, mcnn, "Roles", Cstr(strPreSelect))
+	end if
+
+end function
+
+function Families(byval pstrValues)
+'*********************************************************
+'Name:		Families (function)
+'Purpose:	Creates OPTIONS list of web Users
+'
+'Inputs:		pstrValue - Family ID (see comments in XML section for description)
+'
+'Outputs:	Families - returns HTML <SELECT id=select1 name=select1> drop down list
+'
+'Calls:		fcnSQLWhere - Dynamic creation of the SQL WHERE clause
+'				fcnCreateSELECTlive - Dynamic creation of the OPTIONS list
+'
+'Date:		20 June 2002
+'Author:		ThreeShapes.com LLC (Bryan K. Mofley)
+'*********************************************************
+dim strSQL			'SQL Statement for main ADO Request
+dim arFields		'Field names and values to supply to WHERE clause (if necessary)
+dim arSelect		'values to preselect in list
+dim strPreSelect	'Preselects a value in the Option List
+dim strWHERE		'WHERE clause (if necessary) for SQL statement
+on error resume next
+
+   arSelect = Split(pstrValues, "::")
+   if UBound(arSelect) < 1 then
+		if Trim(pstrValues) <> "" then
+			strPreSelect = pstrValues
+		else
+			strPreSelect = "0"
+		end if
+	else
+		arFields = Split(arSelect(0), "|")
+		strPreSelect = arSelect(1)
+   end if
+	
+	strSQL = "select intFamily_ID, Name = " & _
+	  	 "CASE " & _
+	  	 "WHEN szDesc is null then szFamily_Name " & _
+	  	 "WHEN szDesc is not null then szFamily_Name + ', ' + szDesc " & _
+	  	 "END " & _
+	  	 "from tblFamily "
+	
+	strWHERE = ""
+	if IsArray(arFields) then
+		strWHERE = fcnSQLWhere(arFields)
+	end if
+	strSQL = strSQL & strWHERE & " order by Name"
+	
+	if Err.number <> 0 then
+		Families = "Error: " & Err.number & " - " & Err.Description
+	else
+		Families = fcnCreateSELECTlive(strSQL, mcnn, "Families", Cstr(strPreSelect))
+	end if
+
+end function
+
+function Teachers(byval pstrValues)
+'*********************************************************
+'Name:		Teachers (function)
+'Purpose:	Creates OPTIONS list of web Users
+'
+'Inputs:		pstrValue - Family ID (see comments in XML section for description)
+'
+'Outputs:	Teachers - returns HTML <SELECT id=select1 name=select1> drop down list
+'
+'Calls:		fcnSQLWhere - Dynamic creation of the SQL WHERE clause
+'				fcnCreateSELECTlive - Dynamic creation of the OPTIONS list
+'
+'Date:		20 June 2002
+'Author:		ThreeShapes.com LLC (Bryan K. Mofley)
+'*********************************************************
+dim strSQL			'SQL Statement for main ADO Request
+dim arFields		'Field names and values to supply to WHERE clause (if necessary)
+dim arSelect		'values to preselect in list
+dim strPreSelect	'Preselects a value in the Option List
+dim strWHERE		'WHERE clause (if necessary) for SQL statement
+on error resume next
+
+   arSelect = Split(pstrValues, "::")
+   if UBound(arSelect) < 1 then
+		if Trim(pstrValues) <> "" then
+			strPreSelect = pstrValues
+		else
+			strPreSelect = "0"
+		end if
+	else
+		arFields = Split(arSelect(0), "|")
+		strPreSelect = arSelect(1)
+   end if
+	
+	strSQL = "SELECT intINSTRUCTOR_ID, szLAST_NAME + ', ' + szFIRST_NAME AS Teacher FROM tblINSTRUCTOR "
+	strWHERE = ""
+	if IsArray(arFields) then
+		strWHERE = fcnSQLWhere(arFields)
+	end if
+	strSQL = strSQL & strWHERE & " ORDER BY szLAST_NAME, szFIRST_NAME"
+
+
+	if Err.number <> 0 then
+		Teachers = "Error: " & Err.number & " - " & Err.Description
+	else
+		Teachers = fcnCreateSELECTlive(strSQL, mcnn, "Teachers", Cstr(strPreSelect))
+	end if
+
+end function
+
+
+function Guardians(byval pstrValues)
+'*********************************************************
+'Name:		Guardians (function)
+'Purpose:	Creates OPTIONS list of Guardians
+'
+'Inputs:		pstrValue - User ID (see comments in XML section for description)
+'
+'Outputs:	Guardians - returns HTML <SELECT id=select1 name=select1> drop down list
+'
+'Calls:		fcnSQLWhere - Dynamic creation of the SQL WHERE clause
+'				fcnCreateSELECTlive - Dynamic creation of the OPTIONS list
+'
+'Date:		20 June 2002
+'Author:		ThreeShapes.com LLC (Bryan K. Mofley)
+'*********************************************************
+dim strSQL			'SQL Statement for main ADO Request
+dim arFields		'Field names and values to supply to WHERE clause (if necessary)
+dim arSelect		'values to preselect in list
+dim strPreSelect	'Preselects a value in the Option List
+dim strWHERE		'WHERE clause (if necessary) for SQL statement
+on error resume next
+
+   arSelect = Split(pstrValues, "::")
+   if UBound(arSelect) < 1 then
+		if Trim(pstrValues) <> "" then
+			strPreSelect = pstrValues
+		else
+			strPreSelect = "0"
+		end if
+	else
+		arFields = Split(arSelect(0), "|")
+		strPreSelect = arSelect(1)
+   end if
+
+	strSQL = "SELECT  intGUARDIAN_ID AS id, szLAST_NAME + ',' + szFIRST_NAME + ': ' + CONVERT(nchar(5), intGUARDIAN_ID) AS Name " & _
+				"FROM tblGUARDIAN "
+	strWHERE = ""
+	if IsArray(arFields) then
+		strWHERE = fcnSQLWhere(arFields)
+	end if
+	strSQL = strSQL & strWHERE & " ORDER BY Name"
+
+	if Err.number <> 0 then
+		Guardians = "Error: " & Err.number & " - " & Err.Description
+	else
+		Guardians = fcnCreateSELECTlive(strSQL, mcnn, "Guardians", Cstr(strPreSelect))
+	end if
+
+end function
+
+function ActiveTeachers(pSchoolYear, pSelectedValue)
+	' Returns an html select option list of all Active teacher for pSchoolYear.  
+	' pSelectedValue will be the value in the option list that is selected
+	
+	dim sql 
+	sql = "SELECT intINSTRUCTOR_ID, szLAST_NAME + ', ' + szFIRST_NAME AS Teacher_Name " & _ 
+			" FROM tblINSTRUCTOR i " & _ 
+			" WHERE ((SELECT     TOP 1 bolActive " & _ 
+			"			FROM tblInstructor_Pay_Data ip " & _ 
+			"			WHERE (ip.intInstructor_ID = i.intInstructor_ID) AND " & _
+		    "			(ip.intSchool_Year_Start <= " & pSchoolYear & ") " & _
+			"			ORDER BY ip.intSchool_Year_Start DESC, intInstructor_Pay_Data_ID DESC) = 1) " & _ 
+			" ORDER BY Teacher_Name "
+			
+	ActiveTeachers = fcnMakeListSQL(sql,"intINSTRUCTOR_ID","Teacher_Name",pSelectedValue)	
+end function
+
+function InactiveTeachers(pSchoolYear, pSelectedValue)
+	' Returns an html select option list of all Active teacher for pSchoolYear.  
+	' pSelectedValue will be the value in the option list that is selected
+	
+	dim sql 
+			
+	sql = "SELECT intINSTRUCTOR_ID, szLAST_NAME + ', ' + szFIRST_NAME AS Teacher_Name " & _ 
+			" FROM tblINSTRUCTOR i " & _ 
+			" WHERE ((SELECT     TOP 1 bolActive " & _ 
+			"			FROM tblInstructor_Pay_Data ip " & _ 
+			"			WHERE (ip.intInstructor_ID = i.intInstructor_ID) AND " & _
+		    "			(ip.intSchool_Year_Start <= " & ASP.session.contents("intSchool_Year") & ") " & _
+			"			ORDER BY intSchool_Year_Start DESC, intInstructor_Pay_Data_ID DESC) = 0) " & _ 
+			" ORDER BY Teacher_Name "
+				
+	InactiveTeachers = fcnMakeListSQL(sql,"intINSTRUCTOR_ID","Teacher_Name",pSelectedValue)	
+end function
+'*********************************************************
+'private methods (not exposed) below this line
+'*********************************************************
+
+function fcnSQLWhere(ByVal parField)
+'*********************************************************
+' Name:		fcnSQLWhere (function)
+' Purpose:	Creates the WHERE clause for a given SQL Statement
+'
+' Inputs:	parField - An array containin subarrays of multiple items
+'					to include in the WHERE clause
+'				Example:
+'					parField(0) = "szName_Last=MOFLEY~BACON
+'					parField(1) = "szName_First=BRYAN"
+'					In the above, "=" is delimited so that the left contains the field name (arFieldNames) and the 
+'					right contains the values (arFieldValues).  If the values are delimited with a "~" then they 
+'					are included in an OR clause
+'				
+'
+' Date:		20 June 2001
+' Author:	Bryan K. Mofley (ThreeShapes.com LLC)
+'*********************************************************
+dim arFieldNames	'An array containing field names for the WHERE clause delimited by the "=" sign
+dim arFieldValues	'An array containing field values - multiple criteria delimited by the "~" character
+dim strWHERE		'WHERE portion of a SQL statement
+dim i, j				'Counters in For..Next loop
+
+	strWHERE = ""
+	for i = 0 to UBound(parField)
+		if parField(i) <> "" then
+			arFieldNames = Split(parField(i), "=")
+			arFieldValues = Split(arFieldNames(1), "~")
+			if arFieldValues(0) <> "" then
+				strWHERE = strWHERE & " ("
+				for j = 0 to UBound(arFieldValues)
+					strWHERE = strWHERE & " " & arFieldNames(0) & " = '" & arFieldValues(j) & "' OR"
+				next
+				strWHERE = Left(strWHERE, Len(strWHERE) - 3) & ") AND"	'strip off the trailing " OR"
+			end if
+		end if
+	next
+	if Len(strWHERE) > 3 then
+		strWHERE = Left(strWHERE, Len(strWHERE) - 4)	'strip off the trailing " AND"
+	end if
+	if Trim(strWHERE) <> "" then
+		strWHERE = " WHERE " & strWHERE
+	end if
+	fcnSQLWhere = strWHERE
+end function
+
+
+function fcnWriteArray(ByVal pstrSQL, ByVal pstrArrayName, ByVal pstrCON)
+'*********************************************************
+' Name:		fcnWriteArray (function)
+' Purpose:	Creates Array for drop down lists
+'
+' Inputs:	pstrSQL - SQL statement used to create the array
+'				pstrArrayName - Application Array name
+'				pstrCON - DB connection string
+'
+' Date:		28 May 2001
+' Author:	Bryan K. Mofley
+'*********************************************************
+dim rsAry		'ADO RecordSet object
+dim strSQL		'SQL Statement for main ADO Request
+dim cnnAry		'ADO Connection object
+dim arData		'Array of data
+dim bolReturn	'True if function completes
+
+	bolReturn = False
+
+	Set cnnAry = Server.CreateObject("ADODB.Connection")
+	Set rsAry = Server.CreateObject("ADODB.RecordSet")
+	rsAry.CursorLocation = 3	'adUseClient 
+	cnnAry.Open pstrCON			'use passed in connection string
+	rsAry.Open pstrSQL, cnnAry 'open the recordSet
+	arData = rsAry.GetRows
+	rsAry.Close
+	cnnAry.Close
+	set rsAry = nothing
+	set cnnAry = nothing
+	Application.Contents(pstrArrayName) = ardata
+	
+	bolReturn = True
+	
+	fcnWriteArray = bolReturn
+end function
+
+function fcnCreateSELECT(ByVal pstrArrayName, ByVal pstrLabel, _
+								 ByVal pintFields, ByVal pvntSEL, ByVal strAppVar)
+'*********************************************************
+' Name:		fcnCreateSELECT (function)
+' Purpose:	Creates <SELECT id=select1 name=select1> drop down lists from an array
+'
+' Inputs:	pstrArrayName:	Application Array name
+'				pstrLabel:		<SELECT id=select1 name=select1> label
+'				pintFields:		Number of fields in <SELECT id=select1 name=select1> description
+'				pvntSEL:			used to pre-select a value in the list	
+'				strAppVar:		Date/Time App variable name - used to reset date/time
+'										stamp if Array can not be found
+' Date:		28 May 2001
+' Author:	Bryan K. Mofley
+'*********************************************************
+dim strList		'<SELECT id=select1 name=select1> list holder
+dim arData		'Application Array
+dim arSelect
+dim i				'Counter in For..Next loop
+dim ii
+	
+	strList = ""
+	arSelect = Split(pvntSEL, "|") 'used for multiple selections in a list box	
+	if IsArray(Application.Contents(pstrArrayName)) then
+		arData = Application.Contents(pstrArrayName)
+		for i = 0 to UBound(arData, 2) 
+			strList = strList & "<option value='" & _
+				arData(0, i) & "' "
+			'this select statement prevents type mismatch errors
+			for ii = 0 to UBound(arSelect)
+				select case TypeName(pvntSEL)
+					case "Integer", "Long"
+						if arSelect(ii) = clng(arData(0, i)) then
+							strList = strList & " Selected "
+							exit for
+						end if
+					case "String"
+						if arSelect(ii) = cstr(arData(0, i)) then
+							strList = strList & " Selected "
+							exit for
+						end if
+				end select
+			next
+			strList = strList & " >" 
+			select case pintFields
+				case 1
+					strList = strList & arData(1, i)
+				case 2
+					strList = strList & arData(1, i) & " - " & arData(0, i)
+				case 3
+					strList = strList & arData(1, i) & " - " & arData(0, i) & " - " & arData(2, i)
+				case else
+					strList = strList & arData(1, i)
+			end select
+			strList = strList & "</option>" & vbCr
+		next 
+		if strList <> "" then
+			strList =	"<option value=''>" & pstrLabel & "</option>" & vbCR & _
+							"<option value=''>-------------------</option>" & vbCR & strList
+		else
+			'Array exists but has no data.  Should never happen...but just in case. Reset the Application variable and return
+			'a list with an Error message
+			Application.Contents(strAppVar) = cdate(#01/01/01#)
+			strList =	"<option value=''>" & pstrLabel & "</option>" & vbCR & _
+							"<option value=''>-------------------</option>" & vbCR & _
+							"<option value=''>ZERO RECORDS RETURNED - CALL FOR HELP</option>" & vbCR
+			call fcnSendAdminEmailAlert(1, pstrArrayName, pstrLabel)
+		end if
+	else
+		'Array does not exist.  Reset the Application variable and return
+		'a list with an Error message
+		'PLACE EMAIL CODE HERE
+		Application.Contents(strAppVar) = cdate(#01/01/01#)
+		strList =	"<option value=''>" & pstrLabel & "</option>" & vbCR & _
+						"<option value=''>LIST HAS CHANGED - CLICK REFRESH</option>" & vbCR 
+		call fcnSendAdminEmailAlert(2, pstrArrayName, pstrLabel)
+	end if
+	fcnCreateSELECT = vbCR & strList
+end function
+
+function fcnCreateSELECTlive(ByVal pstrSQL, ByRef pcnn, ByVal pstrLabel, ByVal pvntSEL)
+'*********************************************************
+' Name:		fcnCreateSELECTlive (function)
+' Purpose:	Creates <SELECT id=select1 name=select1> drop down lists from an ADO connection (live)
+'				as opposed to creating the list from a stored application array that is dated
+'
+' Inputs:	pstrSQL		- SQL statement used to create the array
+'				pcnn			- ADODB connection object
+'				pstrLabel	- Title for first field in Select box
+'				pvntSEL		- a single item or piped ("|") array containing items to pre-select
+'
+' Date:		12 mar 2002
+' Author:	Bryan K. Mofley
+'*********************************************************
+dim rs		'Recordset
+dim strList	'Options List
+dim arSelect
+dim i
+'on error resume next
+
+	arSelect = Split(pvntSEL, "|") 'used for multiple selections in a list box
+	
+	if pstrLabel <> "" then
+		strList = "<option value=''>" & pstrLabel & "</option>" & vbCR & _
+					 "<option value=''>-------</option>" & vbCR
+	end if
+
+	Set rs = Server.CreateObject("ADODB.RecordSet")
+	rs.CursorLocation = 3	'adUseClient 
+	rs.Open pstrSQL, pcnn 'open the recordSet
+	
+	with rs
+		if not .BOF and not .EOF then
+			.MoveFirst
+			do while not .EOF
+				strList = strList & "<option value='" & _
+					rs(0) & "'"
+				for i = 0 to UBound(arSelect)
+					select case TypeName(pvntSEL)
+						case "Integer", "Long"
+							if arSelect(i) = clng(rs(0)) then
+								strList = strList & " Selected "
+								exit for
+							end if
+						case "String"
+							if arSelect(i) = cstr(rs(0)) then
+								strList = strList & " Selected "
+								exit for
+							end if
+					end select
+				next
+				strList = strList & ">" 
+				if trim(rs(1)) = "" or trim(rs(1)) = "-" then
+					strList = strList & "BLANK"
+				else
+					strList = strList & rs(1)
+				end if
+				strList = strList & "</option>" & vbCR
+			.MoveNext
+			loop
+		else
+			strList = strList & "<option value=''>NO DATA RETURNED</option>"
+		end if
+	end with
+	
+	rs.Close
+	set rs = nothing
+	if Err.number <> 0 then
+		fcnCreateSELECTlive = "Error: " & Err.number & " - " & Err.Description
+	else
+		fcnCreateSELECTlive = vbCR & strList
+	end if
+end function
+
+function fcnSendAdminEmailAlert(byval pintType, byval pstrArrayName, byval pstrLabel)
+'***********************************************************
+'Section:	Send Email
+'Purpose:	Sends an email to the Web Administrator advising an
+'				error has occured when trying to create/retrieve
+'				data from an Application Array
+'***********************************************************
+on error resume next
+Dim iMsg		'As New CDO.Message
+dim strMessage
+dim strIntro
+
+	select case cint(pintType)
+		case 1	'ZERO records Returnd
+			strMessage = "fcnCreateSELECT returned ZERO records while processing " & pstrArrayName
+		case 2	'Array does not exist
+			strMessage = "fcnCreateSELECT could not find the Application.Contents(" & pstrArrayName & ") " & _
+			  "Array while processing the label: <B>" & pstrLabel & "</B>"
+	end select
+	
+	set iMsg = Server.CreateObject("CDO.Message")
+
+	strIntro = "<html><body><font face='Tahoma'>dbOptionsList.wsc Error occurred on <b>" & now() & _
+		"</b>.<br><br>" & vbCR & "<table cols='2'>"
+
+	With iMsg
+		.To = Application.Contents("strAdminEmail")
+		.From = "FPCS AutoBot <donotreply@fpcs.net>"
+		.Subject = "incDBOptionsList.asp Error: " & pstrArrayName
+		.HTMLBody = strIntro & strMessage & "</table></body></html>"
+		.Send
+	End With
+	
+	set iMsg = nothing
+end function
+
+function fcnMakeListSQL(sql,varValue,varText,varFind)
+	' Creates and returns an HTML option list from a sql statement.
+	' Param Desc:
+	'	sql			sql statement to return option list data
+	'	varValue	field name in recordSet that holds the data that will be placed in
+	'				the VALUE portion of the option tag.
+	'	varText		field name in recordSet that holds the data that will be placed in
+	'				the TEXT portion of the option tag.
+	'	varFind		specific option VALUE to find that you would like auto selected in 
+	'				the option list if found as this function iterates through the recordset.
+	dim strOptionList
+	dim rs
+	
+	set rs= server.CreateObject("ADODB.RECORDSET")
+	rs.CursorLocation = 3	
+	rs.Open sql,mcnn
+	
+	strOptionList = fcnMakeListRS(rs,varValue,varText,varFind)
+	rs.Close
+	set rs = nothing		
+	fcnMakeListSQL = strOptionList
+end function
+
+function fcnMakeListRS(recordSet,varValue,varText,varFind)
+	' Creates and returns an HTML option list from a recordset.
+	' Param Desc:
+	'	recordSet	ADO recordset that holds the data that you want to create a list from
+	'	varValue	field name in recordSet that holds the data that will be placed in
+	'				the VALUE portion of the option tag.
+	'	varText		field name in recordSet that holds the data that will be placed in
+	'				the TEXT portion of the option tag.
+	'	varFind		specific option VALUE to find that you would like auto selected in 
+	'				the option list if found as this function iterates through the recordset.
+	dim strOptionList
+	dim strSelected	
+	if recordset.recordCount > 0 then
+		recordset.MoveFirst
+
+		if varValue = "" then varValue = 0
+		if varText = ""	then varText = 1 	
+	
+		do while not recordSet.EOF
+			strSelected = ""			
+			if instr(1,varFind,", ") > 0 then
+				arFind = split(varFind,", ")
+				for x= 0 to ubound(arFind)
+					if cstr(recordSet(varValue) & "") = cstr(arFind(x) & "") then
+						strSelected = " selected"
+						mSelectedText = recordSet(varText)
+					end if 
+				next
+			else
+				if cstr(recordSet(varValue) & "") = cstr(varFind & "") then
+					strSelected = " selected"
+					mSelectedText = recordSet(varText)
+				end if 
+			end if 
+			strOptionList = strOptionList & "<option value=""" & recordSet(varValue) & _
+						    """" & strSelected & ">" & recordSet(varText) & chr(13)
+			recordSet.MoveNext		
+		loop 
+		recordSet.MoveFirst
+	end if 	
+
+	fcnMakeListRS = strOptionList
+end function
+]]>
+</script>
+
+</component>
+</package>
+

@@ -1,0 +1,218 @@
+<?xml version="1.0"?>
+<package>
+<?component error="true"?>
+
+<comment>
+   *********************************************************
+   Name:	TeacherInfo Functions
+   Purpose:	Creates a COM interface for Common Html Functions
+   Date:	June 2 2005
+   Author:	Scott Bacon
+   *********************************************************
+</comment>
+
+<component>
+
+<registration
+	description="TeacherInfo"
+	progid="TeacherInfo.wsc"
+>
+</registration>
+
+<public>
+	<property name="FirstName">
+		<get/>
+	</property>
+	<property name="LastName">
+		<get/>
+	</property>
+	<property name="Email">
+		<get/>
+	</property>
+	<property name="HomePhone">
+		<get/>
+	</property>
+	<property name="CertificateExpire">
+		<get/>
+	</property>
+	<property name="InstructorID">
+		<get/>
+	</property>
+	<property name="BaseHourlyRate">
+		<get/>
+	</property>
+	<property name="FullHourlyRate">
+		<get/>
+	</property>
+	<property name="PerDiem">
+		<get/>
+	</property>
+	
+	<property name="TersCostPerHour">
+		<get/>
+	</property>
+	
+	<property name="PersCostPerHour">
+		<get/>
+	</property>
+	
+	<property name="FicaCostPerHour">
+		<get/>
+	</property>
+	
+	<property name="MedicareCostPerHour">
+		<get/>
+	</property>
+	
+	<property name="HealthInsuranceCostPerHour">
+		<get/>
+	</property>
+	
+	<property name="WorkersCompCostPerHour">
+		<get/>
+	</property>
+	
+	<property name="LifeInsuranceCostPerHour">
+		<get/>
+	</property>
+	
+	<property name="UnemploymentCostPerHour">
+		<get/>
+	</property>
+	
+   <method name="PopulateObject"/>
+</public>
+
+
+<implements type="ASP" id="ASP"/>
+
+<script language="VBScript">
+<![CDATA[
+' Module Level Variables
+dim mFirstName, mLastName, mEmail,mHomePhone, mCertificateExpire
+dim mInstructorID,mBaseHourlyRate
+dim mFullHourlyRate, mPerDiem, mTersCostPerHour, mPersCostPerHour
+dim mFicaCostPerHour,mMedicareCostPerHour,mHealthInsuranceCostPerHour
+dim mWorkersCompCostPerHour,mLifeInsuranceCostPerHour,mUnemploymentCostPerHour
+    
+Public Sub PopulateObject(Byref Cnn, pInstructorId, pSchoolYear)
+	dim sql, rs
+	
+	sql = "SELECT tblINSTRUCTOR.szFIRST_NAME, tblINSTRUCTOR.szLAST_NAME, tblINSTRUCTOR.szEmail,  " & _ 
+		" tblINSTRUCTOR.szHOME_PHONE, tblINSTRUCTOR.dtCert_Expire, tblINSTRUCTOR.intINSTRUCTOR_ID,  " & _ 
+		" tr.HourlyRateBase, tr.HourlyRateTaxBen,tr.TersCostPerHour,tr.PersCostPerHour,  " & _ 
+		"tr.FicaCostPerHour,tr.MedicareCostPerHour,tr.HealthInsuranceCostPerHour,tr.WorkerCompCostPerHour, " & _
+		"tr.LifeInsuranceCostPerHour,tr.UnemploymentCostPerHour, " & _
+		" tr.PerDiem " & _ 
+		"FROM tblINSTRUCTOR INNER JOIN " & _ 
+		" DM_TEACHER_RATES tr ON tblINSTRUCTOR.intINSTRUCTOR_ID = tr.InstructorId " & _ 
+		"WHERE (tr.StartSchoolYear = " & pSchoolYear & ") AND (tblINSTRUCTOR.intINSTRUCTOR_ID = " & pInstructorId & ") "
+	
+	set rs = server.createobject("ADODB.Recordset")
+	rs.cursorlocation = 3
+	rs.open sql, Cnn
+	
+	if rs.recordcount > 0 then
+		mFirstName = rs("szFIRST_NAME")
+		mLastName = rs("szLAST_NAME")
+		mEmail = rs("szEmail")
+		mHomePhone = rs("szHOME_PHONE")
+		mCertificateExpire = rs("dtCert_Expire")
+		mInstructorID = rs("intINSTRUCTOR_ID")
+		mBaseHourlyRate = round(cdbl(CheckNum(rs("HourlyRateBase"))),3)
+		mFullHourlyRate = round(cdbl(CheckNum(rs("HourlyRateTaxBen"))),3)
+		mPerDiem = round(cdbl(CheckNum(rs("PerDiem"))),3)
+		mTersCostPerHour = round(cdbl(CheckNum(rs("TersCostPerHour"))),4)
+		mPersCostPerHour = round(cdbl(CheckNum(rs("PersCostPerHour"))),4)
+		mFicaCostPerHour = round(cdbl(CheckNum(rs("FicaCostPerHour"))),4)
+		mMedicareCostPerHour = round(cdbl(CheckNum(rs("MedicareCostPerHour"))),4)
+		mHealthInsuranceCostPerHour = round(cdbl(CheckNum(rs("HealthInsuranceCostPerHour"))),4)
+		mWorkersCompCostPerHour = round(cdbl(CheckNum(rs("WorkerCompCostPerHour"))),4)
+		mLifeInsuranceCostPerHour = round(cdbl(CheckNum(rs("LifeInsuranceCostPerHour"))),4)
+		mUnemploymentCostPerHour = round(cdbl(CheckNum(rs("UnemploymentCostPerHour"))),4)
+	end if 
+End Sub
+
+function CheckNum(pNum)
+	if not isnumeric(pNum) then
+		pNum = 0
+	else
+		pNum = pNum
+	end if
+	CheckNum = pNum
+end function
+
+function get_FirstName()
+	get_FirstName = mFirstName
+end function
+
+function get_LastName()
+	get_LastName = mLastName
+end function
+
+function get_Email()
+	get_Email = mEmail
+end function
+
+function get_HomePhone()
+	get_HomePhone = mHomePhone
+end function
+
+function get_CertificateExpire()
+	get_CertificateExpire = mCertificateExpire
+end function
+
+function get_InstructorID()
+	get_InstructorID = mInstructorID
+end function
+
+function get_BaseHourlyRate()
+	get_BaseHourlyRate = mBaseHourlyRate
+end function
+
+function get_FullHourlyRate()
+	get_FullHourlyRate = mFullHourlyRate
+end function
+
+function get_PerDiem()
+	get_PerDiem = mPerDiem
+end function
+
+function get_TersCostPerHour()
+	get_TersCostPerHour = mTersCostPerHour
+end function
+
+function get_PersCostPerHour()
+	get_PersCostPerHour = mPersCostPerHour
+end function
+
+function get_FicaCostPerHour()
+	get_FicaCostPerHour = mFicaCostPerHour
+end function
+
+function get_MedicareCostPerHour()
+	get_MedicareCostPerHour = mMedicareCostPerHour
+end function
+
+function get_HealthInsuranceCostPerHour()
+	get_HealthInsuranceCostPerHour = mHealthInsuranceCostPerHour
+end function
+
+function get_WorkersCompCostPerHour()
+	get_WorkersCompCostPerHour = mWorkersCompCostPerHour
+end function
+
+function get_LifeInsuranceCostPerHour()
+	get_LifeInsuranceCostPerHour = mLifeInsuranceCostPerHour
+end function
+
+function get_UnemploymentCostPerHour()
+	get_UnemploymentCostPerHour = mUnemploymentCostPerHour
+end function
+  
+				
+]]>
+</script>
+
+</component>
+</package>

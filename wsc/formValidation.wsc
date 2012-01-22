@@ -1,0 +1,248 @@
+<?xml version="1.0"?>
+
+<package>
+<?component error="true"?>
+
+<comment>
+   *********************************************************
+   Name:		formValidation (windows script component)
+   Purpose:	Creates a COM interface for easy dot notation
+				to selected functions primarily dealing with
+				form validation.
+   Date:		18 Mar 2003
+   Author:	Scott M. Bacon ThreeShapes LLC
+   *********************************************************
+</comment>
+
+<component>
+
+<registration
+	description="formValidation"
+	progid="formValidation.WSC"
+>
+</registration>
+
+<public>
+    <property name="ValidationError">
+		<get/>
+	</property>
+	<property name="CriticalError">
+		<get/>
+	</property>
+	<property name="SafeDate">
+		<get/>
+	</property>
+    <method name="validateField"/>
+</public>
+
+<implements type="ASP" id="ASP"/>
+
+<script language="VBScript">
+<![CDATA[
+
+' Global Variables
+dim strError, strError2, mDate	' holds validation error messages
+
+function validateField(myValue,myValidate,myPattern,myDesc)
+
+	' "myValidate" indicates if we need to use a regular expression, or if we are going to use
+	'  some other form af validation.
+
+	' The following are the possible values that can be passed in the "myValidate" variable.
+	' (you can always add your own as well)
+
+	'      regexp   - If we use a regular expression, we also have an associated pattern defined
+	'                 by the 'PATTERN' attribute. The following are the possible "pre-determined" 
+	'                 values that can be passed in the "myPattern" variable.
+	                         
+	'                    phone_1 - phone number must match the pattern xxx-xxx-xxxx
+	'                    phone_2 - phone number must match the pattern (xxx)xxx-xxxx
+	'                    zip_1   - zip must match the pattern xxxxx
+	'                    zip_2   - zip must match the pattern xxxxx-xxxx
+	             
+	'                 You can also pass your own regular expression throught the "myPattern" variable
+	                    
+	'      email    - Makes sure the email has no illegal characters and is in a valid format
+	'      date     - Makes sure the date is valid
+	'      blank    - Makes sure the field contains at least one character
+	'      numeric  - Makes sure the field contains a numeric value
+	
+	' myDesc - This parameter is a string value that is used to give each error a description
+	'		   that will prefix the error. 
+	'	EXAMPLE
+	'		myDesc - strError (such as) Client's Email - This is an invalid email address.
+
+	' IF THE RETURN VALUE IS TRUE, THE FIELD IS VALID. 
+
+	myValue=trim(myValue)
+
+	Dim nonValid, hasChar
+
+	' Array of illegal characters for an email address
+	nonValid = array(",", ";", ":", "'", "(", ")", "`", "[", "]", "#", "=", " ", "*", "<", ">", "?", "/", "\", "|", "$", "%", "{", "}", "!", """", "^")
+
+	' Flag used to determine if one of the illegal charcters was found in a given email address       
+	hasChar=0
+
+
+	        
+	SELECT CASE lcase(myValidate)
+	       
+	       
+		CASE "regexp" ' use a regular expression
+
+				select case cstr(myPattern) ' Pattern Types (or your own pattern)
+					case "phone" 
+						for i=1 to len(myValue)
+							num =mid(myValue,i,1)
+							if (isNumeric(num)) then
+								strCopy = strCopy & num
+							end if
+						next
+						myValue = strCopy					
+						myPattern="\d{10}$"
+						myErr=" - Phone Number must be 10 digits"				
+					case "phone_1" 
+						myPattern="\d{3}-\d{3}-\d{4}$"
+						myErr=" - Phone Number must be in the format: xxx-xxx-xxxx"
+					case "phone_2" 
+						myPattern="\(\d{3}\)\d{3}-\d{4}$"
+						myErr=" - Phone Number must be in the format: (xxx)xxx-xxxx"
+					case "zip" 
+						for i=1 to len(myValue)
+							num =mid(myValue,i,1)
+							if (isNumeric(num)) then
+								strCopy = strCopy & num
+							end if
+						next
+						myValue = strCopy					
+						myPattern="^\d{5}([ -]?\d{4})?$"
+						myErr=" - Zip code must be 5 or 9 digits"						
+					case "zip_1" 
+						myPattern="\d{5}$"
+						myErr=" - Zip code must be in the format: xxxxx"
+					case "zip_2" 
+						myPattern="\d{5}-\d{4}$"
+						myErr=" - Zip code must be in the format: xxxxx-xxxx"
+					case "ssn" 
+						for i=1 to len(myValue)
+							num =mid(myValue,i,1)
+							if (isNumeric(num)) then
+								strCopy = strCopy & num
+							end if
+						next
+						myValue = strCopy
+						myPattern="\d{9}$"
+						myErr=" - the SSN is invalid. It must contain 9 digits."
+     				case else 
+						myPattern=myPattern
+						myErr=" - Field did not match the pattern '" & myPattern & "'"
+				end select
+
+				Set RegularExpressionObject = New RegExp
+
+				With RegularExpressionObject
+					.Pattern = myPattern
+					.IgnoreCase = True
+					.Global = True
+				End With			
+				bolResult = RegularExpressionObject.Test(myValue)
+				Set RegularExpressionObject = nothing
+				
+				if bolResult <> true then
+					strError= strError & myDesc & myErr & "<BR>"
+					strError2= strError2 & myDesc & myErr & "<BR>"
+				end if
+	                    
+				validateField = bolResult		
+				
+		CASE "email" ' check for a valid email address 
+		   
+				if inStr(1,myValue,"@") <> 0 and inStr(1,myValue,".") <> 0 then
+					theRest=right(myValue,Len(myValue)-inStr(1,myValue,"@"))
+					if inStr(1,theRest,"@") <> 0 or right(myValue,1) = "@" or right(myValue,1) = "." or left(myValue,1) = "." or left(myValue,1) = "@" then
+						validateField = false
+					else
+						if inStr(1,myValue,"@") = inStr(1,myValue,".")+1 or inStr(1,myValue,"@") = inStr(1,myValue,".")-1 then
+							validateField = false
+						elseif inStr(1,myValue,"..") <> 0 then
+							validateField = false
+						else
+							for each x in nonValid
+								if inStr(1,myValue,x) <> 0 then
+									hasChar=1
+								end if 
+							next
+	                          
+							if hasChar=1 then
+								validateField = false
+							else
+								validateField = true
+							end if
+						end if
+					end if
+				else
+					validateField = false
+				end if			
+		        
+				if validateField = false then
+					strError= strError & myDesc & " - Email provided is not valid<BR>"
+					strError2= strError2 & myDesc & " - Email provided is not valid<BR>"
+				end if
+		        
+		CASE "date" ' check to see if date is valid    
+		   
+   				if isDate(myValue) then
+					validateField = true
+					myValue = cdate(myValue)
+					mDate = month(myValue) & "/" & day(myValue) & "/" & year(myValue)
+				else
+					validateField = false
+					strError= strError & myDesc & " - Date provided is not valid<BR>"
+					strError2= strError2 & myDesc & " - Date provided is not valid<BR>"
+					mDate = ""
+				end if				
+		        
+				
+		CASE "blank" ' check for blank field
+		        
+				if myValue="" then
+					validateField = false
+					strError= strError & myDesc & " - Field cannot be left blank<BR>"
+				else
+					validateField = true
+				end if
+
+		CASE "numeric" ' check to see if value is numeric       
+		   
+   				if isNumeric(myValue) then
+					validateField = true
+				else
+					validateField = false
+					strError= strError & myDesc & " - Field must be numeric<BR>"
+					strError2= strError2 & myDesc & " - Field must be numeric<BR>"
+				end if
+		        	 
+	END SELECT			
+
+end function
+
+function get_ValidationError()
+	get_ValidationError = strError
+end function
+
+function get_CriticalError()
+	get_CriticalError = strError2
+end function
+
+function get_SafeDate()
+	' Use Safe Date to use a MM/DD/YYYY version of the last date validated
+	get_SafeDate = mDate
+end function
+
+]]>
+</script>
+
+</component>
+</package>
+

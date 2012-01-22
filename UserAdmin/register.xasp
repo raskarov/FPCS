@@ -1,0 +1,294 @@
+<%@ Language=VBScript %>
+<%
+'*******************************************
+'Name:		register.asp
+'Purpose:	Captures registration information from
+'			potential users
+'
+'Author:	Bryan K Mofley
+'			3Shapes is Scott Bacon, Bryan Mofley, Guy Mofley
+'Date:      27-Nov-2001
+'*******************************************
+'option explicit
+dim strTitle
+dim rsRegister		'ADO RecordSet object
+dim strSQLRegister	'SQL Statement for main EQ Request
+dim strUserID
+dim strLastName		
+dim strFirstName	
+dim strEmail		
+dim strPassword
+dim hSubmit
+dim strRegisterMsg	'Place Holder for Error message during Registration
+
+	Response.Buffer = false
+	
+	strUserID = Request.Form("szUserID")
+	strLastName = Request.Form("szName_Last")
+	strFirstName = Request.Form("szName_First")
+	strEmail = Request.Form("szEmail")
+	strPassword = Request.Form("szPassword")
+	hSubmit = Request.Form("hSubmit")
+	strRegisterMsg = "&nbsp;"
+	
+	set rsRegister = Server.CreateObject("ADODB.RecordSet")
+	
+Session.Value("strTitle") = "FPCS online - Register"
+Session.Value("strLastUpdate") = "22 Feb 2002"
+
+	If Request.Form("hRegister") = "True" Then 
+	    subCheckRegister
+	Else
+		Server.Execute(Application.Value("strWebRoot") & "Includes/header.asp")
+	    subShowRegister 
+	End If 
+	
+Sub subShowRegister
+%>
+	<SCRIPT language=javascript>	
+	function jfCheckValue(form) {
+		var strErrMsg = '';
+		var intPos = 0;
+		var strRestEmail = '';
+		var szUserID = form.szUserID.value;	
+		var szName_First = form.szName_First.value;	
+		var szName_Last = form.szName_Last.value;	
+		var szEmail = form.szEmail.value;	
+		var szPassword = form.szPassword.value;	
+		var szPassword2 = form.szPassword2.value;
+
+		if(szUserID.length == 0) {strErrMsg = strErrMsg + 'Please enter a user ID.\n';}
+		if(szName_First.length == 0) {strErrMsg = strErrMsg + 'Please enter a first name.\n';}
+		if(szName_Last.length == 0) {strErrMsg = strErrMsg + 'Please enter a last name.\n';}
+		
+		if(szPassword.length < 5 || szPassword.length > 10) {
+			strErrMsg = strErrMsg + 'Please enter a valid password (between 5 and 10 characters).\n';
+		} 
+		intPos = szEmail.indexOf("@")
+		if( intPos > 0)
+		{
+			strRestEmail = szEmail.substring(intPos+1);
+			strRestEmail = strRestEmail.toLowerCase();
+			if (strRestEmail.indexOf(".com") > -1 ||  strRestEmail.indexOf(".net") > -1 || strRestEmail.indexOf(".org") > -1 || strRestEmail.indexOf(".edu") > -1 || strRestEmail.indexOf(".gov") > -1 || strRestEmail.indexOf(".mil") > -1 || strRestEmail.indexOf(".us") > -1 )
+			{
+				} else	{strErrMsg = strErrMsg + 'Please enter a valid email address.\n';}
+		} else  {
+			strErrMsg = strErrMsg + 'Please enter a valid email address.\n';
+		}
+		
+		if (strErrMsg.length == 0 )
+		{
+			form.hRegister.value = "True"
+			form.submit();
+		} else {
+			alert(strErrMsg);
+			return false;
+		}
+
+	}	
+	</script>
+<FORM method="post" action="register.asp" name="frmRegister" onSubmit="return false;">
+<TABLE align=center border=0 cellPadding=4 cellSpacing=2>
+	<TR>
+		<TD bgColor="#666699" vAlign=center>
+			<TABLE border=0 cellPadding=1 cellSpacing=0 width=100%>
+				<TR>
+					<TD align=middle>
+						&nbsp;&nbsp;
+					</TD>
+					<TD>
+						<FONT color=white face=tahoma><B>Register with FPCS</B></FONT>
+					</TD>
+					<TD>
+						&nbsp;&nbsp;
+					</TD>
+				</TR>
+				<TR>
+					<TD align=middle>
+						&nbsp;&nbsp;
+					</TD>
+					<TD>
+						<FONT color=white face=tahoma size=-1>All fields required.</FONT>
+					</TD>
+					<TD align=right>
+						<% = strRegisterMsg%>
+					</TD>
+				</TR>
+				
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD align=left vAlign=center>
+			<TABLE border=0 cellPadding=2 cellSpacing=1>
+				<TR align=left vAlign=center>
+					<TD align=right bgColor=#ffffff>
+						<FONT face=Tahoma size=2><B>User ID:</B></FONT>
+					</TD>
+					<TD bgColor=#ffffff>
+						<INPUT maxLength=50 name=szUserID type="text" size="25" >
+					</TD>
+				</TR>
+				<TR align=left vAlign=center>
+					<TD align=right bgColor=#ffffff>
+						<FONT face=Tahoma size=2><B>First Name:</B></FONT>
+					</TD>
+					<TD bgColor=#ffffff>
+						<INPUT maxLength=50 name=szName_First type="text" size="25" value="<%=strFirstName%>">
+					</TD>
+				</TR>
+				<TR align=left vAlign=center>
+					<TD align=right bgColor=#ffffff>
+						<FONT face=Tahoma size=2><B>Last Name:</B></FONT>
+					</TD>
+					<TD bgColor=#ffffff>
+						<INPUT maxLength=50 name=szName_Last type="text" size="25" value="<%=strLastName%>">
+					</TD>
+				</TR>
+				<TR align=left bgColor=#ffffff>
+					<TD align=right>
+						<FONT face=Tahoma size=2><B>Email address:</B></FONT>
+					</TD>
+					<TD>
+						<INPUT maxLength=50 name=szEmail type="text" size="25" value="<%=strEmail%>">
+					</TD>
+				</TR>
+				<TR align=left>
+					<TD align=right>
+						<FONT face=Tahoma size=2>
+							<B>Password:</B>
+						</FONT>
+					</TD>
+					<td>
+						<input maxLength=50 name="szPassword" type="password" size="25">
+					</td>
+				</TR>
+				<TR vAlign=center>
+					<TD align=right>
+						<FONT face=Tahoma size=2>
+							<B>Re-enter password:</B>
+						</FONT>
+					</TD>
+					<TD align=left>
+						<INPUT maxLength=50 name="szPassword2" type="password" size=25>
+					</TD>
+				</TR>
+				<tr>
+					<td>&nbsp;&nbsp;&nbsp;</td>
+				</tr>
+				<TR align=left bgColor=#ffffff vAlign=center>
+					<TD align=center colspan=2>
+						<FONT size=-1 face=Tahoma>Your registration information 
+						will not be shared without your consent.</FONT>
+					</TD>
+				</TR>
+			</TABLE>
+		</TD>
+	</TR>
+	<TR>
+		<TD bgColor="#666699" vAlign=center>
+			<FONT color=white face=tahoma>
+				<B>&nbsp;&nbsp;&nbsp;Review the FPCS Terms of Service</B>
+			</FONT>
+		</TD>
+	</TR>
+	<TR>
+		<TD align=middle vAlign=top>
+			<TEXTAREA cols=60 id=txaTerms name=txaTerms rows=15>Terms of Service
+
+1. ACCEPTANCE OF TERMS
+
+The FPCS Service (the "Service") provides a wide 
+variety of tools to create and manage on-line applications. 
+
+Blah Blah Blah Blah
+
+2. USER REGISTRATION, PASSWORD AND SECURITY
+
+As a condition of using the Service, you agree to: 
+
+(a) provide true, accurate, current and complete 
+information about yourself (the "Registration Data") 
+as prompted by the forms;
+(b) to maintain and promptly update the Registration Data 
+to keep it true, accurate, current and complete. If you 
+provide any information that is untrue, inaccurate, not 
+current or incomplete or FPCS has reasonable grounds to 
+believe that such information is untrue, inaccurate, not 
+current or incomplete, FPCS has the right to suspend or 
+terminate your account, and refuse any and all current 
+or future use of the Service. You will receive a password
+and account designation upon completing the Registration
+Form. You are responsible for maintaining the 
+confidentiality of that password. 
+
+3. MEMBER PRIVACY
+
+Blah Blah Blah Blah
+
+We appreciate your interest and support.
+Welcome to FPCS!
+
+I HAVE READ AND UNDERSTAND THE FOREGOING TERMS OF SERVICE 
+AND AGREE TO BE BOUND BY ALL OF ITS TERMS.
+			</TEXTAREA>
+		</TD>
+	</TR>
+	<TR>
+		<TD align=middle vAlign=center>
+			<INPUT name=cmdRegister type=submit value="I Accept, Continue" onClick="jfCheckValue(this.form);"> 
+			<INPUT name=hRegister type=hidden value="">
+			<INPUT name=cmdCancel type=submit value=Cancel>
+		</TD>
+	</TR>
+</TABLE>
+</FORM>
+
+<%
+end sub
+
+Sub subCheckRegister
+dim oCrypto			'wsc object
+dim strCookieEnc	'Encrypted Password to store in Cookie
+
+	rsRegister.CursorLocation = 3 'adUseClient 
+	set oFunc = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/FPCSfunctions.wsc"))
+	call oFunc.OpenCN()
+	
+
+	strSQLRegister = "SELECT szUser_ID FROM tblUsers " & _
+					 "WHERE szUser_ID = '" & trim(strUserID) & "'"
+
+	rsRegister.Open strSQLRegister, oFunc.FPCScnn
+	
+	if rsRegister.RecordCount < 1 then
+		rsRegister.Close
+		set oCrypto = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/Crypto.wsc"))
+			'encrypt password for database compare
+			'oCrypto.Key = "something"	'actual key is not shown here
+			oCrypto.Text = strPassword
+			Call oCrypto.Encypttext
+			strEncPwd = oCrypto.EncryptedText
+		set oCrypto = nothing
+		
+		strSQLRegister = "INSERT INTO tblUsers " & _
+						 "(szUser_ID, szName_First, szName_Last, szEmail, szPassword, blnActive, blnForcePWDchange ) " & _
+						 "VALUES ('" & trim(strUserID) & "','" & trim(strFirstName) & "','" & trim(strLastName) & "','" & _
+						 strEmail & "','" & strEncPwd & "','1','0')"
+		rsRegister.Open strSQLRegister, oFunc.FPCScnn
+		Session("bolUserLoggedIn") = True
+		Session("strName") = trim(strFirstName)
+		Session("strUserID") = trim(strUserID)
+		
+		'Response.Redirect(Session("strURL"))
+		Response.Redirect(Application.Value("strWebRoot"))
+	else
+		strRegisterMsg = "<FONT color=lime face=tahoma size=-1><B>" & strUserID & " is already in use!</B></FONT>"
+		subShowRegister
+	end if
+	set oFunc = nothing
+end sub
+Server.Execute(Application.Value("strWebRoot") & "Includes/footer.asp")
+
+%>
+

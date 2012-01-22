@@ -1,0 +1,233 @@
+.svbold
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 10px;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+.svplain
+{
+    FONT-WEIGHT: normal;
+    FONT-SIZE: 10px;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+.svitalic
+{
+    FONT-WEIGHT: normal;
+    FONT-SIZE: 10px;
+    FONT-STYLE: italic;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+.headline
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 14px;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+.pagehead
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 16pt;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+A:link
+{
+    COLOR: #003399
+}
+A:visited
+{
+    COLOR: #003399
+}
+A:hover
+{
+    COLOR: #003399
+}
+LI
+{
+    LINE-HEIGHT: 150%
+}
+.svboldRed
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 10px;
+    COLOR: #ff0000;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+.headlineRed
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 13px;
+    COLOR: #ff0000;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+.pagesubhead
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 12pt;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+.svplain11
+{
+    FONT-WEIGHT: normal;
+    FONT-SIZE: 11pt;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+.svbold11
+{
+    FONT-WEIGHT: bold;
+    FONT-SIZE: 11pt;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+CODE
+{
+    COLOR: #cc0033;
+    FONT-FAMILY: "Courier New", Courier, mono
+}
+.headlineunbold
+{
+    FONT-WEIGHT: normal;
+    FONT-SIZE: 13px;
+    FONT-FAMILY: Verdana, Arial, sans-serif
+}
+.gray
+{
+	border-right: gray 1px solid;
+	padding-right: 3px;
+	border-top: gray 1px solid;
+	font-size: 9pt;
+	border-left: gray 1px solid;
+	color: black;
+	border-bottom: gray 1px solid;
+	font-family: Verdana, Arial;
+	background-color: scrollbar;
+}
+
+.gray2
+{
+	padding-right: 3px;
+	font-size: 9pt;
+	color: black;
+	font-family: Verdana, Arial;
+	background-color: scrollbar;
+}
+
+.svplain13
+{
+    FONT-SIZE: 13pt;
+    COLOR: black;
+    FONT-FAMILY: Verdana, Arial
+}
+.yellowHeader
+{
+    FONT-SIZE: 13pt;
+    COLOR: White;
+    FONT-FAMILY: Arial, Verdana;
+    BACKGROUND-COLOR: Black;
+}
+#btSmallGray
+{
+    FONT-WEIGHT: bolder;
+    FONT-SIZE: 7pt;
+    COLOR: black;
+    FONT-FAMILY: Arial
+}
+#grayBG
+{
+    BACKGROUND-COLOR: #d3d9e8
+}
+.svplain10
+{
+    FONT-SIZE: 8pt;
+    FONT-FAMILY: Verdana, Arial
+}
+.gray12
+{
+    FONT-SIZE: 12pt;
+    COLOR: black;
+    FONT-FAMILY: Arial, Tahoma;
+    BACKGROUND-COLOR: #e6e6e6
+}
+.svHeader10
+{
+    FONT-WEIGHT: bolder;
+    FONT-SIZE: 10pt;
+    COLOR: black;
+    FONT-FAMILY: Arial, Tahoma
+}
+.svHeader8
+{
+    FONT-SIZE: 8pt;
+    COLOR: black;
+    FONT-FAMILY: Verdana, Arial
+}
+.svplain8
+{
+    FONT-SIZE: 8pt;
+    FONT-FAMILY: Verdana, Arial
+}
+.svRed8
+{
+    FONT-SIZE: 8pt;
+    COLOR: red;
+    FONT-FAMILY: Arial
+}
+.svplain6
+{
+	font-size: 6pt;
+	color: black;
+	font-family: Verdana, Tahoma, Arial;
+}
+.svplain7
+{
+	font-size: 7pt;
+	color: black;
+	font-family: Verdana, Tahoma, Arial;
+}
+.thinBorder
+{
+	border-right: black 1pt solid;
+	border-top: black 1pt solid;
+	border-left: black 1pt solid;
+	border-bottom: black 1pt solid;
+}
+.btPrint
+{
+	font-weight: bold;
+	font-size: 8pt;
+	color: black;
+	font-family: Verdana, Tahoma, Arial;
+}
+.TableCell
+{
+	font-size: 7pt;
+	color: black;
+	border-bottom: #c0c0c0 1px solid;
+	border-left: #c0c0c0 1px solid;
+	border-right: #c0c0c0 1px solid;
+	border-top: #c0c0c0 1px solid;
+	font-family: Verdana, Tahoma, Arial;
+}
+.TableCellStrike
+{
+	border-right: #c0c0c0 1px solid;
+	border-top: #c0c0c0 1px solid;
+	font-size: 7pt;
+	border-left: #c0c0c0 1px solid;
+	color: black;
+	border-bottom: #c0c0c0 1px solid;
+	font-family: Verdana, Tahoma, Arial;
+	text-decoration: line-through;
+}
+.TableHeader
+{
+	font-size: 7pt;
+	color: white;
+	font-family: Verdana, Tahoma, Arial;
+	background-color: darkgray;
+}
+.SubHeader
+{
+	font-size: 8pt;
+	color: white;
+	font-family: Verdana, Tahoma, Arial;
+	background-color: dimgray;
+}

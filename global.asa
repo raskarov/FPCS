@@ -1,0 +1,131 @@
+<SCRIPT LANGUAGE=VBScript RUNAT=Server>
+Sub Session_OnStart
+'***************************************************************************
+'Name:          Session_OnStart (sub)
+'Purpose:       Sets various Session Variables for use within the user's visit to
+'                       the site
+'
+'Author:        ThreeShapes.com LLC
+'Date:          3 May 2001
+'****************************************************************************
+        'it is not necessary to "declare" the following variables, as they will be initialized automatically the first
+        'time they are assigned.  They are shown here only for ease of code reading.  All session level variables 
+        'will be outlined below
+        'session.Timeout = 240
+        Session("bolUserLoggedIn") = false      'True if user has passed the database validation
+        Session("strUserID")                    = ""            'User's ID
+        Session("strName")                      = ""            'User's First Name
+		Session.Value("strEmail")                   = ""    'User's Email Address
+        Session("intStudent_ID")        = ""            'Student ID of current student being manipulated
+        Application("intUsers")         = Application("intUsers") + 1        
+        
+        'the value below is used to name the main application window.  Setting it to a unique value for this session will
+        'enable FPCS admin users to have multiple sessions open on the same PC.  Previously, all sessions were redirected 
+        'to the window named 'app' - BKM 30-sept-2002
+        Session.Value("strAppWindow") =  "app" & Replace(cstr(cdbl(now())),".","")
+        ' Force User to Log In
+        if Session("bolUserLoggedIn") = false _
+		   and inStr(1,Request.ServerVariables("URL"),"EmailPassword.asp") < 1 _
+           and inStr(1,Request.ServerVariables("URL"),"login.asp") < 1 _
+           and (inStr(1,ucase(Request.ServerVariables("URL")),"VENDORADMIN.ASP") < 1 _
+				or (inStr(1,ucase(Request.ServerVariables("URL")),"VENDORADMIN.ASP") > 0 and request("xsuggestVendor") = "" ))then
+                session.Value("strURL") = "http://" & Request.ServerVariables("SERVER_NAME") & Request.ServerVariables("URL") & "?" & Request.ServerVariables("QUERY_STRING")
+                Response.Redirect(Application("strSSLWebRoot") & "UserAdmin/login.asp")
+        end if         
+end sub
+
+Sub Session_OnEnd
+        Application("intUsers") = Application("intUsers") - 1
+End Sub
+
+Sub Application_OnStart
+	    'Application("cnnFPCS") = "Data Source=it3shapesdb01;Initial Catalog=fpcs_net;User ID=FpcsWebUser;Password=Test1234"
+        'Application("cnnFPCS") = "Provider=SQLOLEDB.1;Server=U15188154\SqlExpress;Database=fpcs_net;trusted_connection=yes;"
+        
+       'old' Application("cnnFPCS") = "Provider=SQLOLEDB;Data Source=it3shapesdb01;Initial Catalog=fpcs_net;database=fpcs_net;User Id=fpcstest;Password=;"
+		
+		'Application("cnnFPCS") ="Provider=SQLOLEDB;Data Source=NGAVRISH-PC\MSSQLSERVERR2;User Id=Natalia;Password=;Initial Catalog=fpcs_net"
+		
+		Application("cnnFPCS") = "Provider=SQLOLEDB;Data Source=10nb166\sqlexpress;Password=;User ID=ruslan;Initial Catalog=fpcs_net"
+       
+        'Application("cnnFPCS") = "Driver={SQL Server};Server=NGAVRISH-PC\MSSQLSERVERR2;Database=fpcs_net;Uid=natalia;Pwd=12345;"
+       
+        'Application("cnnFPCS") = "ODBC;Driver={SQL Native Client};Server=it3shapesdb01;Database=fpcs_net;Uid=FpcsWebUser;Pwd=Test1234;"
+        'Application("cnnFPCS") = "ODBC;DSN=FPCScnn;Uid=FpcsWebUser;Pwd=Test1234;"
+        'it is not necessary to "declare" the following variables, as they will be initialized automatically the first
+        'time they are assigned.  They are shown here only for ease of code reading.  All application level variables 
+        'will be outlined below
+        
+       
+		
+		Application("strWebRoot")               = 	"/"
+		Application("strImageRoot")             = 	"/images/"
+		Application("strURL")			        = 	"http://localhost/"
+		Application("strMiniRoot")              = 	"/"
+		Application("strAutoFill")              = 	"http://www.fpcs.net/AmazonWS/sample.aspx"
+		Application("strSSLWebRoot")            = 	"http://localhost/"
+        
+        'Application("strWebRoot")               = 	"/empower/"
+        'Application("strImageRoot")             = 	"/empower/images/"
+        'Application("strURL")			        = 	"https://www.fpcs.net/"
+        'Application("strMiniRoot")              = 	"/empower/"
+	    'Application("strAutoFill")              = 	"http://www.fpcs.net/AmazonWS/sample.aspx"
+        'Application("strSSLWebRoot")            = 	"https://www.fpcs.net/empower/"
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        Application("strSMTPserver")    = 		"mail.gci.net"
+        Application.Value("strAdminEmail") = 		"bryan@threeshapes.com, scott@threeshapes.com"
+        Application.Value("dtYearAppStarted") = 	2006 ' This is used for year pulldowns so we only go back to when we have data in the system
+        Application.Contents("intYear_Locked") = 	2005
+        Application.Contents("strEnrollmentList")	= "7,15,31,86,123,129"
+        Application.Contents("ActiveEnrollList")	= "7,15,31,129"
+        Application.Contents("SchoolAddress") = 	"401 East Fireweed Lane, Ste 100<BR>Anchorage, AK 99503<Br>Ph: 907-742-3700<br>Fax: 907-742-3710"
+        Application.Contents("SchoolBudgetAccount") = 	"1975"
+		Application.Contents("SchoolVendorID")	= 	"211"
+        
+        ' Sets various date variables that are used to restrict activity or to inform users of deadlines 
+		' within the app for a given school year 
+        dim rs,cn,sql 
+        set rs = server.CreateObject("ADODB.RECORDSET")
+        rs.CursorLocation = 3
+        set cn = server.CreateObject("ADODB.CONNECTION")
+        cn.ConnectionString = "Provider=SQLOLEDB;Data Source=10nb166\sqlexpress;Password=;User ID=ruslan;Initial Catalog=fpcs_net"
+
+        cn.Open
+        
+       sql =  "SELECT intGlobal_Variable_ID, dtLock_Spending, dtSem_One_Progress_Deadline,  " & _ 
+				" dtSem_Two_Progress_Deadline, bolLock_School_Year, intSchool_Year,  " & _ 
+				" dtCREATE, dtMODIFY, szUSER_CREATE, szUSER_MODIFY, bolUseContractApproval," & _
+				" dtSchool_Year_Start,dtSchool_Year_End, dtCount_Deadline " & _ 
+				"FROM tblGlobal_Variables " 
+		rs.Open sql,cn
+		
+		do while not rs.EOF
+			Application.Contents("dtLock_Spending"&rs("intSchool_Year")) = rs("dtLock_Spending")
+			Application.Contents("dtSem_One_Progress_Deadline"&rs("intSchool_Year")) = rs("dtSem_One_Progress_Deadline")
+			Application.Contents("dtSem_Two_Progress_Deadline"&rs("intSchool_Year")) = rs("dtSem_Two_Progress_Deadline")
+			Application.Contents("bolLock_School_Year"&rs("intSchool_Year")) = rs("bolLock_School_Year")
+			Application.Contents("dtSchool_Year_Start"&rs("intSchool_Year")) = rs("dtSchool_Year_Start")
+			Application.Contents("dtSchool_Year_End"&rs("intSchool_Year")) = rs("dtSchool_Year_End")
+			Application.Contents("dtCount_Deadline"&rs("intSchool_Year")) = rs("dtCount_Deadline")
+			if rs("bolUseContractApproval") = 0 then
+				Application.Contents("bolUseContractApproval"&rs("intSchool_Year")) = false
+			else
+				Application.Contents("bolUseContractApproval"&rs("intSchool_Year")) = true
+			end if
+			rs.MoveNext
+		loop
+		rs.close
+		set rs = nothing
+		cn.Close
+		set cn = nothing
+End Sub
+</SCRIPT>

@@ -1,0 +1,2125 @@
+<?xml version="1.0"?>
+
+<package>
+<?component error="true"?>
+
+<comment>
+   *********************************************************
+   Name:	FPCSfunctions (windows script component)
+   Purpose:	Creates a COM interface for easy dot notation
+			to selected functions
+   Date:	22 Feb 2002
+   Author:	Bryan K. Mofley
+   *********************************************************
+</comment>
+
+<component>
+
+<registration
+	description="FPCSfunctions"
+	progid="FPCSfunctions.WSC"
+>
+</registration>
+
+<public>
+	<property name="FPCScnn">
+		<get/>
+	</property>
+	<property name="arBenTax">
+		<get/>
+	</property>
+	<property name="makeListRecordCount">
+		<get/>
+	</property>
+	<property name="arStudentEnroll">
+		<get/>
+	</property>
+	<property name="CoreHours">
+		<get/>
+	</property>
+	<property name="ElectiveHours">
+		<get/>
+	</property>
+	<property name="SelectedListText">
+		<get/>
+	</property>
+	<property name="LockSpending">
+		<get/>
+	</property>
+	<property name="LockYear">
+		<get/>
+	</property>
+	
+	<property name="IsAdmin">
+		<get/>
+	</property>
+	<property name="IsGuardian">
+		<get/>
+	</property>
+	<property name="IsTeacher">
+		<get/>
+	</property>
+	<property name="IsVendor">
+		<get/>
+	</property>
+	<property name="ShowLockMsg">
+		<get/>
+	</property>	
+   <method name="OpenCN"/>
+   <method name="CloseCN"/>
+   <method name="ExecuteCN"/>
+   <method name="BeginTransCN"/>
+   <method name="CommitTransCN"/>
+   <method name="MakeList"/>
+   <method name="MakeListRS"/>
+   <method name="MakeListSQL"/>
+   <method name="MakeYearList"/>
+   <method name="EscapeTick"/>
+   <method name="GetIdentity"/>
+   <method name="TrueFalse"/>
+   <method name="TFText"/>
+   <method name="YNText"/>   
+   <method name="ErrPrint"/>
+   <method name="SchoolYear"/>
+   <method name="SchoolYearRange"/>
+   <method name="Reformat"/>
+   <method name="Unformat"/>   
+   <method name="ConvertCheckToBit"/>
+   <method name="CheckDecimal"/>
+   <method name="InstructorCosts"/>
+   <method name="StudentPercentage"/>
+   <method name="ResetSelectSessionVariables"/>
+   <method name="InstructionActualCost"/>
+   <method name="InstructionProjectedCost"/>
+   <method name="AddMenu"/>
+   <method name="TargetFundingInfo"/>
+   <method name="CourseInfo"/>
+   <method name="FamilyInfo"/>
+   <method name="TransferDeduct"/>
+   <method name="TransferAdd"/>   
+   <method name="StudentInfo"/>   
+   <method name="InstructorInfo"/> 
+   <method name="ClassInfo"/> 
+   <method name="CheckAuth"/>      
+   <method name="ForcedActionHandling"/>      
+   <method name="IIF"/>       
+   <method name="InstructionCostInfo"/>  
+   <method name="GetStudentBalances"/>
+   <method name="LineItemCosts"/>
+   <method name="CheckSuperAdmin"/>
+   <method name="SecurityLogin"/>   
+   <method name="IsSpendingLimitSubject"/>  
+   <method name="MakeCheckList"/>  
+   <method name="MakeCheckListRS"/>  
+   <method name="GreatestDate"/>  
+   <method name="FormatPhone"/>
+</public>
+
+<implements type="ASP" id="ASP"/>
+
+<script language="VBScript">
+<![CDATA[
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Global Variables
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+dim mcnn
+dim mstrPath
+dim mintRecordCount
+dim marBenTax			'Array that contains all the rates for benefits and taxes
+dim marStudentEnroll(3)
+dim mSelectedText
+dim mIsAdim, mIsGuardian, mIsTeacher, mIsVendor, mShowLockMsg
+
+mIsAdim = false
+mIsGuardian = false
+mIsTeacher = false
+mIsVendor = false
+mShowLockMsg = false
+
+function OpenCN	
+	' Creates and Opens main Connection Object for FPCS
+	set mcnn = Server.CreateObject("ADODB.CONNECTION")
+	mcnn.Open Application.Contents("cnnFPCS")	
+end function
+
+function CloseCN
+	' Closes and Destroys main Connection Object for FPCS
+	mcnn.Close
+	set mcnn = nothing
+end function
+
+function ExecuteCN(byval pstrData)
+	' Executes SQL statement in pstrData
+	mcnn.Execute(pstrData)
+end function
+
+function BeginTransCN
+	' Begins a transaction
+	mcnn.BeginTrans
+end function
+
+function CommitTransCN
+	' Commits a transaction
+	mcnn.CommitTrans
+end function
+
+function MakeCheckListRS(recordSet,varValue,varText,varFind,varName,varColumns)
+	' Creates and returns an HTML option list from a recordset.
+	' Param Desc:
+	'	recordSet	ADO recordset that holds the data that you want to create a list from
+	'	varValue	field name in recordSet that holds the data that will be placed in
+	'				the VALUE portion of the option tag.
+	'	varText		field name in recordSet that holds the data that will be placed in
+	'				the TEXT portion of the option tag.
+	'	varFind		specific option VALUE to find that you would like auto selected in 
+	'				the option list if found as this function iterates through the recordset.
+	dim strOptionList
+	dim strSelected	
+	dim Count
+	Count = 0
+	strOptionList = "<table>"
+	varColumns = cint(varColumns)
+	
+	if recordset.recordCount > 0 then
+		recordset.MoveFirst
+
+		if varValue = "" then varValue = 0
+		if varText = ""	then varText = 1 	
+	
+		do while not recordSet.EOF
+			strSelected = ""	
+			if Count mod varColumns = 0 then
+				if Count > 0 then
+					strOptionList = strOptionList & "</tr><tr>" & chr(13)
+				else
+					strOptionList = strOptionList & "<tr>" & chr(13)
+				end if
+			end if
+			Count = Count + 1
+			
+			if instr(1,varFind,", ") > 0 then
+				arFind = split(varFind,", ")
+				for x= 0 to ubound(arFind)
+					if cstr(recordSet(varValue) & "") = cstr(arFind(x) & "") then
+						strSelected = " checked "
+					end if 
+				next
+			else
+				if cstr(recordSet(varValue) & "") = cstr(varFind & "") then
+					strSelected = " checked "
+				end if 
+			end if 
+			strOptionList = strOptionList & "<td class='svplain8'><input type='checkbox' name='" & varName & "' " & _
+											" value = '" & recordSet(varValue) & "' " & _
+											strSelected & ">" & recordSet(varText) & "</td>"
+			recordSet.MoveNext		
+		loop 
+		strOptionList = strOptionList & "</tr></table>"
+		recordSet.MoveFirst
+	end if 	
+	MakeCheckListRS = strOptionList
+end function
+
+function MakeCheckList(sql,varValue,varText,varFind,varName,varColumns)
+	' Creates and returns an HTML option list from a sql statement.
+	' Param Desc:
+	'	sql			sql statement to return option list data
+	'	varValue	field name in recordSet that holds the data that will be placed in
+	'				the VALUE portion of the option tag.
+	'	varText		field name in recordSet that holds the data that will be placed in
+	'				the TEXT portion of the option tag.
+	'	varFind		specific option VALUE to find that you would like auto selected in 
+	'				the option list if found as this function iterates through the recordset.
+	dim strOptionList
+	dim rs
+	
+	set rs= server.CreateObject("ADODB.RECORDSET")
+	rs.CursorLocation = 3	
+	rs.Open sql,mcnn
+	strOptionList = MakeCheckListRS(rs,varValue,varText,varFind,varName,varColumns)
+	rs.Close
+	set rs = nothing
+	MakeCheckList = strOptionList
+end function
+
+function MakeList(valueList,textList,varFind)
+	' Creates and returns an HTML option list based on a set of comma seperated strings.
+	' Param Desc:
+	'	valueList	comma seperated list for the VALUE portion of the option tag
+	'	textList	comma seperated list for the TEXT portion of the option tag
+	'	varFind		specific option VALUE to find that you would like auto selected in 
+	'				the option list if found as this function iterates through the value list.
+	dim strOptionList
+	dim strSelected
+	dim arValues
+	dim arText
+	dim i
+	
+	arValues = split(valueList,",")
+	
+	if textList = "" then
+		arText = split(valueList,",")
+	else
+		arText = split(textList,",")
+	end if
+	
+	for i = 0 to ubound(arValues)
+		if cstr(arValues(i)) = cstr(varFind & "") then
+			strSelected = " selected"
+		else
+			strSelected = ""
+		end if 
+		strOptionList = strOptionList & "<option value=""" & arValues(i) & _
+					    """" & strSelected & ">" & arText(i) & chr(13)	
+	next
+	
+	MakeList = strOptionList
+end function 
+ 
+function MakeListRS(recordSet,varValue,varText,varFind)
+	' Creates and returns an HTML option list from a recordset.
+	' Param Desc:
+	'	recordSet	ADO recordset that holds the data that you want to create a list from
+	'	varValue	field name in recordSet that holds the data that will be placed in
+	'				the VALUE portion of the option tag.
+	'	varText		field name in recordSet that holds the data that will be placed in
+	'				the TEXT portion of the option tag.
+	'	varFind		specific option VALUE to find that you would like auto selected in 
+	'				the option list if found as this function iterates through the recordset.
+	dim strOptionList
+	dim strSelected	
+	if recordset.recordCount > 0 then
+		recordset.MoveFirst
+
+		if varValue = "" then varValue = 0
+		if varText = ""	then varText = 1 	
+	
+		do while not recordSet.EOF
+			strSelected = ""			
+			if instr(1,varFind,", ") > 0 then
+				arFind = split(varFind,", ")
+				for x= 0 to ubound(arFind)
+					if cstr(recordSet(varValue) & "") = cstr(arFind(x) & "") then
+						strSelected = " selected"
+						mSelectedText = recordSet(varText)
+					end if 
+				next
+			else
+				if cstr(recordSet(varValue) & "") = cstr(varFind & "") then
+					strSelected = " selected"
+					mSelectedText = recordSet(varText)
+				end if 
+			end if 
+			strOptionList = strOptionList & "<option value=""" & recordSet(varValue) & _
+						    """" & strSelected & ">" & recordSet(varText) & chr(13)
+			recordSet.MoveNext		
+		loop 
+		recordSet.MoveFirst
+	end if 	
+	MakeListRS = strOptionList
+end function
+
+function MakeListSQL(sql,varValue,varText,varFind)
+	' Creates and returns an HTML option list from a sql statement.
+	' Param Desc:
+	'	sql			sql statement to return option list data
+	'	varValue	field name in recordSet that holds the data that will be placed in
+	'				the VALUE portion of the option tag.
+	'	varText		field name in recordSet that holds the data that will be placed in
+	'				the TEXT portion of the option tag.
+	'	varFind		specific option VALUE to find that you would like auto selected in 
+	'				the option list if found as this function iterates through the recordset.
+	dim strOptionList
+	dim rs
+	
+	set rs= server.CreateObject("ADODB.RECORDSET")
+	rs.CursorLocation = 3	
+	rs.Open sql,mcnn
+	mintRecordCount = rs.RecordCount
+	strOptionList = MakeListRS(rs,varValue,varText,varFind)
+	rs.Close
+	set rs = nothing
+	MakeListSQL = strOptionList
+end function
+
+function MakeYearList(plusNow,minusNow,varFind)
+	' Creates a list of years spanning Now() + plusNow to Now() - minusNow
+	' Param Desc:
+	'	plusNow		number of years to add to current year.  Used to set end year in list range.
+	'   minusNow	number of years to subtract from current year.  Used to set start year in list range.
+	'	varFind		specific option VALUE to find that you would like auto selected in 
+	'				the option list if found as this function iterates through the year loop.
+	dim intYear
+	dim intStart
+	dim intNow
+	dim intEnd
+	dim i
+	dim strOptionList
+	dim strSelected
+	
+	intNow = datePart("YYYY",now)
+	intEnd = intNow + plusNow
+	intStart = intNow - minusNow
+	
+	for i = intStart to intEnd
+		if cstr(i) = cstr(varFind & "") then
+			strSelected = " selected"
+		else
+			strSelected = ""
+		end if 
+		strOptionList = strOptionList & "<option value=""" & i & """" & strSelected & ">" & i & chr(13)
+	next
+	MakeYearList = strOptionList
+end function
+
+function EscapeTick(text)
+	'Escapes single ticks (') from passed in text to prevent crashing an
+	'insert or update statement in SQL Server.
+	text = replace(replace(text,"'","''"),";","")
+	EscapeTick = text
+end function
+
+function GetIdentity
+	'Get Identity for last changed id in a session
+	dim intID
+	dim rsGetID
+	
+	set rsGetID = server.CreateObject("ADODB.RECORDSET")
+	rsGETID.CursorLocation = 3
+	sql = "select SCOPE_IDENTITY() as New_Num"    
+	rsGetID.Open sql,mcnn
+
+	intID = rsGetId("New_Num")
+
+	rsGetID.Close
+	set rsGetID = nothing
+	
+	GetIdentity = intID
+end function
+
+function TrueFalse(strTF)
+	' Used to set True false text into their numerical values
+	if ucase(strTF) = "TRUE" or strTF = "1" then
+		TrueFalse = 1
+	elseif IsNull(strTF) or strTF = "" then	'added 02-sept-2002 bkm
+		TrueFalse = " null "
+	else
+		'this should be ZERO (which is FALSE in any language)
+		'we need to make sure we are not capturing "-1" as False anywhere.  VB will be confused
+		'False should always be ZERO
+		TrueFalse = 0
+	end if 
+end function
+
+function TFText(strTF)
+	' Used to set True false numerical values into text
+	'mod by BKM 28-Nov-2001 - Added "-1" 
+	'mod by BKM 24-Jan-2003 - changed to test for CBool
+	if IsNull(strTF) or strTF = "" then
+		TFText = ""
+	elseif cbool(strTF) then 'ucase(strTF) = "1"  or ucase(strTF) = "-1" or 
+		TFText = "TRUE"
+	else
+		TFText = "FALSE"
+	end if 
+end function
+
+function YNText(strTF)
+	' Used to set True false numerical values into Yes/No text
+	if IsNull(strTF) or strTF = "" then
+		YNText = ""
+	elseif cbool(strTF) then 'ucase(strTF) = "1"  or ucase(strTF) = "-1" or 
+		YNText = "YES"
+	else
+		YNText = "NO"
+	end if 
+end function
+
+function ErrPrint(text)
+	'Since W2K Server displays absolutly nothing but an error message if
+	'a script contains an error (does not display the good code in the
+	'browser that came before the error) I often am writting stuff to the
+	'screen for testing purposes and to see it I need to do a response.end
+	'so I made this little function.
+	Response.Write text
+	Response.End
+end function
+
+function SchoolYear()
+	' This function returns the current school year based on July 1 
+	' beginning a new school year and the year being defined as 
+	' the year in which the school t=year ends.
+	dim intSchoolYear
+	dim intCurrentMonth
+	
+	intCurrentMonth = datePart("m",now())
+	
+	if intCurrentMonth < 7 then
+		intSchoolYear = datePart("yyyy",now())
+	else
+		intSchoolYear = datePart("yyyy",dateAdd("yyyy",1,now()))
+	end if 
+	SchoolYear = intSchoolYear
+end function 
+
+function SchoolYearRange()
+	' Gives school year range based on session value for school year
+	dim intSchoolYear
+	dim intBenginYear
+	
+	intSchoolYear = ASP.Session.Contents("intSchool_Year")
+	intBenginYear = intSchoolYear - 1
+	
+	SchoolYearRange = "'" & right(intBenginYear,2) & " - '" & right(intSchoolYear,2)
+end function 
+
+Function Reformat(ByVal pstrData, ByVal parArgs)
+'********************************************************
+'Name:		Reformat (function)
+'Purpose:	Formats a string based on optional parameters.
+'
+'Note:		This is largely a reversed engineered adaptation
+'				of the javascript function 'reformat' found in
+'				formCheck.js
+'
+'Usage:		* To reformat a 10-digit U.S. phone number from "1234567890"
+'				to "(123) 456-7890" make this function call:
+'				vfReformat("1234567890", Array("(", 3, ") ", 3, "-", 4))
+'
+'				* To reformat a 9-digit U.S. Social Security number from
+'				"123456789" to "123-45-6789" make this function call:
+'				vfReformat("123456789", Array("", 3, "-", 2, "-", 4))
+'
+'Date:		10 October 2001
+'Author:		Bryan K Mofley (ThreeShapes.com LLC)
+'********************************************************
+Dim vntArg		'Element in array - variant
+Dim intPos		'Integer position in pstrData
+dim intLngth	'Length of String
+Dim strResult	'Reformated results
+Dim i				'Counter in For..Next loop
+
+	intPos = 1
+	strResult = ""
+	intLngth = Len(pstrData)
+	For i = 0 To UBound(parArgs)
+		vntArg = parArgs(i)
+		If i Mod 2 = 0 Then
+			if intpos < intLngth then
+				strResult = strResult & vntArg
+			else
+				exit for
+			end if
+		Else
+			strResult = strResult & Mid(pstrData, intPos, vntArg)
+			intPos = intPos + vntArg
+		End If
+	Next
+	Reformat = strResult
+End Function
+
+Function Unformat(ByVal pstrData, ByVal parArgs)
+'********************************************************
+'Name:		Unformat (function)
+'Purpose:	Removes Characters (via parArgs) to unformat a string
+'
+'Usage:		* To unformat a 10-digit U.S. phone number from "(123) 456-7890"
+'				to "1234567890" make this function call:
+'				Unformat("(123) 456-7890", Array("(", ")", " ", "-"))
+'
+'			* To unformat a 9-digit U.S. Social Security number from
+'				"123-45-6789" to "123456789" make this function call:
+'				Unformat("123-45-6789", Array("-"))
+'
+'Date:		10 June 2003
+'Author:	Bryan K Mofley (ThreeShapes.com LLC)
+'********************************************************
+Dim vntArg		'Element in array - variant
+Dim strResult	'Reformated results
+Dim i			'Counter in For..Next loop
+
+	strResult = pstrData
+	For i = 0 To UBound(parArgs)
+		vntArg = parArgs(i)
+		strResult = Replace(strResult, vntArg, "")
+	Next
+	Unformat = strResult
+End Function
+
+function ConvertCheckToBit(checkVal)
+	'This function converts a 'on' / null value returned by an HTML 
+	'checkbox form element to a 1 or 0 respectively
+	'bkm 29-Nov-2001 added the OR clause - can now be used by SELECT as well as CheckBox
+	checkVal = replace(checkVal,",","")
+	if ucase(checkVal) = "ON"  or UCase(checkVal) = "TRUE" then
+		ConvertCheckToBit = 1
+	else
+		ConvertCheckToBit = 0
+	end if		
+end function
+
+function CheckDecimal(number)
+	number = EscapeTick(number)
+	if isNumeric(number) then
+		CheckDecimal = number
+	else
+		CheckDecimal = 0
+	end if 
+end function
+
+function InstructorCosts(intInstructor_ID)
+	' This function figures out the cost of taxes and benefits 
+	' Requires a valid instructor id to be pased to it as a parameter
+	' and returns an array with the following elements
+	' 0 = Base Hourly Rate
+	' 1 = TRS
+	' 2 = PERS
+	' 3 = FICA
+	' 4 = Medicare
+	' 5 = Health Insurance
+	' 6 = Workmans Comp
+	' 7 = Life Insurance
+	' 8 = Unemployment
+	' 9 = Hourly Rate with all Applicable Taxes & Benefits
+	'10 = Per Diem
+	
+	dim sql
+	dim sqlBenTax
+	dim dtMax
+	dim intCount
+	dim curPer_Hour	'hourly rate from per diem / 7.5 hours
+	
+	' Get Benefit and  Tax Data
+	set rsRates = server.CreateObject("ADODB.RECORDSET")
+	rsRates.cursorLocation = 3
+	
+	sqlBenTax = "select fltTRS,fltMedicare,fltWorkmans_Comp,fltPERS,curHealth_Cost," & _
+		  "fltFICA,fltUnemployment,curLife_Insurance,curFICA_Cap, intTERS_BASE_PERCENT,intPERS_BASE_PERCENT  " & _
+		  "from tblBenefit_Tax_Rates " & _
+		  "where intSchool_Year = " & ASP.Session.Contents("intSchool_Year")
+	rsRates.Open sqlBenTax,mcnn
+	
+	intCount = 0
+	
+	'for loop dims and assigns variables from rsRates
+	for each item in rsRates.Fields
+		execute("dim " & rsRates.Fields(intCount).Name)
+		execute(rsRates.Fields(intCount).Name & " = item")				
+		if instr(1,rsRates.Fields(intCount).Name,"flt") > 0 then
+			execute(rsRates.Fields(intCount).Name & " = " & "cdbl(" & rsRates.Fields(intCount).Name & ")")
+		end if 
+		intCount = intCount + 1
+	next	
+	
+	rsRates.Close
+	set rsRates = nothing
+	
+	if isArray(marBenTax) = false then
+		marBenTax = array(fltTRS,fltPERS,fltFICA,fltMedicare,curHealth_Cost,curLife_Insurance,fltWorkmans_Comp,fltUnemployment,curFICA_Cap)
+	end if
+	
+	'Get Teacher Pay Data
+	set rsGetPayData = server.CreateObject("ADODB.RECORDSET")
+	rsGetPayData.CursorLocation = 3
+	
+	
+	' Replaced sql with below version on jun 6 2004 to conform to new business
+	' rule that a teacher can only have one valid bill rate per school year
+	' which will be the last bill rate change entered in the system for
+	' a given school year
+	sql = "SELECT TOP 1 intInstructor_Pay_Data_ID, " & _
+		  " curPay_Rate, intPay_Type_id, " & _
+	      " fltASD_Full_Time_Percent, fltASD_Part_Time_Percent, " & _
+	      " fltFPCS_Hours_Goal " & _
+		  "FROM tblInstructor_Pay_Data " & _
+		  "WHERE (intInstructor_ID = " & intInstructor_ID & _
+		  ") AND (intSchool_Year_Start <= " & ASP.session.contents("intSchool_Year") & ") " & _
+		  "ORDER BY intSchool_Year_Start desc, intInstructor_Pay_Data_ID DESC "		  
+	
+	rsGetPayData.Open sql,mcnn
+	
+	intCount = 0
+	'for loop dims and assigns variables from rsRates
+	if rsGetPayData.RecordCount > 0 then
+		for each item in rsGetPayData.Fields
+			execute("dim " & rsGetPayData.Fields(intCount).Name)
+			execute(rsGetPayData.Fields(intCount).Name & " = item")			
+			if instr(1,rsGetPayData.Fields(intCount).Name,"flt") > 0 then
+				execute(rsGetPayData.Fields(intCount).Name & " = " & "cdbl(" & rsGetPayData.Fields(intCount).Name & ")")
+			end if 
+			intCount = intCount + 1
+		next
+	end if 
+	
+	rsGetPayData.Close
+	set rsGetPayData = nothing
+	
+	if curPay_Rate <> "" or curPay_Rate <> 0 then
+		curPer_Hour = formatNumber(cdbl(curPay_Rate)/cdbl(7.5),2)		
+	end if 
+	
+	' If our teacher has a valid teacher profile we continue
+	if fltFPCS_Hours_Goal <> "" and fltFPCS_Hours_Goal <> 0 then 
+		if curPer_Hour <> "" and curPer_Hour <> 0 then
+			fltTRS = fltTRS * curPer_Hour
+			fltMedicare = fltMedicare * curPer_Hour
+			fltWorkmans_Comp = fltWorkmans_Comp * curPer_Hour
+			fltPERS = fltPERS * curPer_Hour
+			curHealth_Cost = 100*(curHealth_Cost / (1410 * fltFPCS_Hours_Goal))
+			fltFICA = fltFICA * curPer_Hour
+			fltUnemployment = fltUnemployment * curPer_Hour
+			
+			if intPay_Type_id = "3" or intPay_Type_id = "4" then
+				curLife_Insurance = 100*(curLife_Insurance / (1410 * fltFPCS_Hours_Goal))
+			else
+				curLife_Insurance = 0 
+			end if
+			
+			if fltASD_Part_Time_Percent >= intTERS_BASE_PERCENT or fltASD_Full_Time_Percent >= intTERS_BASE_PERCENT then
+				'Addendum Teacher	
+				dblRate = curPer_Hour + fltTRS + fltMedicare + fltWorkmans_Comp + curLife_Insurance + fltUnemployment				
+				InstructorCosts = array(curPer_Hour,fltTRS,0,0,fltMedicare,0,fltWorkmans_Comp,curLife_Insurance,fltUnemployment,dblRate,curPay_Rate)				
+			
+			elseif (fltASD_Part_Time_Percent + fltFPCS_Hours_Goal) >= intTERS_BASE_PERCENT and (fltFPCS_Hours_Goal >= 20) _
+				 and (fltASD_Part_Time_Percent < intTERS_BASE_PERCENT)  then
+				   dblRate = curPer_Hour + fltTRS + fltMedicare + curHealth_Cost + fltWorkmans_Comp + curLife_Insurance + fltUnemployment
+
+				   InstructorCosts = array(curPer_Hour,fltTRS,0,0,fltMedicare,curHealth_Cost,fltWorkmans_Comp,curLife_Insurance,fltUnemployment,dblRate,curPay_Rate)
+				  			
+			elseif (fltASD_Full_Time_Percent + fltFPCS_Hours_Goal) >= intTERS_BASE_PERCENT and (fltFPCS_Hours_Goal >= 20) _
+				   and (fltASD_Full_Time_Percent < intTERS_BASE_PERCENT) then
+				'Same as above except this teacher is paid by FPCS on not ASD
+				 dblRate = curPer_Hour + fltTRS + fltMedicare + curHealth_Cost + fltWorkmans_Comp + curLife_Insurance + fltUnemployment
+				 InstructorCosts = array(curPer_Hour,fltTRS,0,0,fltMedicare,curHealth_Cost,fltWorkmans_Comp,curLife_Insurance,fltUnemployment,dblRate,curPay_Rate)
+							
+			elseif fltFPCS_Hours_Goal < intPERS_BASE_PERCENT then
+				'Special Activity Agreement				
+				dblRate = curPer_Hour + fltFICA + fltMedicare + fltWorkmans_Comp + curLife_Insurance + fltUnemployment
+				InstructorCosts = array(curPer_Hour,0,0,fltFICA,fltMedicare,0,fltWorkmans_Comp,curLife_Insurance,fltUnemployment,dblRate,curPay_Rate)				
+			elseif fltFPCS_Hours_Goal >= intPERS_BASE_PERCENT and fltFPCS_Hours_Goal < intTERS_BASE_PERCENT then
+				dblRate = curPer_Hour + fltPERS + fltFICA + fltMedicare + fltWorkmans_Comp + curLife_Insurance + fltUnemployment
+				InstructorCosts = array(curPer_Hour,0,fltPERS,fltFICA,fltMedicare,0,fltWorkmans_Comp,curLife_Insurance,fltUnemployment,dblRate,curPay_Rate)				
+			end if 			
+		end if
+	end if 
+end function
+
+Sub ResetSelectSessionVariables()
+	' Reset session variables so data does not get corrupted as 
+	' user goes through workflow.	
+	ASP.Session.Contents("intVendor_ID") = ""
+	ASP.Session.Contents("szVendor_Name") = ""
+	ASP.Session.Contents("strTeacherFirstName") = ""
+	ASP.Session.Contents("strTeacherLastName") = ""
+	' Need to keep student id
+	'ASP.Session.Contents("intStudent_ID") = ""
+	ASP.Session.Contents("szClass_Name") = ""
+	ASP.Session.Contents("intClass_ID") = ""
+	ASP.session.Contents("strParams") = ""
+	ASP.Session.Contents("studentFirstName") = ""
+	ASP.Session.Contents("studentLastName") = ""
+	ASP.Session.Contents("strStudentName") = ""
+	ASP.Session.Contents("intILP_ID") = ""
+	ASP.Session.Contents("blnFromClassAdmin") = false
+	ASP.Session.Contents("intCharge_Type_ID") = "" 
+	ASP.Session.Contents("curUnit_Cost") = ""
+	ASP.Session.Contents("decNum_Units") = ""	
+	ASP.Session.Contents("intPOS_Subject_ID_from_class") = ""
+	ASP.session.contents("intBudget_ID") = ""
+	' Need this variable for ILP1.asp
+	if instr(ucase(ASP.request.servervariables("SCRIPT_NAME")),"ILP1.ASP") < 1 then
+		ASP.Session.Value("intShort_ILP_ID") = ""
+		ASP.Session.Contents("intPOS_Subject_ID") = ""
+	end if
+end Sub
+
+function AddMenu(linkName)	
+	' linkName can be defined as 'shortForm','manageClasses','ilpBank','addILP',
+	' 'teacherBio','enrollmentInfo','familyManager','teacherProfile',"teacherBioEdit'
+	' This function adds menu items based on 'linkName'
+	dim strFamID, intStudent_ID
+	' Get querystring param values for links
+	if request.querystring("intStudent_ID") <> "" then
+		intStudent_ID = request.querystring("intStudent_ID")
+	elseif request.form("intStudent_ID") <> "" then
+		intStudent_ID = request.form("intStudent_ID")
+	elseif ASP.session.contents("intStudent_id") <> "" then 
+		intStudent_ID = ASP.session.contents("intStudent_ID")
+	else
+		intStudent_ID = ""
+	end if
+	
+	if request.Querystring("intInstructor_ID") <> "" then
+		intInstructor_ID = request.Querystring("intInstructor_ID")
+	elseif ASP.session.contents("intInstuctor_ID") <> "" then 
+		intInstructor_ID = ASP.session.contents("intInstructor_ID")
+	end if 
+	
+	If ASP.Session.Contents("instruct_id") <> "" then
+		intInstructor_ID = ASP.Session.Contents("instruct_id")
+	end if
+		
+	' work our way through displying the requested link
+	if ucase(linkName) = "TEACHERBIO" and ASP.Session.Contents("strRole") <> "VENDOR" then
+			AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/Teachers/teacherBiosViewer.asp","Teacher Bios")
+	end if
+	
+	if ucase(linkName) = "ILPBANK" and ASP.Session.Contents("strRole") <> "VENDOR" then
+			AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/ILP/ILPBankViewer.asp","ILP Bank")
+	end if
+	
+	if ASP.Session.Contents("strRole") <> "TEACHER" and ASP.Session.Contents("strRole") <> "VENDOR" and ucase(linkName) = "FAMILYMANAGER" then
+		if ASP.Session.Contents("strRole") = "ADMIN" and intStudent_ID <> "" then
+			strFamID = StudentInfo(intStudent_ID,"6")
+		end if  
+		AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "Admin/familyManager.asp?intFamily_ID=" & strFamID,"Family Manager")
+	end if
+	
+	if ASP.Session.Contents("strRole") <> "VENDOR" and request.querystring("intVendor_ID") <> "" and ucase(linkName) = "VENDORPROFILE" then		
+		AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/VIS/vendorAdmin.asp?intVendor_ID=" & request.querystring("intVendor_ID"),"Vendor Profile")
+	end if
+	
+	if ASP.Session.Contents("strRole") <> "VENDOR" and request.querystring("intVendor_ID") <> "" and ucase(linkName) = "VENDORAUTH" then
+		AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/VIS/vendorAuth.asp?intVendor_ID=" & request.querystring("intVendor_ID"),"Vendor Auth")		
+	end if
+		
+	if intStudent_ID <> "" then
+		Select Case ucase(linkName)
+			case "PACKET" 
+				AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/Packet/Packet.asp?intStudent_ID=" & intStudent_ID,"Packet")
+			case "TRANSFER" 
+				AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/packet/BudgetTransfer.asp?intStudent_ID=" & intStudent_ID,"Transfers")			
+			case "FORMS" 
+				AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/printableForms/printDefault.asp?intStudent_ID=" & intStudent_ID,"Print Forms")			
+			case "ENROLLMENTINFO"  
+				'AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/SIS/enrollmentInfo.asp?intStudent_ID=" & intStudent_ID,"Enrollment Info")		
+			case "ADDILP"	
+				'AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/ilp/ilp1.asp?intStudent_ID=" & intStudent_ID,"Add a Class")			
+			case "MANAGECLASSES" 
+				'AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/teachers/viewClasses.asp?intStudent_ID=" & intStudent_ID,"Manage Classes")
+			case "ILPPHILOSOPHY"
+				AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/ilp/ilpPhilosophy.asp?intStudent_ID=" & intStudent_ID,"ILP Philosophy")			
+		end Select
+	end if
+		
+	if intInstructor_ID <> "" and (ASP.Session.Contents("strRole") = "ADMIN" _ 
+		or ASP.Session.Contents("strRole") = "TEACHER") then
+		
+		Select Case ucase(linkName)
+			Case "ADDILP" 
+				AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/teachers/classAdmin.asp?intInstructor_Id=" & intInstructor_id & "&intInstruct_Type_ID=4","Add a Class")
+		
+			Case "TEACHERPROFILE" 			
+				AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/teachers/addTeacher.asp?intInstructor_Id=" & intInstructor_id,"Teacher Profile")
+			
+			Case "TEACHERBIOEDIT"	
+				AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/teachers/teacherBiosAdmin.asp?intInstructor_Id=" & intInstructor_id,"Edit Bio")
+			
+			case "MANAGECLASSES" 
+				AddMenu = MenuItems(ASP.Application.Contents("strSSLWebRoot") & "forms/teachers/viewClasses.asp?intInstructor_ID=" & intInstructor_ID,"Manage Classes")				
+		end Select
+		
+	end if
+	
+end function
+
+function MenuItems(strPath,strText)
+	' Creates a single menu item.
+	' strPath  http path or link
+	' strText  hyperlinked text the user will see 
+	MenuItems = "<td><table cellpadding=""0"" cellspacing=""0"" border=""0"">" & _
+                  "   <tr> " & _
+                  "      <td class=""flyoutLink"" onClick=""window.location.href='" & strPath & "';""> " & _
+                  "         <b><nobr>" & strText & "</nobr></b>" & _
+                  "       </td>" & _
+                  "   </tr>" & _
+                  "</table></td>"	                  
+end function
+
+function StudentPercentage(student_ID)
+	' This function tells us how much funding a student qulifies for.
+	' Requires parameter 'student_ID' which must be a valid intStudent_ID from tblStudent	
+	dim sqlCore
+	dim sqlElective
+	dim sqlWorldLangCore
+	dim sqlWorldLangElec
+	dim sqlInstructHrs
+	dim sqlASDorUAA
+	dim sqlHrsExempt
+	dim intTotalCore
+	dim intTotalElec
+	dim intCoreElec4
+	dim intCoreElec2
+	dim bolASDorUAA
+	dim bolExempt
+	dim strList
+	dim intCore_Exempt
+	dim intElect_Exempt
+	dim intLockedLevel
+	dim sqlCheckLock
+	dim intFiguredPercentage
+	
+	set rsData = server.CreateObject("ADODB.RECORDSET")
+	rsData.CursorLocation = 3
+	
+	sqlCheckLock = "select intPercent_Enrolled_Locked " & _
+				   " from tblEnroll_Info " & _
+				   " where intStudent_ID = " & student_ID & _
+				   " and sintSchool_Year = " & ASP.Session.Contents("intSchool_Year")
+	rsData.open sqlCheckLock,mcnn
+	
+	if rsData.recordcount > 0 then
+		intLockedLevel = rsData(0)
+	else
+		intLockedLevel = ""
+	end if
+	
+	rsData.close
+	'This sql gives us the total number of core hours a student has signed up for
+	sqlCore = "SELECT SUM(i.decCourse_Hours) AS coreHours " & _
+				"FROM trefPOS_Subjects cc INNER JOIN " & _
+				" tblClasses c ON cc.intPOS_Subject_ID = c.intPOS_Subject_ID INNER JOIN " & _
+				" tblILP i ON c.intClass_ID = i.intClass_ID " & _
+				"WHERE (i.intStudent_ID = " & student_ID & ") AND (cc.bolCore_Course = 1)  " & _
+				"AND (i.sintSchool_Year = " & ASP.Session.Contents("intSchool_Year") & _
+				") "
+				
+	'This sql gives us the total number of elective class a student has signed up for
+	sqlElective = "SELECT SUM(i.decCourse_Hours) AS coreHours " & _
+					"FROM trefPOS_Subjects cc INNER JOIN " & _
+					" tblClasses c ON cc.intPOS_Subject_ID = c.intPOS_Subject_ID INNER JOIN " & _
+					" tblILP i ON c.intClass_ID = i.intClass_ID " & _
+					"WHERE (i.intStudent_ID = " & student_ID & ") AND (cc.bolCore_Course = 0)  " & _
+					"AND (i.sintSchool_Year = " & ASP.Session.Contents("intSchool_Year") & _
+					") "
+					
+	' Number of hours student has with ASD instruction/oversight		      
+	sqlInstructHrs = "SELECT SUM(c.decHours_Student) + SUM(c.decHours_Planning) AS Contracted_Hrs " & _
+						"FROM tblILP i INNER JOIN " & _
+						" tblClasses c ON i.intClass_ID = c.intClass_ID " & _
+						"WHERE (i.intStudent_ID = " & student_ID & ")  " & _
+						"AND (i.sintSchool_Year = " & ASP.Session.Contents("intSchool_Year") & ")  " & _
+						"AND (c.intInstructor_ID IS NOT NULL)  " 
+			 
+	' Check for ASD or UAA vendor classes. If they exist they count for all
+	' but 4 hours of required teacher contract time				 
+	'sqlASDorUAA = "SELECT COUNT(*) AS ASDorUAA " & _
+	'			  "FROM tblOrdered_Items " & _
+	'			  "WHERE (intItem_ID = 1 OR " & _
+	'			  "intItem_ID = 2) AND (intStudent_ID = " & student_ID & ") " & _
+	'			  "AND intSchool_Year = " & ASP.Session.Contents("intSchool_Year")
+				  
+	sqlASDorUAA = "SELECT COUNT(*) AS ASDorUAA " & _
+					"FROM tblOrdered_Items oi LEFT OUTER JOIN " & _
+					" tblILP i ON oi.intILP_ID = i.intILP_ID " & _
+		 			"WHERE (oi.intItem_ID = 1 OR " & _
+					" oi.intItem_ID = 2) AND (oi.intStudent_ID = " & student_ID & ") " & _
+					"AND (oi.intSchool_Year = " & ASP.Session.Contents("intSchool_Year") & _
+					") "
+				  
+	sqlHRSExempt = "SELECT     bolASD_Contract_HRS_Exempt, " & _
+				   "intCore_Credit_Percent,intElective_Credit_Percent " & _
+				   "FROM         tblStudent_Exemptions " & _
+				   "WHERE     (intStudent_ID = " & student_ID & ") " & _
+				   "AND (intSchool_Year = " & ASP.Session.Contents("intSchool_Year") &")"
+	rsData.Open sqlHrsExempt, mcnn
+	
+	strList = "sqlCore,sqlElective,sqlInstructHrs,sqlASDorUAA"
+	bolExempt = false
+	
+	intCore_Exempt = 1
+	intElect_Exempt = 1
+	
+	if rsData.recordcount > 0 then		
+		if rsData(0) =  true then
+			strList = "sqlCore,sqlElective,sqlInstructHrs"
+			bolExempt = true
+		end if
+		if rsData(1) & "" <> "" then
+			intCore_Exempt = rsData(1)
+			intCore_Exempt = 100 - intCore_Exempt		
+			intCore_Exempt = intCore_Exempt * .01
+		end if
+		
+		if rsData(2) & "" <> "" then
+			intElect_Exempt = rsData(2)
+			intElect_Exempt = 100 - intElect_Exempt
+			intElect_Exempt = intElect_Exempt * .01
+		end if
+	end if 
+	
+	rsData.close
+	execute("arSQLs = array(" & strList & ")")
+
+	for i = 0 to ubound(arSQLs)			
+		rsData.Open arSQLs(i),mcnn
+		if rsData.RecordCount > 0 then
+			if not isnull(rsData(0)) then
+				marStudentEnroll(i) = cdbl(rsData(0))
+			else
+				marStudentEnroll(i) = 0
+			end if
+		else		
+			marStudentEnroll(i) = 0
+		end if 
+		rsData.Close
+	next   
+	set rsData = nothing
+	   
+	' A credit is 90 hours. We now calculate core and elective credits
+	intTotalCore = (marStudentEnroll(0))/90
+	intTotalElec = (marStudentEnroll(1))/90	
+	
+	' intCoreElec4 refelcts the number of total credits after a mandatory
+	' 4 core hours have been removed.
+	intCoreElec4 = formatNumber((intTotalCore-4)+intTotalElec,3)
+	
+	' Same as above but with 2 core credits removed
+	intCoreElec2 = formatNumber((intTotalCore-2)+intTotalElec,3)
+	
+	' Set flag if we have uaa or asd vendor classes
+	bolASDorUAA = false
+	
+	if bolExempt = false then 
+		if marStudentEnroll(3) > 0 then bolASDorUAA = true
+	end if
+	
+	'ASP.Response.Write "TESTING: " & intElect_Exempt & "<BR>"
+	' 4*intCore_Exempt is the number of units the student must have in order to obtain a certian
+	' percentage level
+
+'if (intTotalCore >= (4*intCore_Exempt) and cdbl(intCoreElec4) >= cdbl((4*intElect_Exempt))) and _
+'		((bolExempt) or (marStudentEnroll(2) >= 18) or (bolASDorUAA and marStudentEnroll(2) >= 4)) then
+'		intFiguredPercentage = 100	' full time
+'	elseif (intTotalCore >= (4*intCore_Exempt) and cdbl(intCoreElec4) >= cdbl((2*intElect_Exempt))) and _
+'		((bolExempt) or (marStudentEnroll(2) >= 13.5) or (bolASDorUAA and marStudentEnroll(2) >= 4)) then
+'		intFiguredPercentage = 75
+'	elseif (intTotalCore >= (2*intCore_Exempt) and cdbl(intCoreElec2) >= cdbl((2*intElect_Exempt))) and _
+'		((bolExempt) or (marStudentEnroll(2) >= 9) or (bolASDorUAA and marStudentEnroll(2) >= 4)) then
+'		intFiguredPercentage = 50
+'	elseif intTotalCore >= (2*intCore_Exempt) and _
+'		((bolExempt) or (marStudentEnroll(2) >= 4.5) or (bolASDorUAA and marStudentEnroll(2) >= 4)) then
+'		intFiguredPercentage = 25
+'	else
+'		'asp.response.write intTotalCore & " - " & bolExempt & " - " & marStudentEnroll(2) & " - " & bolASDorUAA
+'		'asp.response.end
+'		intFiguredPercentage = 0
+'	end if 
+
+	
+	if (intTotalCore >= (4*intCore_Exempt) and cdbl(intCoreElec4) >= cdbl((4*intElect_Exempt))) and _
+		((bolExempt) or (marStudentEnroll(2) >= 9) or (bolASDorUAA and marStudentEnroll(2) >= 2)) then
+		intFiguredPercentage = 100	' full time
+	elseif (intTotalCore >= (4*intCore_Exempt) and cdbl(intCoreElec4) >= cdbl((2*intElect_Exempt))) and _
+		((bolExempt) or (marStudentEnroll(2) >= 6.75) or (bolASDorUAA and marStudentEnroll(2) >= 2)) then
+		intFiguredPercentage = 75
+	elseif (intTotalCore >= (2*intCore_Exempt) and cdbl(intCoreElec2) >= cdbl((2*intElect_Exempt))) and _
+		((bolExempt) or (marStudentEnroll(2) >= 4.5) or (bolASDorUAA and marStudentEnroll(2) >= 2)) then
+		intFiguredPercentage = 50
+	elseif intTotalCore >= (2*intCore_Exempt) and _
+		((bolExempt) or (marStudentEnroll(2) >= 2.25) or (bolASDorUAA and marStudentEnroll(2) >= 2)) then
+		intFiguredPercentage = 25
+	else
+		'asp.response.write intTotalCore & " - " & bolExempt & " - " & marStudentEnroll(2) & " - " & bolASDorUAA
+		'asp.response.end
+		intFiguredPercentage = 0
+	end if 
+	
+	' This logic allows the locked level to override the figured level if it is 
+	' greater
+	if isNumeric(intLockedLevel) then
+		if intFiguredPercentage > intLockedLevel then
+			intFiguredPercentage = intLockedLevel
+		end if
+	end if
+	StudentPercentage = intFiguredPercentage
+end function
+
+function TargetFundingInfo(studentID)
+	' This function returns an array with the first index containing target funding info.
+	' The array indexes are defined as follows ...
+	'	0 = Target Enrollment Percentage
+	'	1 = 100% funding amount for students grade level
+	'	2 = Targeted Funding level student qualifies for based on enrollment %
+	
+	dim intPercent_Enrolled_Fpcs
+	dim curFund_Amount 
+	dim curTargetFunding
+	dim sql
+	
+	' Get target enrollment percentage and funding amount for grade level
+	
+	sql = "SELECT (CASE isNull(ei.intPercent_Enrolled_Locked, 0) WHEN 0 THEN ei.intPercent_Enrolled_Fpcs ELSE intPercent_Enrolled_Locked END)  " & _ 
+			" AS intPercent_Enrolled_Fpcs, f.curFund_Amount " & _ 
+			"FROM tblFunding f INNER JOIN " & _ 
+			" tblStudent_States ss ON UPPER(f.szGrade) = UPPER(ss.szGrade) AND ss.intSchool_Year = " & ASP.session.Contents("intSchool_Year") & " INNER JOIN " & _ 
+			" tblSTUDENT s ON ss.intStudent_id = s.intSTUDENT_ID INNER JOIN " & _ 
+			" tblENROLL_INFO ei ON ei.intSTUDENT_ID = s.intSTUDENT_ID " & _ 
+			"WHERE (ei.sintSCHOOL_YEAR = " & ASP.session.Contents("intSchool_Year") & ") " & _
+			"AND (f.intSchool_Year = " & ASP.session.Contents("intSchool_Year") & ") " & _
+			" AND (s.intSTUDENT_ID = " & studentID & ") "
+
+	' Replaced 3-29-05 by SMB because grade was moved to tblStudent_States
+	'sql = "SELECT (CASE isNull(ei.intPercent_Enrolled_Locked, 0) WHEN 0 THEN ei.intPercent_Enrolled_Fpcs ELSE intPercent_Enrolled_Locked END) " & _
+	'	  " AS intPercent_Enrolled_Fpcs, f.curFund_Amount " & _
+	'	  " FROM tblFunding f INNER JOIN " & _
+	'	  " tblENROLL_INFO ei INNER JOIN " & _
+	'	  " tblSTUDENT s ON ei.intSTUDENT_ID = s.intSTUDENT_ID ON UPPER(f.szGrade) = UPPER(s.szGRADE) " & _
+	'	  " WHERE (ei.sintSCHOOL_YEAR = " & ASP.session.Contents("intSchool_Year") & ") " & _
+	'	  " AND (f.intSchool_Year = " & ASP.session.Contents("intSchool_Year") & ") " & _
+	'	  " AND (s.intSTUDENT_ID = " & studentID & ")"
+		  
+	set rsGetTargetEnroll = server.CreateObject("ADODB.RECORDSET")
+	rsGetTargetEnroll.CursorLocation = 3
+	rsGetTargetEnroll.Open sql, mcnn
+	
+	if rsGetTargetEnroll.recordcount > 0 then
+		intPercent_Enrolled_Fpcs = cdbl(rsGetTargetEnroll("intPercent_Enrolled_Fpcs"))
+		curFund_Amount = formatNumber(cdbl(rsGetTargetEnroll("curFund_Amount")),2)
+		curTargetFunding = formatNumber((curFund_Amount * (intPercent_Enrolled_Fpcs/100)),2)
+	end if	
+	rsGetTargetEnroll.close
+	set rsGetTargetEnroll = nothing
+	TargetFundingInfo = Array(intPercent_Enrolled_Fpcs,curFund_Amount,curTargetFunding)	
+end function
+
+function InstructionActualCost(ilpID)
+	' Get actual teacher instruction costs for a specific course
+	' defined by the parameter 'ilpID'
+	
+	dim dblTeacherRate
+	dim sql
+	dim dblTeacherCost
+	
+	set rsCourseCost = server.createObject("ADODB.RECORDSET")
+	rsCourseCost.cursorlocation = 3
+	
+	sql = "SELECT hours_to_charge, intInstructor_ID " & _
+		"FROM v_Hours_Instructor_To_Charge " & _
+		"WHERE (intILP_ID = " & ilpID & ")"
+	rsCourseCost.Open sql,mcnn
+	
+	dblTeacherCost = formatNumber(0,2)
+	if rsCourseCost.RecordCount > 0 then
+		arTeacherRate = InstructorCosts(rsCourseCost("intInstructor_ID"))
+		dblTeacherRate = cdbl(arTeacherRate(9))		
+		dblTeacherCost = formatNumber(dblTeacherRate * cdbl(rsCourseCost("hours_to_charge")),2)
+	end if	
+	rsCourseCost.Close
+	set rsCourseCost = nothing
+	InstructionActualCost = dblTeacherCost
+end function
+
+function InstructionCostInfo(ilpID)
+	' Get actual teacher instruction costs for a specific course
+	' defined by the parameter 'ilpID'
+	' returns array(dblTeacherCost,hrsToCharge,teacherName,dblTeacherRate)
+	
+	dim dblTeacherRate
+	dim sql
+	dim dblTeacherCost
+	dim teacherName
+	dim hrsToCharge
+	
+	set rsCourseCost = server.createObject("ADODB.RECORDSET")
+	rsCourseCost.cursorlocation = 3
+	
+	sql = "SELECT hours_to_charge, intInstructor_ID, Teachers_Name " & _
+		"FROM v_Hours_Instructor_To_Charge " & _
+		"WHERE (intILP_ID = " & ilpID & ")"
+	rsCourseCost.Open sql,mcnn
+	
+	dblTeacherCost = formatNumber(0,2)
+	if rsCourseCost.RecordCount > 0 then
+		arTeacherRate = InstructorCosts(rsCourseCost("intInstructor_ID"))
+		dblTeacherRate = cdbl(arTeacherRate(9))		
+		dblTeacherCost = formatNumber(dblTeacherRate * cdbl(rsCourseCost("hours_to_charge")),2)
+		hrsToCharge = cdbl(rsCourseCost("hours_to_charge"))
+		teacherName = rsCourseCost("Teachers_Name")
+	end if	
+	rsCourseCost.Close
+	set rsCourseCost = nothing
+	InstructionCostInfo = array(dblTeacherCost,hrsToCharge,teacherName,dblTeacherRate)
+end function
+
+function InstructionProjectedCost(classID)
+	' Get potential teacher instruction costs for a specific course
+	' defined by the parameter 'classID'
+	' This will tell us if a student were to take a class how much the
+	' teacher cost would be by adding 1 to the number of enrolled students in a class
+	' which is done in the view 'v_Hours_Projected_To_Charge'.
+	
+	dim dblTeacherRate
+	dim sql
+	dim dblTeacherCost
+	dim dblTotalHrs
+	
+	set rsCourseCost = server.createObject("ADODB.RECORDSET")
+	rsCourseCost.cursorlocation = 3
+	
+	sql = "SELECT hours_to_charge, intInstructor_ID " & _
+		"FROM v_Hours_Projected_To_Charge " & _
+		"WHERE (intClass_ID = " & classID & ")"
+	rsCourseCost.Open sql,mcnn
+	
+	dblTeacherCost = formatNumber(0,2)
+	if rsCourseCost.RecordCount > 0 then
+		arTeacherRate = InstructorCosts(rsCourseCost("intInstructor_ID"))
+		dblTeacherRate = cdbl(arTeacherRate(9))
+		dblTeacherCost = formatNumber(dblTeacherRate * cdbl(rsCourseCost("hours_to_charge")),2)
+	else
+		' There are no students enrolled in the class so we find out the max cost for a 
+		' class based on minimum enrollment
+		rsCourseCost.close
+		sql = "select intInstructor_ID, intMin_Students, decHours_Student,decHours_Planning " & _
+			  "From tblClasses " & _
+			  "Where intClass_ID = " & classID
+		rsCourseCost.open sql, mcnn
+		arCost = InstructorCosts(rsCourseCost(0))
+		
+		dblTotalHrs = cdbl(rsCourseCost(2)) + cdbl(rsCourseCost(3))
+		dblTeacherCost = formatNumber((cdbl(arCost(9)) * dblTotalHrs)/cdbl(rsCourseCost(1)),2)
+	end if	
+	rsCourseCost.Close
+	set rsCourseCost = nothing
+	InstructionProjectedCost = dblTeacherCost
+end function
+
+function TransferDeduct(studentID)
+	' Returns the amount of funds that needs to be deducted from students budget
+	' due to budget transfer withdrawing funds
+	dim sql
+	dim dblDeduct
+	
+	sql = "SELECT SUM(curAmount) AS total " & _
+			"FROM tblBudget_Transfers " & _
+			"GROUP BY intSchool_Year, intFrom_Student_ID " & _
+			"HAVING (intSchool_Year = " & ASP.session.contents("intSchool_Year") & ") " & _
+			"AND (intFrom_Student_ID = " & studentID & ")"	
+	set rs = server.createObject("ADODB.RECORDSET")	
+	rs.cursorlocation = 3
+	rs.open sql, mcnn
+	
+	dblDeduct = 0 
+	if rs.recordcount > 0 then
+		dblDeduct = rs("total")
+	end if 
+	
+	rs.close
+	set rs = nothing
+	TransferDeduct = formatNumber(dblDeduct,2)
+end function
+
+function TransferAdd(studentID)
+	' Returns the amount of funds that needs to be added to students budget
+	' due to budget transfer deposit of funds
+	dim sql
+	dim dblAdd
+	
+	sql = "SELECT SUM(curAmount) AS total " & _
+			"FROM tblBudget_Transfers " & _
+			"GROUP BY intSchool_Year, intTo_Student_ID " & _
+			"HAVING (intSchool_Year = " & ASP.session.contents("intSchool_Year") & ") " & _
+			"AND (intTo_Student_ID = " & studentID & ")"
+
+	set rs = server.createObject("ADODB.RECORDSET")
+	rs.cursorlocation = 3
+	rs.open sql, mcnn
+	
+	dblAdd = 0 
+	if rs.recordcount > 0 then
+		dblAdd = rs("total")
+	end if 
+	
+	rs.close
+	set rs = nothing
+	TransferAdd = formatNumber(dblAdd,2)
+end function
+
+function CourseInfo(shortILPID,field)
+	' This function returns information related to the Short ILP Form (aka Course Info)
+	' It requires 2 fields ...
+	'	shortILPID = the intShort_ILP_ID you would like to return info on
+	'	'field' the value for this field can be a 1, 2, 3 or 4 with the following definitions
+	'		1 returns the intPOS_Subject_ID
+	'		2 returns the Course Hours
+	'		3 returns the Course Title
+	'		4 returns an array containing items 1-3 and ordered the same in the array
+	'       5 returns the ASD Course ID
+	
+	
+	set rs = server.createObject("ADODB.Recordset")
+	rs.cursorLocation = 3
+	sql = "SELECT ilp.intPOS_Subject_ID, intCourse_Hrs, (CASE szCourse_Title + '' WHEN NULL THEN " & _
+			" (SELECT txtCourseTitle " & _
+			" FROM tblProgramOfStudies ps " & _
+			" WHERE ilp.lngPOS_ID = ps.lngPOS_ID) " & _
+			" WHEN '' THEN (SELECT ps2.txtCourseTitle " & _
+			" FROM tblProgramOfStudies ps2 " & _
+			" WHERE ilp.lngPOS_ID = ps2.lngPOS_ID) ELSE szCourse_Title END) AS courseTitle, " & _
+			" pos.txtCourseNbr " & _ 
+			"FROM tblILP_SHORT_FORM ilp LEFT OUTER JOIN " & _
+			" tblProgramOfStudies pos ON ilp.lngPOS_ID = pos.lngPOS_ID " & _
+			"WHERE (ilp.intShort_ILP_ID = " & shortILPID & ")" 
+			
+	rs.open sql,mcnn
+	
+	if rs.recordcount > 0 then		
+		select case field
+			case "1" 
+				myResult = rs(0)
+			case "2"
+				myResult = rs(1)
+			case "3" 
+				myResult = rs(2)
+			case "4"
+				' we need to assign the field values to vbs variables
+				' otherwise we would loose then once we closed the recordset even
+				' though we assign them to an array. 
+				a = rs(0)
+				b = rs(1)
+				c = rs(2)				
+				myResult = array(a,b,c)
+			case "5"
+				myResult = rs(3)
+		end select
+	else
+		myResult = ""		
+	end if
+
+	rs.close
+	set rs = nothing
+	CourseInfo = myResult 	
+end function
+
+function FamilyInfo(IDType,ID,field)
+	' This function returns information related to the Family record for a given student
+	' or family ID
+	' It requires 3 fields ...
+	'	IDType is either 1 for student id or 2 for family id (2 is the default)
+	'	ID = the intStudent_ID or intFamily_ID you would like to return info on
+	'	'field' the value for this field can be 1-6 with the following definitions
+	'		1 returns the intFamily_ID
+	'		2 returns the Family Name
+	'		3 returns the Family Desc
+	'		4 returns the Family Email
+	'		5 returns the Family Home Phone #
+	'		6 returns an array containing items 1-5 and ordered the same in the array
+	
+	set rs = server.createObject("ADODB.Recordset")
+	rs.cursorLocation = 3
+	
+	if IDType = "1" then
+		sql = "SELECT f.intFamily_ID, f.szFamily_Name, f.szDesc, " & _
+				"f.szEMAIL, f.szHome_Phone " & _
+				"FROM tblSTUDENT s INNER JOIN " & _
+				" tblFAMILY f ON s.intFamily_ID = f.intFamily_ID " & _
+				"WHERE (s.intSTUDENT_ID = " & ID & ")"
+	else 
+		sql = "SELECT f.intFamily_ID, f.szFamily_Name, f.szDesc, " & _
+				"f.szEMAIL, f.szHome_Phone " & _
+				"FROM tblFAMILY f " & _
+				"WHERE (f.intFamily_ID  = " & ID & ")"
+	end if
+		
+	rs.open sql,mcnn
+	
+	if rs.recordcount > 0 then		
+		select case field
+			case "1" 
+				myResult = rs(0)
+			case "2"
+				myResult = rs(1)
+			case "3" 
+				myResult = rs(2)
+			case "4" 
+				myResult = rs(3)
+			case "5" 
+				myResult = rs(4)
+			case "6"	
+				' we need to assign the field values to vbs variables
+				' otherwise we would loose then once we closed the recordset even
+				' though we assign them to an array. 
+				a = rs(0)
+				b = rs(1)
+				c = rs(2)
+				d = rs(3)
+				e = rs(4)			
+				myResult = array(a,b,c,d,e)
+		end select
+	else
+		myResult = ""		
+	end if
+
+	rs.close
+	set rs = nothing
+	FamilyInfo = myResult 	
+end function
+
+function StudentInfo(studentID,field)
+	' This function returns information related to the Student record for a given student
+	' It requires 2 fields ...
+	'	ID = the intStudent_ID you would like to return info on
+	'	'field' the value for this field can be 1-6 with the following definitions
+	'		1 returns student last name
+	'		2 returns student first name
+	'		3 returns regular full name
+	'		4 returns full name with last name first
+	'		5 returns student grade
+	'		6 returns family id
+	'		7 returns student target enrollment percentage in FPCS
+	'		8 returns an array containing items 1-7 and ordered the same in the array
+	
+	set rs = server.createObject("ADODB.Recordset")
+	rs.cursorLocation = 3
+	
+
+sql = "SELECT s.szFIRST_NAME, s.szLAST_NAME, s.szFIRST_NAME + ' ' + s.szLAST_NAME as regName, " & _
+		" s.szLAST_NAME + ', ' + s.szFIRST_NAME as lastFirst, ss.szGRADE, s.intFamily_ID, " & _
+		"ei.intPercent_Enrolled_Fpcs,ei.intSponsor_Teacher_ID, i.szFirst_Name + ' ' + i.szLast_Name as Sponsor, " & _
+		"i.szEmail " & _
+		"FROM tblSTUDENT s LEFT OUTER JOIN " & _
+		" tblENROLL_INFO ei ON s.intSTUDENT_ID = ei.intSTUDENT_ID AND " & _
+		" ei.sintSCHOOL_YEAR = " & ASP.session.contents("intSchool_Year") & " "& _
+		" Left Outer Join tblInstructor i ON ei.intSponsor_Teacher_ID = i.intInstructor_ID INNER JOIN " & _
+		" tblStudent_States ss ON s.intStudent_ID = ss.intStudent_ID and " & _
+		" ss.intSchool_year = " & session.Contents("intSchool_Year") & " " & _
+		"WHERE (s.intSTUDENT_ID = " & studentID & ")"
+		
+	rs.open sql,mcnn
+	
+	if rs.recordcount > 0 then		
+		select case field
+			case "1" 
+				myResult = rs(0)
+			case "2"
+				myResult = rs(1)
+			case "3" 
+				myResult = rs(2)
+			case "4" 
+				myResult = rs(3)
+			case "5" 
+				myResult = rs(4)
+			case "6" 
+				myResult = rs(5)
+			case "7" 
+				myResult = rs(6)
+			case "8"
+				' we need to assign the field values to vbs variables
+				' otherwise we would loose then once we closed the recordset even
+				' though we assign them to an array. 
+				a = rs(0)
+				b = rs(1)
+				c = rs(2)
+				d = rs(3)
+				e = rs(4)
+				f = rs(5)
+				g = rs(6)
+				h = rs(7)
+				i = rs(8)
+				j = rs(9)
+				myResult = array(a,b,c,d,e,f,g,h,i,j)
+			case "9"
+				myResult = rs(7)  'sponsor teacher id
+			case "10"
+				myResult = rs(8)  'sponsor teachers name
+			case "11" 
+				myResult = rs(9)  'sponsor teachers email
+		end select
+	else
+		myResult = ""		
+	end if
+
+	rs.close
+	set rs = nothing
+	StudentInfo = myResult 	
+end function
+
+function ClassInfo(classID,field)
+	dim sql
+	dim rs
+	'dim a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u
+	set rs = server.createObject("ADODB.Recordset")
+	rs.cursorLocation = 3
+	
+	sql = "SELECT c.szClass_Name,c.intPOS_Subject_ID,c.intInstructor_ID, c.intGuardian_ID, " & _
+			" c.intInstruct_Type_ID, " & _
+			" g.szFIRST_NAME + ' ' + g.szLAST_NAME AS gName, " & _
+			" i.szFIRST_NAME + ' ' + i.szLAST_NAME AS iName, " & _
+			" c.szLocation, c.intMin_Students, c.intMax_Students, " & _
+			" c.dtReg_Deadline, c.sGrade_Level, c.sGrade_Level2, " & _
+			" c.dtClass_Start, c.dtClass_End, c.szDays_Meet_On, c.szStart_Time, " & _
+			" c.szEnd_Time,c.decHours_Student, c.decHours_Planning " & _			
+			"FROM tblClasses c LEFT OUTER JOIN " & _
+			" tblGUARDIAN g ON c.intGuardian_ID = g.intGUARDIAN_ID LEFT OUTER JOIN " & _
+			" tblINSTRUCTOR i ON c.intInstructor_ID = i.intINSTRUCTOR_ID " & _
+			"WHERE (c.intClass_ID = " & classID & ")"
+	rs.open sql,mcnn
+	
+	if rs.recordcount > 0 then		
+		select case field
+			case "1" 
+				myResult = rs(0)
+			case "2"
+				myResult = rs(1)
+			case "3" 
+				myResult = rs(2)
+			case "4" 
+				myResult = rs(3)
+			case "5" 
+				myResult = rs(4)
+			case "6" 
+				myResult = rs(5)
+			case "7" 
+				myResult = rs(6)
+			case "8" 
+				myResult = rs(7)
+			case "9" 
+				myResult = rs(8)
+			case "10" 
+				myResult = rs(9)
+			case "11"
+				myResult = rs(10)
+			case "12" 
+				myResult = rs(11)
+			case "13" 
+				myResult = rs(12)
+			case "14" 
+				myResult = rs(13)
+			case "15" 
+				myResult = rs(14)
+			case "16" 
+				myResult = rs(15)
+			case "17" 
+				myResult = rs(16)
+			case "18" 
+				myResult = rs(17)
+			case "19" 
+				myResult = rs(18)
+			case "20" 
+				myResult = rs(19)
+			case "21"
+				' we need to assign the field values to vbs variables
+				' otherwise we would loose then once we closed the recordset even
+				' though we assign them to an array. 
+				a = rs(0)
+				b = rs(1)
+				c = rs(2)
+				d = rs(3)
+				e = rs(4)
+				f = rs(5)
+				g = rs(6)
+				h = rs(7)
+				i = rs(8)
+				j = rs(9)
+				k = rs(10)
+				l = rs(11)
+				m = rs(12)
+				n = rs(13)
+				o = rs(14)
+				p = rs(15)
+				q = rs(16)
+				r = rs(17)
+				s = rs(18)
+				t = rs(19)
+				u = rs(20)
+				myResult = array(a,b,c,d,e,f,g,h,i,j,k,l,m,n,o,p,q,r,s,t,u)
+		end select
+	else
+		myResult = ""		
+	end if
+
+	rs.close
+	set rs = nothing
+	ClassInfo = myResult 
+	
+end function
+
+function InstructorInfo(instructID,field)
+	' This function returns information related to the Instructor record for a given teacher
+	' It requires 2 fields ...
+	'	instructID = the intInstructor_ID you would like to return info on
+	'	'field' the value for this field can be 1-10 with the following definitions
+	'		1 returns student last name
+	'		2 returns student first name
+	'		3 returns regular full name
+	'		4 returns full name with last name first
+	'		5 returns instructor Mailing Address
+	'		6 returns home phone
+	'		7 returns business phone
+	'		8 returns email address
+	'		9 returns pay rate
+	'		10 returns an array containing items 1-9 and ordered the same in the array
+	
+	set rs = server.createObject("ADODB.Recordset")
+	rs.cursorLocation = 3
+	
+
+	sql = "SELECT szLAST_NAME, szFIRST_NAME, szFIRST_NAME + ' ' + szLAST_NAME AS NameReg,  " & _
+			"szLAST_NAME + ', ' + szFIRST_NAME AS Name,  " & _
+			"szMAILING_ADDR + '<BR>' + szCITY + ' ' + sSTATE + ' ' + szZIP_CODE AS Address,  " & _
+			"szHOME_PHONE,  szBusiness_Phone, szEmail, curPay_Rate " & _
+			"FROM tblINSTRUCTOR " & _
+			"WHERE (intINSTRUCTOR_ID = " & instructID & ")"
+		
+	rs.open sql,mcnn
+	
+	if rs.recordcount > 0 then		
+		select case field
+			case "1" 
+				myResult = rs(0)
+			case "2"
+				myResult = rs(1)
+			case "3" 
+				myResult = rs(2)
+			case "4" 
+				myResult = rs(3)
+			case "5" 
+				myResult = rs(4)
+			case "6" 
+				myResult = rs(5)
+			case "7" 
+				myResult = rs(6)
+			case "8" 
+				myResult = rs(7)
+			case "9" 
+				myResult = rs(8)
+			case "10"
+				' we need to assign the field values to vbs variables
+				' otherwise we would loose then once we closed the recordset even
+				' though we assign them to an array. 
+				a = rs(0)
+				b = rs(1)
+				c = rs(2)
+				d = rs(3)
+				e = rs(4)
+				f = rs(5)
+				g = rs(6)
+				h = rs(7)
+				i = rs(8)
+				myResult = array(a,b,c,d,e,f,g,h,i)
+		end select
+	else
+		myResult = ""		
+	end if
+
+	rs.close
+	set rs = nothing
+	InstructorInfo = myResult 	
+end function
+
+function CheckAuth()
+	' Ensures that a teacher or guard do not try to view accounts
+	' they do not have rights to. student_list is defined in UserAdmin/login.asp
+	if ucase(ASP.session.contents("strRole")) <> "ADMIN" then
+		dim objForm
+		if ASP.request.form.count > 0 then
+			set objForm = ASP.Request.form
+		else
+			set objForm = ASP.Request.Querystring
+		end if
+		
+		if objForm("intStudent_ID") <> "" then	
+			if instr(1,ASP.session.Contents("student_list"),"~" & objForm("intStudent_ID") & "~") < 1 then
+				dim insertCrack
+				insertCrack = "insert into tblCrack_Attempts(szUser_ID,szIP_Address,szURL,szALL,szUser_Create) " & _
+							" values (" & _
+							"'" & ASP.session.Contents("strUserID") & "'," & _
+							"'" & ASP.request.ServerVariables("REMOTE_ADDR") & "'," & _
+							"'" & replace(ASP.Request.ServerVariables("URL") & "?" & ASP.Request.ServerVariables("QUERY_STRING"),"'","''") & "'," & _
+							"'" & replace(ASP.request.ServerVariables("ALL_HTTP"),"'","''") & "'," & _
+							"'" & ASP.session.Contents("strUserID") & "')" 
+				mcnn.Execute(insertCrack)
+				ASP.response.Write "<H1>Security Breach Attempt. Your user information has been captured and sent to the Admin.</h1>" & _
+							"<br>This action can cause your account to be terminated and legal steps may also be taken."
+				ASP.response.End
+			end if
+		end if
+	end if
+end function
+
+sub ForcedActionHandling(oFPCS,fvCount)
+		
+	dim i
+	dim insert
+	dim delete
+	
+	BeginTransCN()
+	insert = "insert into tblForce_Action_Results(intAction_ID,szUser_ID,dtCompleted,intSchool_Year) " & _
+			 "values (" & ASP.session.Contents("arActions")(fvCount,0) & _
+			 ",'" & ASP.session.Contents("strUserID") & "','" & now() & "'," & _
+			 ASP.session.Contents("intSchool_Year") & ")"
+	ExecuteCN(insert)
+
+	' Delete this forced action from users list
+	delete = "delete from tascUsers_Action " & _
+			 "where intUser_Action_ID = " & ASP.session.Contents("arActions")(fvCount,2)
+
+	ExecuteCN(delete)
+	
+	CommitTransCN
+	CloseCN
+	
+	'Erase this action from the array so it doesn't get executed again
+	arEdit = ASP.session.Contents("arActions")
+	arEdit(fvCount,1) = "" 
+	ASP.session.Contents("arActions") = arEdit
+	
+	for i = 0 to ubound(arEdit)
+		if arEdit(i,1) <> "" then
+			ASP.Response.Redirect(Application.Contents("strSSLWebRoot") & arEdit(i,1) & "&exempt=true")
+			ASP.response.end
+		end if 
+	next 
+
+	ASP.session.Contents("bolActionNeeded") = false
+	if ASP.session.Contents("strURL") <> "" then
+		ASP.Response.Redirect(ASP.session.Contents("strURL"))
+	else
+		ASP.Response.Redirect(ASP.Application.Contents("strSSLWebRoot"))
+	end if 
+	Response.End
+end sub
+
+function IIF(pEval,pReturnIfTrue,pReturnIfFalse)
+	if pEval then 
+		IIF = pReturnIfTrue
+	else
+		IIF = pReturnIfFalse
+	end if
+end function
+	
+function GetStudentBalances(pintStudentID)
+	' For a given student (pintStudentID) this function returns an array where 
+	'	arFunds(0) = Remaining Budget Balance 
+	'	arFunds(1) = Remaining Actual Balance
+	'   arFunds(2) = dblStartTargetBalance
+	'   arFunds(3) = dblStartActualBalance
+	
+	dim strWhere
+	dim intActualEnroll			' actual entrollment percentage based on credits and sponsor time
+	dim arTargetFunding			
+	dim intTotalHrs				' hours student spends on subjects 
+	dim intTargetEnroll			' percent of enrollment targeted
+	dim dblTargetBalance
+	dim dblActualBalance		
+	dim dblDeposits				' additions based on budget transfers
+	dim dblWithdraw				' duductions based on budget transfers
+	dim sql
+	dim dblStartTargetBalance
+	dim dblStartActualBalance
+	
+	if pintStudentID = "" then 
+		asp.response.write "<h1>Page Improperly Called</h1>"
+		asp.response.end
+	end if
+	
+	'get target and actual funding for student
+	intActualEnroll = StudentPercentage(pintStudentID)
+	arTargetFunding = TargetFundingInfo(pintStudentID)
+	
+	intTotalHrs = (CoreHours + ElectiveHours)
+
+	' Figure out funding figures
+	intTargetEnroll = arTargetFunding(0)
+	dblFunding = cdbl(arTargetFunding(1))
+	dblTargetBalance = formatNumber(cdbl(arTargetFunding(2)),2)
+	dblActualBalance = formatNumber((cdbl(intActualEnroll * .01) * dblFunding),2)
+	
+	dblDeposits = TransferAdd(pintStudentID)
+	dblWithdraw = TransferDeduct(pintStudentID)
+	dblActualBalance = (cdbl(dblActualBalance) + cdbl(dblDeposits)) - cdbl(dblWithdraw)
+	dblTargetBalance = (cdbl(dblTargetBalance) + cdbl(dblDeposits)) - cdbl(dblWithdraw)
+	dblStartTargetBalance = dblTargetBalance
+	dblStartActualBalance = dblActualBalance
+	
+	sql = "SELECT ISF.intShort_ILP_ID, I.szName, tblILP.intILP_ID,tblILP.bolApproved as aStatus, tblILP.bolSponsor_Approved as sStatus,oi.bolApproved, oi.bolSponsor_Approved,  " & _ 
+			" CASE ISF.intPOS_Subject_ID WHEN 22 THEN 0 ELSE 1 END AS isSponsor, oi.intQty, oi.curUnit_Price, oi.curShipping,ISF.intCourse_Hrs, tblILP.decCourse_Hours,  " & _ 
+			" oi.intQty * oi.curUnit_Price + oi.curShipping AS total, oi.intOrdered_Item_ID, tblClasses.intInstructor_ID, tps.szSubject_Name, tblClasses.intClass_ID, " & _ 
+			" tblClasses.intInstruct_Type_ID, tblILP.intContract_Guardian_ID,tblClasses.intGuardian_ID,tblClasses.intVendor_ID, " & _
+			" tblClasses.szClass_Name, CASE WHEN tblClasses.intInstructor_ID IS NOT NULL THEN ins.szFirst_Name + ' ' + ins.szLast_Name   " & _
+			" WHEN tblClasses.intGuardian_ID IS NOT NULL THEN g.szFirst_Name + ' ' + g.szLast_Name END AS teacherName, " & _
+			" tblILP.szAdmin_Comments, tblILP.szSponsor_Comments, tblILP.bolReady_For_Review, tblILP.dtReady_For_Review, " & _
+			"          (SELECT top 1 oa2.szValue " & _
+			"             FROM          tblOrd_Attrib oa2 " & _
+			"             WHERE      oa2.intOrdered_Item_Id = oi.intOrdered_Item_Id AND " & _
+			"			 (oa2.intItem_Attrib_ID = 9 OR " & _
+			"              oa2.intItem_Attrib_ID = 5 OR " & _
+			"              oa2.intItem_Attrib_ID = 6 OR " & _
+			"              oa2.intItem_Attrib_ID = 22 or oa2.intItem_Attrib_ID = 33) order by oa2.intOrd_Attrib_ID) AS oiDesc, bolClosed " & _
+			", oi.bolReimburse, I.intItem_Group_ID, oi.szDeny_Reason " & _
+			"FROM tblClasses INNER JOIN " & _ 
+			" tblILP ON tblClasses.intClass_ID = tblILP.intClass_ID LEFT OUTER JOIN " & _ 
+			" trefItems I INNER JOIN " & _ 
+			" tblOrdered_Items oi ON I.intItem_ID = oi.intItem_ID ON tblILP.intILP_ID = oi.intILP_ID RIGHT OUTER JOIN " & _ 
+			" tblILP_SHORT_FORM ISF ON tblILP.intShort_ILP_ID = ISF.intShort_ILP_ID LEFT OUTER JOIN " & _ 
+			" tblProgramOfStudies POS ON ISF.lngPOS_ID = POS.lngPOS_ID inner join " & _
+			"  trefPOS_SUBJECTS tps ON tps.intPOS_SUBJECT_ID = ISF.intPOS_SUBJECT_ID LEFT OUTER JOIN " & _
+			" tblINSTRUCTOR INS ON tblClasses.intInstructor_ID = INS.intINSTRUCTOR_ID left outer join" & _
+			" tblGUARDIAN g ON tblClasses.intGuardian_ID = g.intGUARDIAN_ID " & _
+			"WHERE  (oi.bolApproved is null or oi.bolApproved = 1) and (ISF.intStudent_ID = " & pintStudentID & _
+			") AND (ISF.intSchool_Year = " & ASP.session.Contents("intSchool_Year") & ")" & _
+			" ORDER BY isSponsor, POS.txtCourseTitle, ISF.szCourse_Title, ISF.intShort_ILP_ID "
+
+	set rsBudget = Server.CreateObject("ADODB.RECORDSET")
+	rsBudget.CursorLocation = 3
+	rsBudget.Open sql, mcnn
+	
+	dim dblItemCharges
+	dim dblItemBudget
+	dim strILPList 
+	
+	strILPList = ","
+	do while not rsBudget.eof
+		dblItemCharges = 0
+		dblItemBudget = 0
+		
+		if len(rsBudget("intInstructor_ID")) > 0 and instr(1,strILPList,"," & rsBudget("intILP_ID") & ",") < 1 then
+			' get teacher cost
+			arASDCostInfo = InstructionCostInfo(rsBudget("intILP_ID"))
+			dblItemCharges = arASDCostInfo(0)
+			dblItemBudget = arASDCostInfo(0)	
+			strILPList = strILPList & rsBudget("intILP_ID") & ","
+		end if
+		
+		if rsBudget("intOrdered_Item_ID") & "" <> "" then 
+			' get the budgeted and actual cost for this item
+			dblBudgetTotal = formatNumber(rsBudget("Total"),2)
+			'Get Line Item info
+			liInfo = LineItemCosts(rsBudget("intOrdered_Item_ID"),dblBudgetTotal, rsBudget("bolClosed"), mcnn)			
+			dblCharge = formatNumber(liInfo(0),2)
+			dblAdjBudget = formatNumber(dblBudgetTotal + cdbl(liInfo(1)),2)
+			dblItemCharges = dblItemCharges + cdbl(dblCharge)
+			dblItemBudget = dblItemBudget + cdbl(dblAdjBudget)
+		end if 
+		dblTargetBalance = dblTargetBalance - dblItemBudget
+		dblActualBalance = dblActualBalance - dblItemCharges
+		rsBudget.MoveNext
+	loop
+	
+	rsBudget.close
+	set rsBudget = nothing
+	
+	dim arFunds(3)
+	arFunds(0) = dblTargetBalance
+	arFunds(1) = dblActualBalance
+	arFunds(2) = dblStartTargetBalance
+	arFunds(3) = dblStartActualBalance
+	GetStudentBalances = arFunds
+end function
+
+function LineItemCosts(pOrderedID,pBudget,pClosed,pCn)
+	' Checks for line item entries and returns the following array if they exist...
+	' ar(0)= Total amount Charged (sum of all line items)
+	' ar(1) = Budget Adjustment (deifined if budget is closed or is negative)
+	dim sql
+	dim tCharged
+	dim tBudget
+	dim rs
+	dim dAdjust
+	dim bolLineItem
+	
+	tCharged = 0
+	dAdjust = 0
+	bolLineItem = false
+	
+	sql = "SELECT intLine_Item_ID, dtLine_Item, szLine_Item_desc, curUnit_Price, intQuantity, curShipping, " & _ 
+			" (curUnit_Price * intQuantity) + curShipping as Total, dtCREATE " & _
+			"FROM tblLine_Items " & _ 
+			"WHERE (intOrdered_Item_ID = " & pOrderedID & ") " & _
+			" Order by intLine_Item_ID "
+				
+	set rs = server.CreateObject("ADODB.RECORDSET")
+	rs.CursorLocation = 3
+	rs.Open sql, pCn
+	
+	do while not rs.EOF
+		bolLineItem = true
+		tCharged = tCharged + formatNumber(rs("Total"),2)				
+		rs.MoveNext		
+	loop	
+	rs.Close
+	set rs = nothing
+	
+	tBudget = pBudget - tCharged
+	
+	if tBudget < 0 or pClosed then
+		dAdjust = tBudget * -1
+	end if
+	
+	dim ar(1)
+	ar(0) = formatNumber(tCharged,2)
+	ar(1) = formatNumber(dAdjust,2)
+	LineItemCosts = ar
+end function
+
+function CheckSuperAdmin()
+	' checks super admin access and 
+	dim bolPass, pwd
+	
+	if ASP.Request.Form("pwd") <> "" then
+		pwd = ASP.Request.Form("pwd")
+	elseif ASP.Session.Contents("SuperAdmin") <> "" then
+		pwd = ASP.Session.Contents("SuperAdmin") = ""
+	end if
+	
+	if pwd <> "" then
+		if ASP.Session.Contents("SuperAdmin") = "" then
+			sql = "SELECT szPassword " & _
+				"FROM tblSecurity " & _ 
+				"WHERE intSecurity_ID = 1 "
+					
+			set rs = server.CreateObject("ADODB.RECORDSET")
+			rs.CursorLocation = 3
+			rs.Open sql, mcnn
+			
+			if rs.recordcount > 0 then
+				if pwd = cstr(rs(0)) then
+					bolPass = true
+					ASP.Session.Contents("SuperAdmin") = bolPass
+				else
+					bolPass = false
+				end if
+			else
+				bolPass = false
+			end if
+			rs.Close
+			set rs = nothing
+		else
+			bolPass = true
+		end if
+	end if
+	
+	if not bolPass then
+		SecurityLogin		
+	end if
+	
+	CheckSuperAdmin = bolPass
+end function
+
+function SecurityLogin
+	if ASP.application.Contents("dtSchool_Year_Start" & ASP.session.Contents("intSchool_Year")) = "" or _
+	ASP.application.Contents("dtSchool_Year_End" & ASP.session.Contents("intSchool_Year")) = ""  and _
+	ucase(ASP.session.Contents("strRole")) = "ADMIN" then
+		ASP.REsponse.Write "The Online Application has not been set up for the " & ASP.session.Contents("intSchool_Year") & _
+						   " school year. The Principal or Business Manager must log in and enter set up information for this school year before it can be used.<BR><BR>"
+	
+	end if
+	
+	if ASP.Session.Contents("Atempts") < 4 then
+		ASP.Response.Write "<form name='sec1' method='post'>" & _
+							"<table><tr class='svplain8'><td><b>Enter Manager Password:</b> " & _
+							"<input type='password' name='pwd'><input type='submit' value='submit' class='navSave'></td></tr></table></form>"
+		ASP.Session.Contents("Atempts") = ASP.Session.Contents("Atempts") + 1
+		ASP.Response.End
+	else
+		ASP.Response.Write "<h1>Security Violation</h1>"
+		ASP.Response.End
+	end if
+end function
+
+'function ItemInfo(pItemID,pOrderedId)
+	' returns array defined as 
+	'	0 - item name
+	'	1 - description
+	'	2 - Page #
+	'	3 - Item # (such as ISBN or manufacturer #)
+	'	4 - Class Dates
+
+'end function
+
+function GreatestDate(dtArray)
+	' Pass an array of dates to dtArray and this function will returnt the largest date.
+	' if the array doesn't contain a valid date at any index then the function will return nothing
+
+	dim i, dtLargest, mydate
+	dtLargest = cdate("01/01/1800")
+	
+	for i = 0 to ubound(dtArray)
+		if isDate(dtArray(i)) then
+			myDate = cdate(dtArray(i))
+			if myDate > dtLargest then
+				dtLargest = myDate
+			end if
+		end if
+	next
+	if dtLargest = cdate("01/01/1800") then dtLargest = ""
+	
+	GreatestDate = dtLargest
+end function
+
+function get_FPCScnn()
+	get_FPCScnn = mcnn
+end function
+
+function get_SelectedListText()
+	get_SelectedListText = mSelectedText
+end function
+
+function get_arBenTax()
+	get_arBenTax = marBenTax
+end function
+
+function get_makeListRecordCount()
+	get_makeListRecordCount = mintRecordCount
+end function
+
+function get_arStudentEnroll()
+	get_arStudentEnroll = marStudentEnroll
+end function
+
+function get_CoreHours()
+	get_CoreHours = marStudentEnroll(0)
+end function
+
+function get_ElectiveHours()
+	get_ElectiveHours = marStudentEnroll(1)
+end function
+
+function get_LockSpending()
+	' Checks to see if spending lock is in place and reports back true/false
+	dim bolLock, dtLock
+	dtLock = ASP.Application.Contents("dtLock_Spending" & ASP.session.Contents("intSchool_Year") )
+	bolLock = false	
+	
+	if isDate(dtLock) then
+		if dtLock <= now() then
+			if ucase(ASP.session.Contents("strRole")) <> "ADMIN" then
+				bolLock = true
+			else
+				mShowLockMsg = true
+			end if
+		end if				
+	end if
+	
+	if Request.QueryString("intStudent_ID") <> "" then studentID = Request.QueryString("intStudent_ID")
+	if Request.Form("intStudent_ID") <> "" then studentID = Request.Form("intStudent_ID")
+		
+	' There are some pages that do not report the student id so we must
+	' store it in a session variable once we log it so we always have it on hand
+	if studentID & "" <> "" then
+		ASP.Session.Contents("LockedStudent") = studentID
+	elseif ASP.Session.Contents("LockedStudent") & "" <> "" then
+		studentID = ASP.Session.Contents("LockedStudent")
+	end if
+	
+	if (bolLock <> true) and studentID <> ""  then
+		if ASP.Application.Contents("LockedStudentAccounts" & ASP.Session.Contents("intSchool_Year")) = "" then
+			sql = "select StudentId from STUDENT_LOCKED_ACCOUNTS where SchoolYear = " & ASP.Session.Contents("intSchool_Year")
+			set rs = Server.CreateObject("ADODB.RECORDSET")
+			rs.cursorlocation = 3
+			rs.open sql, mcnn
+			sList = ","
+			do while not rs.eof
+				sList = sList & rs(0) & ","
+				rs.movenext
+			loop
+			rs.close
+			set rs = nothing
+			ASP.Application.Contents("LockedStudentAccounts" & ASP.Session.Contents("intSchool_Year")) = sList
+		end if
+		 
+		if instr(ASP.Application.Contents("LockedStudentAccounts" & ASP.Session.Contents("intSchool_Year")) , "," & studentID & ",") > 0 then
+			if  ucase(ASP.session.Contents("strRole")) <> "ADMIN" then
+				bolLock = true
+			else
+				mShowLockMsg = true
+			end if
+		end if
+	end if
+	get_LockSpending = bolLock
+end function
+
+function get_LockYear()
+	' Checks to see if the School year is locked and reports back true/false
+	' Only applies to non Admin roles
+	dim bolLock
+	bolLock = false
+	if (ucase(ASP.session.Contents("strRole")) <> "ADMIN" and _
+	 ASP.Application.Contents("bolLock_School_Year" & ASP.session.Contents("intSchool_Year"))) then
+		bolLock = true
+	end if		
+	
+	get_LockYear = bolLock
+end function
+
+function IsSpendingLimitSubject(pSubjectId)
+	' find out if a subject has a spending limit on it
+	dim sql, bolTF
+	sql = "Select bolSpendingLimit from trefPOS_Subjects where intPOS_Subject_ID = " & pSubjectId
+	set rs = server.createobject("ADODB.RECORDSET")
+	rs.open sql, mcnn
+	
+	if rs(0) then
+		bolTF = true
+	else
+		bolTF = fasle
+	end if
+	
+	rs.close
+	set rs = nothing
+	IsSpendingLimitSubject = bolTF
+end function
+
+function FormatPhone(pPhone)
+	Set oRe = new RegExp
+	oRe.Pattern = "[\W_]"
+	oRe.Global = True
+	strPhone = oRe.Replace(pPhone,"")
+	
+	if len(strPhone) = 7 then 
+		strPhone = mid(strPhone,1,3) & "-" & mid(strPhone,4,4)
+	elseif len(strPhone) =10 then
+		strPhone = mid(strPhone,1,3) & "-" & mid(strPhone,4,3) & "-" & mid(strPhone,7,4)
+	elseif len(strPhone) = 11 then
+		strPhone = mid(strPhone,1,1) & "-" & mid(strPhone,2,3) & "-" & mid(strPhone,5,3) & "-" & mid(strPhone,8,4)
+	end if
+	
+	FormatPhone = strPhone
+end function
+
+function get_IsAdmin()
+	if ucase(ASP.Session.Contents("strRole")) = "ADMIN" then
+		mIsAdmin = true
+	else
+		mIsAdmin = false
+	end if 
+	get_IsAdmin = mIsAdmin
+end function
+
+function get_IsGuardian()
+	if ucase(ASP.Session.Contents("strRole")) = "GUARD" then
+		mIsGuardian = true
+	else
+		mIsGuardian = false
+	end if 
+	get_IsGuardian = mIsGuardian
+end function
+
+function get_IsTeacher()
+	if ucase(ASP.Session.Contents("strRole")) = "TEACHER" then
+		mIsTeacher = true
+	else
+		mIsTeacher = false
+	end if 
+	get_IsTeacher = mIsTeacher
+end function
+
+function get_IsVendor()
+	if ucase(ASP.Session.Contents("strRole")) = "VENDOR" then
+		mIsVendor = true
+	else
+		mIsVendor = false
+	end if 
+	get_IsVendor = mIsVendor
+end function
+
+function get_ShowLockMsg()
+	get_ShowLockMsg = mShowLockMsg
+end function
+]]>
+</script>
+
+</component>
+</package>
+

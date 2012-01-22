@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<package>
+<?component error="true"?>
+
+<comment>
+   *********************************************************
+   Name:	HTML Functions
+   Purpose:	Creates a COM interface for Common Html Functions
+   Date:	12 Sep 2004
+   Author:	Scott Bacon
+   *********************************************************
+</comment>
+
+<component>
+
+<registration
+	description="htmlFuncs"
+	progid="htmlFuncs.wsc"
+>
+</registration>
+
+<public>
+	<property name="ToolTipDivs">
+		<get/>
+	</property>
+	
+   <method name="InstructMsg"/>
+   <method name="ToolTip"/>
+   <method name="IIF"/>
+   
+</public>
+
+
+<implements type="ASP" id="ASP"/>
+
+<script language="VBScript">
+<![CDATA[
+dim mDivID
+mDivID = 0
+dim mTTDivs
+dim vbNewLine
+vbNewLine = chr(10) & chr(13)
+    
+    Public Function InstructMsg(ByVal pMessageText, _
+                                ByVal pWidth)
+        ' Gives us standard message formatting for instruction.  Returns pMessageText
+        ' in desired message format
+        Dim strMessageStart 
+        Dim strMessageEnd 
+        if pWidth = "" then pWidth = "100%"
+        strMessageStart = "<table style=""width:" & pWidth & ";"" class=""instruct"" cellpadding=5 cellspacing=0><tr>" & _
+                          "<td style=""width:7px;"">&nbsp;</td><td valign=top><b>"
+        strMessageEnd = "</b></td></tr></table>"
+        InstructMsg = strMessageStart & pMessageText & strMessageEnd
+    End Function
+    
+    Public Function ToolTip(ByVal pMouseOverText , _
+                            ByVal pToolTipText , _
+                             ByVal pIsDragable , _
+                             ByVal pTitle , _
+                             ByVal pIsVelcro , _
+                             ByVal pToolTipCss , _
+                             ByVal pWidth , _
+                             ByVal pHeight , _
+                             ByVal pAutoScroll , _
+                             ByVal pIsOnClick ) 
+
+        ' This is a very handy function that handles our tool tip functionality
+        ' which does the out placement of pToolTipText based on screen bounderies
+        ' and allows us to add titles (if pTitle is defined), make the tool tip
+        ' dragable (if pIsDragable is true) or make the tool tip stay active 
+        '  while the mouse is on the tool tip itself (if pIsVelcro is true).
+
+        Dim strTipDiv 
+        Dim strScript 
+        
+        strTipDiv = strTipDiv & "<span " & IIf(pIsOnClick, "onClick", "onmouseover") & "=""domTT_activate(this, event, 'content', tt" & mDivID & vbNewLine & _
+                    IIf(pTitle <> "", ",'styleClass','caption','caption','" & Replace(pTitle, "'", "\'") & "'", "") & vbNewLine & _
+                    IIf(pIsDragable, ",'type','sticky','draggable',true", IIf(pIsVelcro, ",'type','velcro'", "")) & ");"">" & vbNewLine & _
+                    pMouseOverText & vbNewLine & _
+                    "</span>" & vbNewLine
+
+        mTTDivs = mTTDivs & "<div id='tooltipPool' style='display: none' >" & vbNewLine & _
+                    "<div " & IIf(pWidth <> "" Or pHeight <> "" Or pAutoScroll, " style='" & _
+                    IIf(pWidth <> "", "width:" & pWidth & ";", "") & _
+                    IIf(pHeight <> "", "Height:" & pHeight & ";", "") & _
+                    IIf(pAutoScroll, "overflow:auto;", "") & _
+                    "' ", "") & " id='tt" & mDivID & "' " & IIf(pToolTipCss <> "", " class='" & pToolTipCss & "' ", "") & ">" & vbNewLine & _
+                    pToolTipText & vbNewLine & _
+                    "</div></div>" & vbNewLine
+        mDivID = mDivID + 1
+        ToolTip = strTipDiv
+    End Function
+
+    function get_ToolTipDivs() 
+
+            ' JavaScript scripts that are required for functionality
+            ' this is included only the first time this vb function is called
+            ' Javascript taken from http://www.mojavelinux.com/cooker/demos/domTT/toc.html
+            ' This guy did a great job!
+            Dim strScript 
+            Dim sPath  
+            sPath = ASP.Application.contents("strSSLWebRoot") & "/includes/" 
+
+            strScript = vbNewLine & _
+                        "<script language=""javascript"" type='text/javascript' src=""" & sPath & "domLib.js""></script>" & vbNewLine & _
+                        "<script language=""javascript"" type='text/javascript' src=""" & sPath & "domTT.js""></script>" & vbNewLine & _
+                        "<script language=""javascript"" type='text/javascript' src=""" & sPath & "domTT_drag.js""></script>" & vbNewLine
+
+            get_ToolTipDivs = strScript & mTTDivs
+    End function
+
+	function IIF(pEval,pReturnIfTrue,pReturnIfFalse)
+		if pEval then 
+			IIF = pReturnIfTrue
+		else
+			IIF = pReturnIfFalse
+		end if
+	end function
+				
+]]>
+</script>
+
+</component>
+</package>

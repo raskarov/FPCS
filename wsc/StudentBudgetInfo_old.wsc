@@ -1,0 +1,646 @@
+<?xml version="1.0"?>
+<package>
+<?component error="true"?>
+
+<comment>
+   *********************************************************
+   Name:	StudentBudgetInfo (windows script component)
+   Purpose:	Creates a COM interface for easy dot notation
+			to selected functions and properties
+   Date:	June 1, 2005
+   Author:	Scott Bacon
+   *********************************************************
+</comment>
+
+<component>
+
+<registration
+	description="FPCSfunctions"
+	progid="StudentBudgetInfo.WSC"
+>
+</registration>
+
+<public>
+	<property name="StudentName">
+		<get/>
+	</property>
+	<property name="SponsorName">
+		<get/>
+	</property>
+	<property name="SponsorID">
+		<get/>
+	</property>
+	<property name="SponsorEmail">
+		<get/>
+	</property>
+	<property name="PlannedEnrollment">
+		<get/>
+	</property>
+	<property name="ActualEnrollment">
+		<get/>
+	</property>
+	<property name="StudentGrade">
+		<get/>
+	</property>
+	<property name="CoreUnits">
+		<get/>
+	</property>
+	<property name="ElectiveUnits">
+		<get/>
+	</property>
+	<property name="ContractHours">
+		<get/>
+	</property>
+	<property name="TotalHours">
+		<get/>
+	</property>
+	<property name="Withdrawls">
+		<get/>
+	</property>
+	<property name="Deposits">
+		<get/>
+	</property>
+	<property name="TotalTransfers">
+		<get/>
+	</property>
+	<property name="BudgetFunding">
+		<get/>
+	</property>
+	<property name="ActualFunding">
+		<get/>
+	</property>
+	<property name="BudgetBalance">
+		<get/>
+	</property>
+	<property name="ActualBalance">
+		<get/>
+	</property>
+	<property name="TotalAmountBudgeted">
+		<get/>
+	</property>
+	<property name="TotalAmountSpent">
+		<get/>
+	</property>
+	<property name="FamilyId">
+		<get/>
+	</property>
+	<property name="FamilyEmail">
+		<get/>
+	</property>
+	<property name="FamilyPhone">
+		<get/>
+	</property>
+	<property name="FamilyElectiveBudget">
+		<get/>
+	</property>
+	<property name="FamilyElectiveSpent">
+		<get/>
+	</property>
+	<property name="AvailableElectiveBudget">
+		<get/>
+	</property>
+	<property name="AvailableElectiveToSpend">
+		<get/>
+	</property>
+	<property name="PercentEnrolledLocked">
+		<get/>
+	</property>
+	<property name="EnrollmentId">
+		<get/>
+	</property>
+	<property name="FamilyName">
+		<get/>
+	</property>
+	
+	<property name="BasePlannedFunding">
+		<get/>
+	</property>
+	<property name="BaseActualFunding">
+		<get/>
+	</property>
+	
+	<property name="GoalCoreCredits">
+		<get/>
+	</property>	
+	<property name="GoalElectiveCredits">
+		<get/>
+	</property>
+	<property name="GoalContractHours">
+		<get/>
+	</property>
+	<property name="GoalClassTime">
+		<get/>
+	</property>
+	
+	<property name="FamilyBudgetFunding">
+		<get/>
+	</property>
+	<property name="FamilyActualFunding">
+		<get/>
+	</property>
+	
+	<property name="AdminPacketSigned">
+		<get/>
+	</property>
+	<property name="PacketSignDate">
+		<get/>
+	</property>
+	
+	<property name="EnrollInfoId">
+		<get/>
+	</property>
+	
+	<property name="IepId">
+		<get/>
+	</property>
+	
+	<property name="TSTestingSigned">
+		<get/>
+	</property>
+	
+	<property name="IsProgressSigned">
+		<get/>
+	</property>
+	
+	<property name="IsPhilosophyFilled">
+		<get/>
+	</property>
+	
+	<property name="HasSponsorCourse">
+		<get/>
+	</property>
+	
+	<property name="ParentAlert">
+		<get/>
+	</property>
+	
+	<property name="ReEnrollState">
+		<get/>
+	</property>
+	
+   <method name="PopulateStudentFunding"/>
+   <method name="PopulateFamilyBudgetInfo"/>
+   
+</public>
+<implements type="ASP" id="ASP"/>
+
+<script language="VBScript">
+<![CDATA[
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+' Global Variables
+'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+dim mStudentName
+dim mSponsorName
+dim mSponsorID, mSponsorEmail,mPlannedEnrollment, mActualEnrollment, mStudentGrade
+dim mCoreUnits, mElectiveUnits, mContractHours, mTotalHours, mWithdrawls, mDeposits
+dim mTotalAmountBudgeted, mTotalAmountSpent
+dim mTotalTransfers, mBudgetFunding, mActualFunding, mBudgetBalance, mActualBalance
+dim mFamilyId, mFamilyEmail, mFamilyPhone, mFamilyElectiveBudget, mFamilyElectiveSpent
+dim  mFamilyName, mFamilyBudgetFunding, mFamilyActualFunding
+dim mAvailableElectiveBudget, mAvailableElectiveToSpend, mPercentEnrolledLocked, mEnrollmentId
+dim mBasePlannedFunding, mBaseActualFunding, mGoalCoreCredits, mGoalElectiveCredits
+dim mGoalContractHours, mGoalClassTime, mAdminPacketSigned, mPacketSignDate, mEnrollInfoId, mIepId
+dim mTSTestingSigned, mIsProgressSigned, mIsPhilosophyFilled, mHasSponsorCourse, mParentAlert, mReEnrollState
+ 
+Sub PopulateStudentFunding(byref Cnn, pStudentId, pSchoolYear)
+	dim sql
+	dim rs
+	
+	sql = "SELECT     s.szLAST_NAME, s.szFIRST_NAME, s.intSTUDENT_ID,intINSTRUCTOR_ID, i.szFIRST_NAME + ' ' + i.szLAST_NAME AS TEACHERS_NAME, i.szEmail AS TEACHER_EMAIL,  " & _ 
+				"                      i.szHOME_PHONE AS TEACHER_PHONE, f.szEMAIL, f.szHome_Phone, f.szDesc, f.szFamily_Name, ss.intReEnroll_State, ss.dtWithdrawn, ss.szGrade, " & _ 
+				"                      ei.intPercent_Enrolled_Locked, ei.intEnroll_Info_ID, pe.TotalCoreHours, pe.TotalElectiveHours, pe.TotalHours,  " & _ 
+				"                      pe.CoreCredits, pe.ElectiveCredits, pe.ActualEnrolledPercent,  " & _ 
+				"                      se.TotalGSBudgeted, se.TotalGSSpent, se.ElectiveGSBudgeted,  " & _ 
+				"                      se.ElectiveGSSpent, se.ElectiveTeacherCost, se.TotalElectiveBudget,  " & _ 
+				"                      se.TotalElectiveSpent, se.TotalTeacherCosts, se.TotalTeacherHours,  " & _ 
+				"                      se.Deposits, se.Withdrawls, se.TotalTransfers,  " & _ 
+				"                      fg.curFund_Amount, ei.intPercent_Enrolled_Fpcs, s.intFamily_Id, " & _ 
+				"					   fg.curFund_Amount * (ei.intPercent_Enrolled_Fpcs / 100) as BasePlannedFunding, " & _
+				"					   fg.curFund_Amount * (pe.ActualEnrolledPercent / 100) as BaseActualFunding, " & _
+				"                      fg.curFund_Amount * (ei.intPercent_Enrolled_Fpcs / 100) + se.TotalTransfers AS BudgetFunding,  " & _ 
+				"                      fg.curFund_Amount * (pe.ActualEnrolledPercent / 100) + se.TotalTransfers AS ActualFunding, " & _
+				"					   pe.GoalCoreCredits, pe.GoalElectiveCredits, pe.GoalContractHours, pe.GoalClassTime, ei.AdminPacketSigned, " & _
+				"					   ei.PacketSignDate, ei.intEnroll_Info_ID, tblIEP.intIEP_ID, ei.bolAsD_Testing, ei.bolProgress_Agreement, ei.intPhilosophy_ID, " & _
+				"		(SELECT top 1 i2.intILP_ID " & _ 
+				"			FROM         tblILP i2 INNER JOIN " & _ 
+				"                      tblClasses c ON i2.intClass_ID = c.intClass_ID " & _ 
+				"			WHERE     (c.intPOS_Subject_ID = 22) AND (i2.sintSchool_Year = " & pSchoolYear & ") AND (i2.intStudent_ID = s.intSTUDENT_ID) AND  " & _ 
+				"                      (c.decOriginal_Student_Hrs + c.decOriginal_Planning_Hrs > 0)) as HasSponsorCourse,  " & _
+				"		(Select top 1 bolASD_Contract_HRS_Exempt from tblStudent_Exemptions ste where ste.intStudent_ID = s.intSTUDENT_ID and ste.intSchool_Year = " & pSchoolYear & ") as bolASD_Exempt, " & _ 
+				"		(SELECT count(i2.intILP_ID) " & _ 
+				"			FROM         tblILP i2 " & _ 
+				"			WHERE     (i2.sintSchool_Year = " & pSchoolYear & ") AND (i2.intStudent_ID = s.intSTUDENT_ID) and i2.bolParentAlert = 1) as ParentAlert  " & _
+				"FROM         tblFunding fg INNER JOIN " & _ 
+				"                      tblStudent_States ss INNER JOIN " & _ 
+				"                      tblSTUDENT s ON ss.intStudent_id = s.intSTUDENT_ID ON fg.szGrade = ss.szGrade LEFT OUTER JOIN " & _ 
+				"                      DM_STUDENT_EXPENSES se ON s.intSTUDENT_ID = se.StudentId and se.SchoolYear = " & pSchoolYear & " LEFT OUTER JOIN " & _ 
+				"                      DM_PERCENT_ENROLLED pe ON s.intSTUDENT_ID = pe.StudentID AND (pe.SchoolYear = " & pSchoolYear & ") LEFT OUTER JOIN " & _ 
+				"                      tblFAMILY f ON s.intFamily_ID = f.intFamily_ID LEFT OUTER JOIN " & _ 
+				"                      tblINSTRUCTOR i RIGHT OUTER JOIN " & _ 
+				"                      tblENROLL_INFO ei ON i.intINSTRUCTOR_ID = ei.intSponsor_Teacher_ID AND (ei.sintSCHOOL_YEAR = " & pSchoolYear & ") ON  " & _ 
+				"                      s.intSTUDENT_ID = ei.intSTUDENT_ID AND (ei.sintSCHOOL_YEAR = " & pSchoolYear & ") LEFT OUTER JOIN " & _ 
+				"					   tblIEP ON s.intStudent_ID = tblIEP.intStudent_ID and (tblIEP.intSchool_Year = " & pSchoolYear & ") " & _
+				"WHERE     (ss.intSchool_Year = " & pSchoolYear & ") " & _ 
+				"           AND (fg.intSchool_Year = " & pSchoolYear & ") " & _ 
+				" AND (s.intSTUDENT_ID = " & pStudentId & ") " & _
+				"ORDER BY s.szLAST_NAME, s.szFIRST_NAME "
+
+'if ucase(asp.session.contents("strUSerId")) = "SCOTT" then
+	'asp.response.write sql & "<<<"
+'end if
+
+	set rs= server.CreateObject("ADODB.RECORDSET")
+	rs.CursorLocation = 3	
+	rs.open sql, Cnn
+	
+	if rs.recordCount > 0 then
+		' populate properties
+		mStudentName = rs("szFIRST_NAME") & " " & rs("szLAST_NAME")
+		mSponsorName = rs("TEACHERS_NAME")
+		mSponsorID = rs("intINSTRUCTOR_ID")
+		mSponsorEmail = rs("TEACHER_EMAIL")
+		mPlannedEnrollment = rs("intPercent_Enrolled_Fpcs")
+		mActualEnrollment = rs("ActualEnrolledPercent")
+		mStudentGrade = rs("szGrade")
+		mCoreUnits = CheckNumber(rs("CoreCredits"))
+		mElectiveUnits = CheckNumber(rs("ElectiveCredits"))
+		mContractHours = CheckNumber(rs("TotalTeacherHours"))
+		mTotalHours = CheckNumber(rs("TotalHours"))
+		mWithdrawls = CheckNumber(rs("Withdrawls"))
+		mDeposits = CheckNumber(rs("Deposits"))
+		mTotalTransfers = rs("TotalTransfers")
+		mBudgetFunding = CheckNumber(rs("BudgetFunding"))
+		mActualFunding = CheckNumber(rs("ActualFunding"))
+		mTotalAmountBudgeted = round(cdbl(CheckNumber(rs("TotalTeacherCosts"))) + cdbl(CheckNumber(rs("TotalGSBudgeted"))),2)
+		mTotalAmountSpent = round(cdbl(CheckNumber(rs("TotalTeacherCosts"))) + cdbl(CheckNumber(rs("TotalGSSpent"))),2)
+		mBudgetBalance = round(cdbl(mBudgetFunding) - mTotalAmountBudgeted,2)
+		mActualBalance = ROUND(cdbl(mActualFunding) - mTotalAmountSpent,2)	
+		mFamilyId = rs("intFamily_Id")	
+		mFamilyEmail = rs("szEMAIL")
+		mFamilyPhone = rs("szHome_Phone")
+		mPercentEnrolledLocked = rs("intPercent_Enrolled_Locked")
+		mEnrollmentId = rs("intEnroll_Info_ID")
+		mStudentGrade = rs("szGrade")
+		mFamilyName = rs("szFamily_Name")
+		mBasePlannedFunding = round(cdbl(CheckNumber(rs("BasePlannedFunding"))),2)
+		mBaseActualFunding = round(cdbl(CheckNumber(rs("BaseActualFunding"))),2)
+		mGoalCoreCredits = rs("GoalCoreCredits")
+		mGoalElectiveCredits = rs("GoalElectiveCredits")
+		mGoalContractHours = rs("GoalContractHours")
+		mGoalClassTime = rs("GoalClassTime")
+		mAdminPacketSigned = rs("AdminPacketSigned")
+		mPacketSignDate = rs("PacketSignDate")
+		mEnrollInfoId = rs("intEnroll_Info_ID")
+		mIepId = rs("intIEP_ID")
+		mReEnrollState = rs("intReEnroll_State")
+		
+		if not isNumeric(mTotalTransfers) then 
+			mTotalTransfers = 0
+		end if
+
+		if isNumeric(rs("ParentAlert")) then 
+			mParentAlert = rs("ParentAlert")
+		else
+			mParentAlert = 0
+		end if
+		
+		'if isNumeric(rs("HasSponsorCourse")) then
+		'	mHasSponsorCourse = true
+		'else
+		'	mHasSponsorCourse = false
+		'end if
+		mHasSponsorCourse = true
+			
+		if rs("bolASD_Exempt") then
+			mHasSponsorCourse = true
+		end if
+		
+		if rs("bolAsD_Testing") then 
+			' true
+			mTSTestingSigned = 1
+		elseif rs("bolAsD_Testing") & "" = "" then
+			' null, no action taken
+			mTSTestingSigned = -1
+		else
+			' false
+			mTSTestingSigned = 0
+		end if
+		
+		if rs("bolProgress_Agreement") then		
+			mIsProgressSigned = true
+		else
+			mIsProgressSigned = false
+		end if
+		
+		if rs("intPhilosophy_ID") & "" <> "" then
+			mIsPhilosophyFilled = true
+		else
+			mIsPhilosophyFilled = false
+		end if
+		
+	end if	
+	rs.close
+	set rs = nothing
+End Sub
+
+sub PopulateFamilyBudgetInfo(byref Cnn, pFamilyId, pSchoolYear)
+	dim sql	
+	
+	sql = "SELECT     SUM(DERIVEDTBL.ElectiveBudgeted) AS ElectiveBudgeted, SUM(DERIVEDTBL.ElectiveSpent) AS ElectiveSpent, SUM(DERIVEDTBL.BudgetFunding)  " & _ 
+			"	AS BudgetFunding, SUM(DERIVEDTBL.ActualFunding) AS ActualFunding, SUM(DERIVEDTBL.ElectiveBudgetedWD) AS ElectiveBudgetedWD,  " & _ 
+			"	SUM(DERIVEDTBL.ElectiveSpentWD) AS ElectiveSpentWD, SUM(DERIVEDTBL.BudgetFundingWD) AS BudgetFundingWD,  " & _ 
+			"	SUM(DERIVEDTBL.ActualFundingWD) AS ActualFundingWD " & _ 
+			"FROM	(SELECT     se.TotalElectiveBudget AS ElectiveBudgeted, se.TotalElectiveSpent AS ElectiveSpent,  " & _ 
+			"			(fg.curFund_Amount * (ei.intPercent_Enrolled_Fpcs / 100)) + se.TotalTransfers AS BudgetFunding,  " & _ 
+			"			(fg.curFund_Amount * (pe.ActualEnrolledPercent / 100)) + se.TotalTransfers AS ActualFunding, 0 as ElectiveBudgetedWD, 0 as ElectiveSpentWD, 0 as BudgetFundingWD, 0 as ActualFundingWD " & _ 
+			"		FROM	tblFunding fg INNER JOIN " & _ 
+			"			tblStudent_States ss INNER JOIN " & _ 
+			"			tblSTUDENT s ON ss.intStudent_id = s.intSTUDENT_ID and (ss.intSchool_Year = " & pSchoolYear & ") ON fg.szGrade = ss.szGrade AND (fg.intSchool_Year = " & pSchoolYear & ") LEFT OUTER JOIN " & _ 
+			"			DM_STUDENT_EXPENSES se ON s.intSTUDENT_ID = se.StudentId AND se.SchoolYear = " & pSchoolYear & " LEFT OUTER JOIN " & _ 
+			"			DM_PERCENT_ENROLLED pe ON s.intSTUDENT_ID = pe.StudentID AND pe.SchoolYear = " & pSchoolYear & " LEFT OUTER JOIN " & _ 
+			"			tblENROLL_INFO ei ON s.intSTUDENT_ID = ei.intSTUDENT_ID AND ei.sintSCHOOL_YEAR = " & pSchoolYear & " " & _ 
+			"		WHERE	(ss.intReEnroll_State IN (" & ASP.Application.Contents("ActiveEnrollList") & ")) AND  (s.intFamily_ID = " & pFamilyId & ") " & _ 
+			"UNION ALL " & _ 
+			"		SELECT		0 as ElectiveBudgeted, 0 as ElectiveSpent, 0 as BudgetFunding, 0 as ActualFunding, se.TotalElectiveBudget AS ElectiveBudgetedWD, se.TotalElectiveSpent AS ElectiveSpentWD,  " & _ 
+			"			(fg.curFund_Amount * (ei.intPercent_Enrolled_Fpcs / 100)) + se.TotalTransfers AS BudgetFundingWD,  " 
+	
+	' We need to take into account the count deadline. If a student has withdrawn prior to the count
+	' deadline then they do not qualify for any funding and we must set the ActualFundingWD to 0
+	
+	if isDate(ASP.Application.Contents("dtCount_Deadline" & ASP.Session.Contents("intSchool_Year"))) then
+		sql = sql & "CASE isNull(ss.dtWithdrawn, 0)  " & _ 
+				"		WHEN 0 THEN (fg.curFund_Amount * (pe.ActualEnrolledPercent / 100))  " & _ 
+				"		+ se.TotalTransfers ELSE CASE WHEN ss.dtWithdrawn < CONVERT(datetime, '" & ASP.Application.Contents("dtCount_Deadline" & ASP.Session.Contents("intSchool_Year")) & "')  " & _ 
+				"		THEN 0 ELSE (fg.curFund_Amount * (pe.ActualEnrolledPercent / 100)) + se.TotalTransfers END END AS ActualFundingWD " 
+	else
+		sql = sql & "			(fg.curFund_Amount * (pe.ActualEnrolledPercent / 100)) + se.TotalTransfers AS ActualFundingWD " 
+	end if
+	
+	sql = sql & "		FROM	tblFunding fg INNER JOIN " & _ 
+			"			tblStudent_States ss INNER JOIN " & _ 
+			"			tblSTUDENT s ON ss.intStudent_id = s.intSTUDENT_ID and (ss.intSchool_Year = " & pSchoolYear & ") ON fg.szGrade = ss.szGrade AND (fg.intSchool_Year = " & pSchoolYear & ") LEFT OUTER JOIN " & _ 
+			"			DM_STUDENT_EXPENSES se ON s.intSTUDENT_ID = se.StudentId AND se.SchoolYear = " & pSchoolYear & " LEFT OUTER JOIN " & _ 
+			"			DM_PERCENT_ENROLLED pe ON s.intSTUDENT_ID = pe.StudentID AND pe.SchoolYear = " & pSchoolYear & " LEFT OUTER JOIN " & _ 
+			"			tblENROLL_INFO ei ON s.intSTUDENT_ID = ei.intSTUDENT_ID AND ei.sintSCHOOL_YEAR = " & pSchoolYear & " " & _ 
+			" WHERE (ss.intReEnroll_State in (86,123))  AND (s.intFamily_ID = " & pFamilyId & ")) DERIVEDTBL "
+
+	set rs= server.CreateObject("ADODB.RECORDSET")
+	if ucase(asp.session.contents("strUserID")) = "SCOTT" then
+		'asp.response.write sql
+	end if
+	
+	rs.CursorLocation = 3	
+	rs.open sql, Cnn
+	
+	if rs.recordcount > 0 then
+		mFamilyId = pFamilyId
+		
+		mFamilyElectiveBudget = round(cdbl(CheckNumber(rs("ElectiveBudgeted"))),2)
+		mFamilyElectiveSpentWD = round(cdbl(CheckNumber(rs("ElectiveSpentWD"))),2)
+		
+		' Half of family total budget is available for elective spending
+		mFamilyBudgetFunding = round(cdbl(CheckNumber(rs("BudgetFunding")))/2,2)
+		mFamilyActualFundingWD = round(cdbl(CheckNumber(rs("ActualFundingWD")))/2,2)				
+		
+		mAvailableElectiveFundingWD = mFamilyActualFundingWD - mFamilyElectiveSpentWD
+		
+		if mFamilyElectiveSpentWD > 0 and mFamilyElectiveSpentWD <= mFamilyActualFundingWD then
+			mFamilyBudgetFunding = mFamilyBudgetFunding + mFamilyElectiveSpentWD
+			mFamilyElectiveBudget = mFamilyElectiveBudget + mFamilyElectiveSpentWD
+			mFamilyActualFundingWD = mFamilyActualFundingWD - mFamilyElectiveSpentWD
+		elseif mAvailableElectiveFundingWD < 0 then
+			' withdrawn students have spent more than their allotted amount
+			' so we deduct the amount from the active students elective budget
+			' The math works even though we add the numbers together because 
+			' mAvailableElectiveFundingWD must be negative for this code to run
+			mFamilyBudgetFunding = mFamilyBudgetFunding + mFamilyActualFundingWD
+			mFamilyElectiveBudget = mFamilyElectiveBudget + mFamilyElectiveSpentWD
+			mFamilyActualFundingWD = 0 		
+		end if
+		
+		mAvailableElectiveBudget = mFamilyBudgetFunding - mFamilyElectiveBudget
+		mAvailableElectiveFundingWD = mFamilyActualFundingWD - mFamilyElectiveSpentWD
+		
+		if mAvailableElectiveBudget < 0 and mAvailableElectiveFundingWD > 0 _
+			and mAvailableElectiveFundingWD >= (mAvailableElectiveBudget * -1) then
+			' in this case mAvailableElectiveBudget is negative and there is money 
+			' left from the withdrawn students funding so we take the elective spending allotment from 
+			' the withdrawn student and use it for the active
+			mFamilyBudgetFunding = mFamilyBudgetFunding + (mAvailableElectiveBudget *-1)
+			mFamilyActualFundingWD = mFamilyActualFundingWD + mAvailableElectiveBudget	
+			mAvailableElectiveBudget = 0 	
+		elseif mAvailableElectiveBudget < 0  then
+			ASP.Response.Write "<span class='sverror'>Error: Elective Budget Balance is Negative. Please contact the school office.</span>"
+		end if 					
+				
+	end if
+end sub
+
+function CheckNumber(pNum)
+	if not isNumeric(pNum) then
+		pNum = 0
+	else
+		pNum = pNum
+	end if
+	
+	CheckNumber =  pNum
+end function
+
+function get_StudentName()
+	get_StudentName = mStudentName
+end function
+
+function get_SponsorName()
+	get_SponsorName = mSponsorName
+end function
+
+function get_SponsorID()
+	get_SponsorID = mSponsorID
+end function
+
+function get_SponsorEmail()
+	get_SponsorEmail = mSponsorEmail
+end function
+
+function get_PlannedEnrollment()
+	get_PlannedEnrollment = mPlannedEnrollment
+end function
+
+function get_ActualEnrollment()
+	get_ActualEnrollment = mActualEnrollment
+end function
+
+function get_StudentGrade()
+	get_StudentGrade = mStudentGrade
+end function
+
+function get_CoreUnits()
+	get_CoreUnits = mCoreUnits
+end function
+
+function get_ElectiveUnits()
+	get_ElectiveUnits = mElectiveUnits
+end function
+
+function get_ContractHours()
+	get_ContractHours = mContractHours
+end function
+
+function get_TotalHours()
+	get_TotalHours = mTotalHours
+end function
+
+function get_Withdrawls()
+	get_Withdrawls = mWithdrawls
+end function
+
+function get_Deposits()
+	get_Deposits = mDeposits
+end function
+
+function get_TotalTransfers()
+	get_TotalTransfers = mTotalTransfers
+end function
+
+function get_BudgetFunding()
+	get_BudgetFunding = mBudgetFunding
+end function
+
+function get_ActualFunding()
+	get_ActualFunding = mActualFunding
+end function
+
+function get_TotalAmountBudgeted()
+	get_TotalAmountBudgeted = mTotalAmountBudgeted
+end function
+
+function get_TotalAmountSpent()
+	get_TotalAmountSpent = mTotalAmountSpent
+end function
+
+function get_BudgetBalance()
+	get_BudgetBalance = mBudgetBalance
+end function
+
+
+function get_ActualBalance()
+	get_ActualBalance = mActualBalance
+end function
+
+function get_FamilyId()
+	get_FamilyId = mFamilyId
+end function
+
+function get_FamilyEmail()
+	get_FamilyEmail = mFamilyEmail
+end function
+
+function get_FamilyPhone()
+	get_FamilyPhone = mFamilyPhone
+end function
+
+function get_FamilyElectiveBudget()
+	get_FamilyElectiveBudget = mFamilyElectiveBudget
+end function
+
+function get_FamilyElectiveSpent()
+	get_FamilyElectiveSpent = mFamilyElectiveSpent
+end function
+
+function get_AvailableElectiveBudget()
+	get_AvailableElectiveBudget = mAvailableElectiveBudget
+end function
+
+function get_AvailableElectiveToSpend()
+	get_AvailableElectiveToSpend = mAvailableElectiveToSpend
+end function
+
+function get_PercentEnrolledLocked()
+	get_PercentEnrolledLocked = mPercentEnrolledLocked
+end function
+
+function get_EnrollmentId()
+	get_EnrollmentId = mEnrollmentId
+end function
+
+function get_FamilyName()
+	get_FamilyName = mFamilyName
+end function
+
+function get_BasePlannedFunding()
+	get_BasePlannedFunding = mBasePlannedFunding
+end function
+
+function get_BaseActualFunding()
+	get_BaseActualFunding = mBaseActualFunding
+end function
+
+function get_GoalClassTime()
+	get_GoalClassTime = mGoalClassTime
+end function
+
+function get_GoalCoreCredits()
+	get_GoalCoreCredits = mGoalCoreCredits
+end function
+
+function get_GoalElectiveCredits()
+	get_GoalElectiveCredits = mGoalElectiveCredits
+end function
+
+function get_GoalContractHours()
+	get_GoalContractHours = mGoalContractHours
+end function
+
+function get_FamilyBudgetFunding()
+	get_FamilyBudgetFunding = mFamilyBudgetFunding
+end function
+
+function get_FamilyActualFunding()
+	get_FamilyActualFunding = mFamilyActualFunding
+end function
+
+function get_AdminPacketSigned()
+	get_AdminPacketSigned = mAdminPacketSigned
+end function
+
+function get_PacketSignDate()
+	get_PacketSignDate = mPacketSignDate
+end function
+
+function get_EnrollInfoId()
+	get_EnrollInfoId = mEnrollInfoId
+end function
+
+function get_IepId()
+	get_IepId = mIepId
+end function
+
+function get_TSTestingSigned()
+	get_TSTestingSigned = mTSTestingSigned
+end function
+
+function get_IsProgressSigned()
+	get_IsProgressSigned = mIsProgressSigned
+end function
+
+
+function get_IsPhilosophyFilled()
+	get_IsPhilosophyFilled = mIsPhilosophyFilled
+end function
+
+function get_HasSponsorCourse()
+	get_HasSponsorCourse = mHasSponsorCourse
+end function
+
+function get_ParentAlert()
+	get_ParentAlert = mParentAlert
+end function
+
+function get_ReEnrollState()
+	get_ReEnrollState = mReEnrollState
+end function
+]]>
+</script>
+
+</component>
+</package>

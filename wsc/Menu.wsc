@@ -1,0 +1,380 @@
+<?xml version="1.0"?>
+<package>
+<?component error="true"?>
+
+<comment>
+   *********************************************************
+   Name:	Menu
+   Purpose:	Creates a COM interface for Common Menu Functions
+   Date:	27 Sep 2005
+   Author:	Scott Bacon
+   *********************************************************
+</comment>
+ 
+<component>
+<registration
+	description="Menu"
+	progid="Menu.wsc"
+>
+</registration>
+
+<public>
+   <method name="GetMenu"/>
+   <method name="Counter"/>
+</public>	
+
+<implements type="ASP" id="ASP"/>
+
+<script language="VBScript">
+<![CDATA[
+dim intCount
+intCount = 0
+     
+Public Function GetMenu()
+
+    ' This is a very handy function that handles our tool tip functionality
+    ' which does the out placement of pToolTipText based on screen bounderies
+    ' and allows us to add titles (if pTitle is defined), make the tool tip
+    ' dragable (if pIsDragable is true) or make the tool tip stay active 
+    '  while the mouse is on the tool tip itself (if pIsVelcro is true).
+
+    dim strJS, objForm
+    
+    if ASP.request.form.count > 0 then
+		set objForm = ASP.Request.form
+	else
+		set objForm = ASP.Request.Querystring
+	end if
+
+    strJS = "<script language='javascript' src='" & ASP.Application.Contents("strSSLWebRoot") & "includes/domLib.js'></script>"  & chr(13) & _ 
+	      "<script language='javascript' src='" & ASP.Application.Contents("strSSLWebRoot") & "includes/domMenu.js'></script>"  & chr(13) & _ 
+			"<script language='javascript'>"   & chr(13) & _
+			"domMenu_data.set('domMenu_main', new Hash( "   & chr(13) 
+		
+		
+	if asp.session.contents("intVendor_ID") <> "" then
+		myUrlBit = "/vendorHome.asp" 
+	end if 	
+	
+    strJS = strJS & "    " & Counter & ", new Hash( "   & chr(13) & _ 
+			"        'contents', 'Home', "   & chr(13) & _ 
+			"        'contentsHover', 'Home', "   & chr(13) & _ 
+			"        'uri', '" & ASP.Application.Contents("strSSLWebRoot") & myUrlBit & "', "  & chr(13) & _ 
+			"        'target', '_self', "  & chr(13) & _ 
+			"        'statusText', 'FPCS Online System Home') "  & chr(13) 
+			
+    if objForm("intStudent_ID") <> "" then
+		intStudent_ID = objForm("intStudent_ID")
+		
+		if ucase(session.contents("strRole")) = "ADMIN" or ucase(session.contents("strRole")) = "GUARD" then
+			dim intFamilyId
+			if ASP.Session.Contents("intFamily_ID") <> "" then
+				intFamilyId = ASP.Session.Contents("intFamily_ID")		
+			else
+				dim cn, rs
+				set cn = server.createObject("ADODB.Connection")
+				cn.Open ASP.Application.Contents("cnnFPCS")	
+				set rs = server.createObject("ADODB.RECORDSET")
+				rs.cursorlocation = 3
+				sql = "select intFamily_ID from tblStudent where intStudent_ID = " & intStudent_ID
+				rs.open sql, cn
+				if rs.recordcount > 0 then 
+					intFamilyId = rs("intFamily_ID")
+				end if
+				rs.close
+				set rs = nothing
+				cn.close
+				set cn = nothing
+			end if
+			
+			strJS = strJS & ", " & Counter & ", new Hash( "  & chr(13) & _ 
+				"        'contents', 'Profiles', "  & chr(13) & _ 
+				"        'contentsHover', 'Profiles', "  & chr(13) & _ 
+				"        'uri', '', "  & chr(13) & _ 
+				"        'statusText', 'Profiles', "  & chr(13) & _  
+				"        1, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Family Manager', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "admin/familyManager.asp?intFamily_ID=" & intFamilyId & "', "  & chr(13) & _ 
+				"            'statusText', 'Family Manager' "  & chr(13) & _ 
+				"        ), "  & chr(13) & _ 
+				"        2, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Student Profile', "  & chr(13) & _  
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/SIS/studentProfile.asp?intStudent_ID=" & intStudent_ID & "', "  & chr(13) & _  
+				"            'statusText', 'Student Profile' "  & chr(13) & _ 
+				"        )) "  & chr(13) 
+		end if
+								
+		strJS = strJS & ", " &  Counter & ", new Hash( "  & chr(13) & _  
+			"        'contents', 'Packet', "  & chr(13) & _  
+			"        'contentsHover', 'Packet', "  & chr(13) & _  
+			"        'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/Packet/Packet.asp?intStudent_ID=" & intStudent_ID & "', "  & chr(13) & _ 
+			"        'statusText', 'Student Packet Page'), "  & chr(13)
+		if ucase(session.contents("strRole")) = "ADMIN" then
+			strJS = strJS & "    " & Counter & ", new Hash( "  & chr(13) & _  
+			"        'contents', 'Transfer', "  & chr(13) & _ 
+			"        'contentsHover', 'Transfer', "  & chr(13) & _  
+			"        'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/packet/BudgetTransfer.asp?intStudent_ID=" & intStudent_ID & "', "   & chr(13) & _  
+			"        'statusText', 'Transfer Student Funds'), "  & chr(13) 
+		end if 
+			
+			strJS = strJS & "    " & Counter & ", new Hash( "  & chr(13) & _ 
+			"        'contents', 'ILP', "  & chr(13) & _ 
+			"        'contentsHover', 'ILP', "   & chr(13) & _ 
+			"        'uri', '', "  & chr(13) & _ 
+			"        'statusText', 'ILP Tools', "  & chr(13) & _  
+			"        1, new Hash( "  & chr(13) & _ 
+			"            'contents', 'ILP Bank', "  & chr(13) & _ 
+			"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/ilp/ilpBankViewer.asp', "  & chr(13) & _ 
+			"            'statusText', 'Find Existing ILP\'s' "  & chr(13) & _ 
+			"        ), "   & chr(13) & _ 
+			"        2, new Hash( "  & chr(13) & _ 
+			"            'contents', 'ILP Philosophy', "  & chr(13) & _  
+			"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/ilp/ilpPhilosophy.asp?intStudent_ID=" & intStudent_ID & "', "  & chr(13) & _ 
+			"            'statusText', 'ILP Philosophy' "  & chr(13) & _  
+			"        )), "   & chr(13) & _ 			
+			"    " & Counter & ", new Hash( "  & chr(13) & _  
+			"        'contents', 'Print Forms', "  & chr(13) & _ 
+			"        'contentsHover', 'Print Forms', "  & chr(13) & _  
+			"        'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/PrintableForms/printDefault.asp?intStudent_ID=" & intStudent_ID & "', "  & chr(13) & _ 
+			"        'statusText', 'Printable Forms'), "  & chr(13) & _  
+			"     " & Counter & ", new Hash( "  & chr(13) & _ 
+			"        'contents', 'Reimburse', "  & chr(13) & _ 
+			"        'contentsHover', 'Reimburse', "  & chr(13) & _ 
+			"        'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/Requisitions/reimburseForm.asp?intStudent_ID=" & intStudent_ID & "', "  & chr(13) & _  
+			"        'statusText', 'Reimbursement Form','target', '_new') "  & chr(13) 
+    end if
+    
+    if objForm("intInstructor_ID") <> "" and ucase(ASP.Session.Contents("strRole")) <> "GUARD" then
+		if (ucase(ASP.Session.Contents("strRole")) = "TEACHER" and objForm("intInstructor_ID") = ASP.Session.Contents("instruct_id")) _
+			or ucase(ASP.Session.Contents("strRole")) = "ADMIN" then
+				strJS = strJS & ", " & Counter & ", new Hash( "  & chr(13) & _ 
+					"        'contents', 'Profiles', "  & chr(13) & _ 
+					"        'contentsHover', 'Profiles', "  & chr(13) & _ 
+					"        'uri', '', "  & chr(13) & _  
+					"        'statusText', 'Profiles', "  & chr(13) & _ 
+					"        1, new Hash( "   & chr(13) & _ 
+					"            'contents', 'Teacher Profile', "   & chr(13) & _ 
+					"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/Teachers/addTeacher.asp?intInstructor_ID=" & objForm("intInstructor_ID") & "', "  & chr(13) & _ 
+					"            'statusText', 'Teacher Profile' "  & chr(13) & _ 
+					"        ), "  & chr(13) & _  
+					"        2, new Hash( "  & chr(13) & _  
+					"            'contents', 'Teacher Bio', "   & chr(13) & _ 
+					"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/Teachers/teacherBiosViewer.asp?intInstructor_ID=" & objForm("intInstructor_ID") & "', "  & chr(13) & _ 
+					"            'statusText', 'Teacher Bio' "   & chr(13) & _ 
+					"        )) "  & chr(13) & _ 	
+					"	, " & Counter & ", new Hash( "  & chr(13) & _  
+					"        'contents', 'Add a Class', "  & chr(13) & _ 
+					"        'contentsHover', 'Add a Class', "  & chr(13) & _  
+					"        'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "/forms/teachers/classAdmin.asp?intInstructor_Id=" & objForm("intInstructor_ID") & "&intInstruct_Type_ID=4', "  & chr(13) & _  
+					"        'statusText', 'Add a Class') "  & chr(13) & _ 	
+					"	, " & Counter & ", new Hash( "  & chr(13) & _  
+					"        'contents', 'Teacher Tools', "  & chr(13) & _  
+					"        'contentsHover', 'Teacher Tools', "  & chr(13) & _ 
+					"        'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "/forms/teachers/viewClasses.asp?intInstructor_ID=" & objForm("intInstructor_ID") & "', "  & chr(13) & _  
+					"        'statusText', 'Teacher Tools', "  & chr(13) & _ 	
+					"        1, new Hash( "  & chr(13) & _ 
+					"            'contents', 'Manage Classes', "  & chr(13) & _ 
+					"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "/forms/teachers/viewClasses.asp?intInstructor_ID=" & objForm("intInstructor_ID") & "', "  & chr(13) & _  
+					"            'statusText', 'Teacher Profile' "  & chr(13) & _ 
+					"        ), "  & chr(13) & _ 
+					"        2, new Hash( "  & chr(13) & _ 
+					"            'contents', 'Instructor Contract Manager', "  & chr(13) & _ 
+					"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "/forms/Teachers/ContractManager.asp?intInstructor_ID=" & objForm("intInstructor_ID") & "', "  & chr(13) & _ 
+					"            'statusText', 'Teacher Bio' "  & chr(13) & _ 
+					"        ),"  & chr(13) & _ 
+					"        3, new Hash( "  & chr(13) & _ 
+					"            'contents', 'Teacher Payroll Report', "   & chr(13) & _  
+					"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "/Reports/teacherPayRoll.asp?intInstructor_ID=" & objForm("intInstructor_ID") & "', "  & chr(13) & _  
+					"            'statusText', 'Teacher Payroll Report' "  & chr(13) & _ 
+					"        )) " 			  & chr(13) 
+		end if		
+    
+    end if
+    
+    if ucase(ASP.Session.Contents("strRole")) = "ADMIN" then
+		strJS = strJS & ", " & Counter & ", new Hash( "  & chr(13) & _ 
+				"        'contents', 'Reports', "  & chr(13) & _  
+				"        'contentsHover', 'Reports', "  & chr(13) & _ 
+				"        'uri', '', "  & chr(13) & _ 
+				"        'statusText', 'Reports', "  & chr(13) & _  
+				"        1, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Directory', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Reports/directory.asp', "  & chr(13) & _ 
+				"            'statusText', 'Directory' "  & chr(13) & _ 
+				"        ), "  & chr(13) & _ 
+				"        2, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Re-Enrollment Report by Case', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/enroll/enrollmentReportbyCase.asp', "  & chr(13) & _  
+				"            'statusText', 'Re-Enrollment Report by Case'), "  & chr(13) & _  
+				"		 3, new Hash( "  & chr(13) & _ 
+				"			 'contents', 'Re-Enrollment Report by Student', "  & chr(13) & _ 
+				"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/enroll/enrollmentReportbyStudent.asp', "  & chr(13) & _ 
+				"			 'statusText', 'Re-Enrollment Report by Student'), "  & chr(13) & _ 
+				"		 4, new Hash( " & _ 
+				"			 'contents', 'Student Balance Reports', "  & chr(13) & _ 
+				"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Reports/DeficitBalanceReport2.asp', "  & chr(13) & _ 
+				"			 'statusText', 'Student Balance Reports'), "  & chr(13) & _ 
+				"        5, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Student Enrollment Percentages', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Reports/studentEnrollmentPercentages.asp', "  & chr(13) & _ 
+				"            'statusText', 'Student Enrollment Percentages' "  & chr(13) & _ 
+				"        ), "  & chr(13) & _ 
+				"        6, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Student Progress Report Viewer', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Reports/AdminstudentProgressReport.asp', "  & chr(13) & _  
+				"            'statusText', 'Student Progress Report Viewer'), "  & chr(13) & _  
+				"		 7, new Hash( "  & chr(13) & _ 
+				"			 'contents', 'Student/Sponsor List', "  & chr(13) & _ 
+				"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "reports/studentSponsors.asp', "  & chr(13) & _ 
+				"			 'statusText', 'Student/Sponsor List'), "  & chr(13) & _ 
+				"		 8, new Hash( " & _ 
+				"			 'contents', 'Teacher Payroll Report', "  & chr(13) & _ 
+				"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Reports/teacherPayRoll.asp', "  & chr(13) & _ 
+				"			 'statusText', 'Teacher Payroll Report'), "  & chr(13) & _ 
+				"		 9, new Hash( "  & chr(13) & _  
+				"            'contents', 'Vendor Service Report', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Reports/vendorServiceReport.asp', "  & chr(13) & _ 
+				"            'statusText', 'Vendor Service Report' "  & chr(13) & _ 
+				"        )) "   & chr(13) 
+		
+		strJS = strJS & ", " & Counter & ", new Hash( "  & chr(13) & _ 
+				"        'contents', 'Admin Tools', "  & chr(13) & _  
+				"        'contentsHover', 'Admin Tools', "  & chr(13) & _ 
+				"        'uri', '', "  & chr(13) & _ 
+				"        'statusText', 'Admin Tools', "  & chr(13) & _  
+				"        1, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Change School Year', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Admin/ChangeSchoolYear.asp', "  & chr(13) & _ 
+				"            'statusText', 'Change School Year' "  & chr(13) & _ 
+				"        ), "  & chr(13) & _ 
+				"        2, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Class Search Engine', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Forms/Teachers/classSearch.asp', "  & chr(13) & _  
+				"            'statusText', 'Class Search Engine'), "  & chr(13) & _  
+				"		 3, new Hash( "  & chr(13) & _ 
+				"			 'contents', 'Family Emailer', "  & chr(13) & _ 
+				"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Admin/familyEmailer.asp', "  & chr(13) & _ 
+				"			 'statusText', 'Family Emailer'), "  & chr(13) & _ 
+				"		 4, new Hash( " & _ 
+				"			 'contents', 'Family Manager', "  & chr(13) & _ 
+				"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "admin/FamilyManager.asp', "  & chr(13) & _ 
+				"			 'statusText', 'Family Manager'), "  & chr(13) & _ 
+				"		 5, new Hash( "  & chr(13) & _  
+				"            'contents', 'Generate User Accounts', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Admin/GenerateGuardAccts.asp', "  & chr(13) & _ 
+				"            'statusText', 'Generate User Accounts'), "  & chr(13) & _ 
+				"        6, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Goods/Services Approval Admin', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/requisitions/reqApprovalAdmin.asp', "  & chr(13) & _ 
+				"            'statusText', 'Goods/Services Approval Admin' "  & chr(13) & _ 
+				"        ), "  & chr(13) & _ 				
+				"		 7, new Hash( "  & chr(13) & _ 
+				"			 'contents', 'Manage User Accounts', "  & chr(13) & _ 
+				"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Admin/ManageAccts.asp', "  & chr(13) & _ 
+				"			 'statusText', 'Manage User Accounts'), "  & chr(13) & _ 
+				"		 8, new Hash( " & _ 
+				"			 'contents', 'Principal/Business Manager Admin', "  & chr(13) & _ 
+				"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Admin/globalVariables.asp', "  & chr(13) & _ 
+				"			 'statusText', 'Principal/Business Manager Admin'), "  & chr(13) & _ 
+				"		 9, new Hash( "  & chr(13) & _  
+				"            'contents', 'Principals\' ASD Contract Approval', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "admin/TeacherContractAdmin.asp', "  & chr(13) & _ 
+				"            'statusText', 'Principals\' ASD Contract Approval'), "  & chr(13) & _ 
+				"        10, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Principals\' Packet Manager', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Admin/PacketManager.asp', "  & chr(13) & _  
+				"            'statusText', 'Principals\' Packet Manager'), "  & chr(13) & _  
+				"		 11, new Hash( "  & chr(13) & _  
+				"            'contents', 'Re-Enrollment Scan Interface', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/enroll/scanEnrollLetter.asp', "  & chr(13) & _ 
+				"            'statusText', 'Re-Enrollment Scan Interface'), "  & chr(13) & _ 				
+				"		 12, new Hash( "  & chr(13) & _  
+				"            'contents', 'Requisition Forms', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/requisitions/reqAdminForms.asp', "  & chr(13) & _ 
+				"            'statusText', 'Requisition Forms'), "  & chr(13) & _ 
+				"        13, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Teacher Emailer', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Admin/TeacherEmailer.asp', "  & chr(13) & _  
+				"            'statusText', 'Teacher Emailer'), "  & chr(13) & _  
+				"        14, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Service Vendor Emailer', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Admin/vendorEmailer.asp', "  & chr(13) & _  
+				"            'statusText', 'Service Vendor Emailer'), "  & chr(13) & _ 
+				"        15, new Hash( "  & chr(13) & _ 
+				"            'contents', 'Service Vendor User List', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Forms/VIS/VendorUserList.asp', "  & chr(13) & _  
+				"            'statusText', 'Service Vendor Emailer'), "  & chr(13) & _   
+				"		 16, new Hash( "  & chr(13) & _  
+				"            'contents', 'Vendor Status Manager', "  & chr(13) & _ 
+				"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "reports/vendorList.asp', "  & chr(13) & _ 
+				"            'statusText', 'Vendor Status Manager' "  & chr(13) & _ 
+				"        )) "   & chr(13) 
+    end if
+	
+    'JD: Don't allow VENDOR role access to the search menu
+	if ucase(ASP.Session.Contents("strRole")) <> "VENDOR" then
+    strJS = strJS & ", " & Counter & ", new Hash( "  & chr(13) & _ 
+			"        'contents', 'Search', "  & chr(13) & _  
+			"        'contentsHover', 'Search', "  & chr(13) & _ 
+			"        'uri', '', "  & chr(13) & _ 
+			"        'statusText', 'Search Tools', "  & chr(13) & _  
+			"        1, new Hash( "  & chr(13) & _ 
+			"            'contents', 'Class Search', "  & chr(13) & _ 
+			"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/Teachers/classSearch.asp', "  & chr(13) & _ 
+			"            'statusText', 'Search for Classes' "  & chr(13) & _ 
+			"        ), "  & chr(13) & _ 
+			"        2, new Hash( "  & chr(13) & _ 
+			"            'contents', 'Teacher Search', "  & chr(13) & _ 
+			"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/Teachers/teacherBiosViewer.asp', "  & chr(13) & _  
+			"            'statusText', 'Search for Teachers'), "  & chr(13) & _  
+			"		 3, new Hash( "  & chr(13) & _ 
+			"			 'contents', 'Vendor Search', "  & chr(13) & _ 
+			"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/VIS/VendorSearchEngine.asp', "  & chr(13) & _ 
+			"			 'statusText', 'Search for Vendors'), "  & chr(13) & _ 
+			"		 4, new Hash( " & _ 
+			"			 'contents', 'Directories', "  & chr(13) & _ 
+			"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Reports/directory.asp', "  & chr(13) & _ 
+			"			 'statusText', 'Directories'), "  & chr(13) & _ 
+			"		 5, new Hash( "  & chr(13) & _  
+			"            'contents', 'ILP Bank', "  & chr(13) & _ 
+			"            'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "forms/ilp/ilpBankViewer.asp', "  & chr(13) & _ 
+			"            'statusText', 'Find Existing ILP\'s') "  & chr(13) 
+	end if
+	
+	if ucase(ASP.Session.Contents("strRole")) = "ADMIN"  then
+		strJS = strJS & ",		 6, new Hash( " & _ 
+			"			 'contents', 'Inventory Search', "  & chr(13) & _ 
+			"			 'uri', '" & ASP.Application.Contents("strSSLWebRoot") & "Inventory/inventoryAdmin.asp', "  & chr(13) & _ 
+			"			 'statusText', 'Invetory Search') "  & chr(13) 
+	end if
+	
+	if ucase(ASP.Session.Contents("strRole")) <> "VENDOR" then
+		strJS = strJS &	"        ))); "   & chr(13) 
+	else 
+			strJS = strJS &	"        )); "   & chr(13) 
+	end if
+	'JD
+	strJS = strJS & "domMenu_settings.set('domMenu_main', new Hash( "  & chr(13) & _ 
+			"    'subMenuWidthCorrection', -1, "   & chr(13) & _  
+			"    'verticalSubMenuOffsetX', -1, "   & chr(13) & _  
+			"    'verticalSubMenuOffsetY', -1, "  & chr(13) & _  
+			"    'horizontalSubMenuOffsetX', 1, "  & chr(13) & _ 
+			"    'openMouseoverMenuDelay', 300, "   & chr(13) & _  
+			"    'closeMouseoutMenuDelay', 500, "  & chr(13) & _ 
+			"    'expandMenuArrowUrl', 'arrow.gif' "  & chr(13) & _ 
+			")); "  & chr(13) & _
+			"domMenu_activate('domMenu_main'); "  & chr(13) & _
+			"</script>"   & chr(13)				
+    GetMenu = strJS
+End Function
+
+function Counter()
+	intCount = intCount + 1
+	Counter = intCount
+end function
+				
+]]>
+</script>
+
+</component>
+</package>
