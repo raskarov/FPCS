@@ -311,13 +311,16 @@ function vbfVendorList
 					</tr>
 					<tr>
 						<td class="svplain8">
-							<% if intVendor_ID & "" = "157" and intItem_ID & "" = "1" then %>
-							<input type="hidden" name="intVendor_ID" value="<% = intVendor_ID %>"> A S D 
+							<% 
+                            'if intVendor_ID & "" = "157" and intItem_ID & "" = "1" then 
+                            if intVendor_ID  = "157" and intItem_ID  = "1" then 
+                            %>
+							<input type="hidden" name="intVendor_ID" value="<% = intVendor_ID %>"/> A S D 
 							Administration BLDG.<br>
 							<br>
 							<% else %>
-							<select name="intVendor_ID" onChange="this.form.submit();" ID="Select1">
-								<option value="">
+							<select name="intVendor_ID" onchange="this.form.submit();" id="Select1">
+								<option value="">-Select-</option>
 									<%
 							dim sqlAdd
 							dim sqlVendor
@@ -337,7 +340,8 @@ function vbfVendorList
 							'			"	FROM          tblVendor_Status vs " & _ 
 							'			"	WHERE      vs.intVendor_ID = v.intVendor_ID AND vs.intSchool_Year <= " & session.Contents("intSchool_Year") & _ 
 							'			"	ORDER BY intSchool_Year DESC, intVendor_Status_ID DESC" 
-	
+	Dim bReplace
+    bReplace = True
 							select case intItem_Group_ID
 								case 1
 									'sql =" v.bolService_Vendor = 1 " 
@@ -363,7 +367,13 @@ function vbfVendorList
 										'	"       and vs.dtContract_Start is not null) " & _
 										'	"	ORDER BY intSchool_Year DESC, intVendor_Status_ID DESC "
 										sql = sql & " and vt.dtContract_start is not NULL "
-
+sqlVendor="SELECT distinct v.intVendor_ID, v.szVendor_Name Vend_Name " _
+& "FROM  tblVendors AS v INNER JOIN " _
+& "tblVendor_Status AS s ON v.intVendor_ID = s.intVendor_ID " _
+& "where year(s.dtContract_start) <=" & session.Contents("intSchool_Year") _
+& " and v.intVendor_ID in (select intVendor_ID from dbo.tblClass_Items where intSchool_year=" & session.Contents("intSchool_Year") & ") " _
+& "order by 2"
+bReplace = False
 									end if
 								case 2
 									'sql = " v.bolGoods_Vendor = 1 " 
@@ -380,6 +390,7 @@ function vbfVendorList
 							'			"FROM tblVendors v WHERE " & sql & _ 
 							'			" AND (" & sql2 & ") IN ('APPR','PEND') " & _
 							'			" ORDER BY Vend_Name "
+                            If bReplace Then
 							sqlVendor = "SELECT intVendor_ID " & _
                                         ", szVendor_Name as Vend_Name " & _
                                         "FROM (SELECT intVendor_ID " & _
@@ -409,7 +420,7 @@ function vbfVendorList
                                         "and vt.szVendor_Status_CD = 'APPR' " & _
                                         sql & _
                                         "ORDER BY vt.szVendor_Name  " 
-										
+								End If		
 										
  
 							Response.Write oFunc.MakeListSQL(sqlVendor,"intVendor_ID","Vend_Name",intVendor_ID)												 
