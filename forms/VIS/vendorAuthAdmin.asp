@@ -125,7 +125,7 @@ sqlAuth = "SELECT trefItems.szName AS item, trefItem_Groups.szName AS iGroup, " 
           "   (va.intItem_ID = " & request("intItem_ID") & ") " & _
           "    AND (va.intVendor_ID = " & request("intVendor_ID") & ")))" & _
 		  "ORDER BY 9"
-rsAuth.open sqlAuth, oFunc.FPCScnn
+rsAuth.open sqlAuth, Application("cnnFPCS")'oFunc.FPCScnn
 
 if rsAuth.RecordCount > 0 then
 %>

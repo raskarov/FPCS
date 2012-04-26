@@ -67,7 +67,7 @@ sql = "SELECT TOP " & intNumToShow & " intVendor_ID, szVendor_Name, szVendor_Pho
 	  
 'Response.Write sql
 'Response.End	  
-rsVendors.Open sql, oFunc.FPCScnn
+rsVendors.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 'Start by printing title
 %>

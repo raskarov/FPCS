@@ -50,7 +50,7 @@ else
 			"ORDER BY szVendor_Name "
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FpcsCnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FpcsCnn
 	
 	if rs.RecordCount > 0 then
 		set oCrypto = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/Crypto.wsc"))

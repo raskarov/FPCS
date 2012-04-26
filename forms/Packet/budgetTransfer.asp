@@ -110,7 +110,7 @@ rsStudents.CursorLocation = 3
 			" ss.intReEnroll_State = 31) " & sWhere & _
 			"ORDER BY s.szFIRST_NAME "
 			
-rsStudents.Open sql, oFunc.FPCScnn
+rsStudents.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 if rsStudents.RecordCount = 1 and not oFUnc.IsAdmin then
 %>			
@@ -148,7 +148,8 @@ else
 <%
 	do while not rsStudents.EOF
 		'arFund = oFunc.GetStudentBalances(rsStudents("intStudent_ID"))
-		oBudget.PopulateStudentFunding oFunc.FPCScnn,rsStudents("intStudent_ID"),session.Contents("intSchool_Year")
+		oBudget.PopulateStudentFunding Application("cnnFPCS"),rsStudents("intStudent_ID"),session.Contents("intSchool_Year")
+		'oBudget.PopulateStudentFunding oFunc.FPCScnn,rsStudents("intStudent_ID"),session.Contents("intSchool_Year")
 %>
 				<tr>
 					<td class="TableCell">
@@ -282,7 +283,8 @@ function vbfValidate()
 				' Don't validate student since funds are not coming from a studnet account but
 				' the school account
 			else
-				oBudget.PopulateStudentFunding oFunc.FPCScnn,intFrom_Student_ID,session.Contents("intSchool_Year")
+				oBudget.PopulateStudentFunding Application("cnnFPCS"),intFrom_Student_ID,session.Contents("intSchool_Year")
+				'oBudget.PopulateStudentFunding oFunc.FPCScnn,intFrom_Student_ID,session.Contents("intSchool_Year")
 				fromBudget = oBudget.BudgetBalance
 				'fromBudget = arFund2(0)
 			end if
@@ -335,7 +337,7 @@ sub vbsShowStatement
 	
 	set rs2 = server.CreateObject("ADODB.RECORDSET")
 	rs2.CursorLocation = 3
-	rs2.Open sql, oFunc.FpcsCnn
+	rs2.Open sql, Application("cnnFPCS")'oFunc.FpcsCnn
 	
 	if rs2.RecordCount > 0 then
 %>
@@ -439,7 +441,7 @@ sub vbsShowStatement
 				"	GROUP BY intSchool_Year " & _ 
 				"	HAVING (intSchool_Year = " & session.Contents("intSchool_Year")& ")) b "
 
-		rs2.Open sql, oFunc.FPCScnn
+		rs2.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if rs2.RecordCount > 0 then
 %>

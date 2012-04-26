@@ -66,7 +66,8 @@ if Request("intInstructor_ID") <> "" then
 	Session.Value("intInstructor_ID") = intInstructor_ID
 	
 	set oTeacher = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/TeacherInfo.wsc"))
-	oTeacher.PopulateObject oFunc.FPCScnn, intInstructor_ID, session.Contents("intSchool_Year")
+	'oTeacher.PopulateObject oFunc.FPCScnn, intInstructor_ID, session.Contents("intSchool_Year")
+	oTeacher.PopulateObject Application("cnnFPCS"), intInstructor_ID, session.Contents("intSchool_Year")
 	
 	strTeacherName = oTeacher.FirstName & " " & oTeacher.LastName	
 	
@@ -89,7 +90,7 @@ else
 		sql = "Select szSubject_Name " & _
 			  "from trefPOS_Subjects " & _
 			  "where intPOS_Subject_ID = " & session.Contents("intPOS_Subject_ID")
-		rsSubject.Open sql, oFunc.FPCScnn
+		rsSubject.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		szSubject_Name = rsSubject("szSubject_Name")
 		intPOS_Subject_ID = session.Contents("intPOS_Subject_ID")
 		rsSubject.Close
@@ -172,7 +173,7 @@ select case request("intInstruct_Type_ID")
 		sql4 ="select intFlat_Inst_Id, flatRate from tblInstructor_Flat_Rate where intSchool_year = " & session.Contents("intSchool_Year")
         set rs4 = server.CreateObject("ADODB.RECORDSET")
         rs4.CursorLocation = 3
-        rs4.Open sql4, oFunc.FPCScnn
+        rs4.Open sql4, Application("cnnFPCS")'oFunc.FPCScnn
         curinstructionrate = formatNumber(rs4("flatRate"), 2)
         rs4.Close()
         end if
@@ -193,7 +194,7 @@ select case request("intInstruct_Type_ID")
 			set rsIDS = server.CreateObject("ADODB.RECORDSET")
 			rsIDS.CursorLocation = 3
 			
-			rsIDS.Open sqlContracts, oFunc.FPCScnn									
+			rsIDS.Open sqlContracts, Application("cnnFPCS")'oFunc.FPCScnn									
 
 			strSelectContract = "<table><tr><td class=gray>&nbsp;Copy an Existing Contract:</td>" & _
 								"<td><select name=intContract_ID onChange='jfGetContract(this);'>" & _
@@ -243,7 +244,7 @@ if intClass_Id <> "" then
 			   "c.decOriginal_Student_Hrs, c.intContract_Status_ID, c.decOriginal_Planning_hrs, dtHrs_Last_Updated, " & _
 			   	strAddSQL 
 			   	
-	rsClass.Open sqlClass, oFunc.FPCScnn		
+	rsClass.Open sqlClass, Application("cnnFPCS")'oFunc.FPCScnn		
 
 	'This for loop dimentions and defines all the columns we selected in sqlClass
 	'and we use the variables created here to populate the form.
@@ -813,7 +814,7 @@ if intClass_ID <> "" and request.QueryString("bolHideGoodsServices") = "" _
 	'end if
 	set rsItems = server.CreateObject("ADODB.Recordset")
 	rsItems.CursorLocation = 3
-	rsItems.Open sqlItems, oFunc.FPCScnn
+	rsItems.Open sqlItems, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	
 	if rsItems.RecordCount < 1 then		
@@ -1139,13 +1140,16 @@ function vbfClassDetailsForASD
 				set oBudget = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/StudentBudgetInfo.wsc"))
 				set oClass = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/ClassInfo.wsc"))
 				
-				oClass.PopulateObject oFunc.FpcsCnn, intClass_ID
-				oBudget.PopulateStudentFunding oFunc.FpcsCnn, intStudent_ID, session.contents("intSchool_Year")
+				'oClass.PopulateObject oFunc.FpcsCnn, intClass_ID
+				oClass.PopulateObject Application("cnnFPCS"), intClass_ID
+				'oBudget.PopulateStudentFunding oFunc.FpcsCnn, intStudent_ID, session.contents("intSchool_Year")
+				oBudget.PopulateStudentFunding Application("cnnFPCS"), intStudent_ID, session.contents("intSchool_Year")
 	
 				myBudget = oBudget.BudgetBalance
 				bolLimit = false
 				if oFunc.IsSpendingLimitSubject(intPOS_SUBJECT_ID) then
-					oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId, session.contents("intSchool_Year") 
+					'oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId, session.contents("intSchool_Year") 
+					oBudget.PopulateFamilyBudgetInfo Application("cnnFPCS"), oBudget.FamilyId, session.contents("intSchool_Year") 
 					if oBudget.BudgetBalance > oBudget.AvailableElectiveBudget then
 						myBudget = oBudget.AvailableElectiveBudget
 						bolLimit = true

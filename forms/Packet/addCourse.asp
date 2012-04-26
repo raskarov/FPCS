@@ -335,7 +335,7 @@ sub vbsGetShortForm(id)
 		  "WHERE (intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 		  "AND (intStudent_ID = " & intStudent_ID & " ) " & _
 		  "AND (intShort_ILP_ID = " & id & ")" 
-	rsShortForm.Open sql, oFunc.FPCScnn
+	rsShortForm.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	'Populate variables
 	intPOS_Subject_ID = rsShortForm("intPOS_Subject_ID")

@@ -156,7 +156,7 @@ dim FullRights
 					"			  LEFT OUTER JOIN trefLocations l on v.intLocation_ID = l.intLocation_ID " & _
 					"WHERE     intVendor_ID = " & intVendor_ID
 					
-		rsVendor.Open sqlVendor,oFunc.FPCScnn
+		rsVendor.Open sqlVendor,Application("cnnFPCS")'oFunc.FPCScnn
 		if not rsVendor.BOF and not rsVendor.EOF then
 			'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			'' This for loop will dimension AND assign our student info variables
@@ -667,7 +667,7 @@ dim FullRights
 						<%
 							set rsProvide = server.CreateObject("ADODB.RECORDSET")
 							rsProvide.CursorLocation = 3
-							rsProvide.Open sql2, oFunc.FpcsCnn
+							rsProvide.Open sql2, Application("cnnFPCS")'oFunc.FpcsCnn
 							if rsProvide.RecordCount > 0 then
 								do while not rsProvide.EOF
 									strProvide =  strProvide & rsProvide("ServiceName") & ", "
@@ -1149,7 +1149,7 @@ set oFunc = nothing
 					"FROM   tblVendors " & _
 					"WHERE (UPPER(REPLACE(szVendor_Name, ' ', '')) = UPPER(REPLACE('" & oFunc.EscapeTick(szVendor_Name) & "', ' ', ''))) " & _
 					"OR    (REPLACE(szVendor_Phone, '-', '') = REPLACE('" & szVendor_Phone & "', '-', ''))"
-			rsDuplicate.Open strSQL, oFunc.FPCScnn
+			rsDuplicate.Open strSQL, Application("cnnFPCS")'oFunc.FPCScnn
 			with rsDuplicate
 				if not .BOF and not .EOF then
 					strError = "A Vendor with that Name or Phone Number already exists.<BR>"
@@ -1398,7 +1398,7 @@ set oFunc = nothing
 			" WHERE intVendor_ID = " & intVendor_ID & _
 			" AND intSchool_Year = " & SchoolYear & _
 			" ORDER BY intSchool_Year DESC,intVendor_Status_ID DESC "
-		rsc.Open sql, oFunc.FpcsCnn
+		rsc.Open sql, Application("cnnFPCS")'oFunc.FpcsCnn
 	
 		if objRequest("dtContract_Start") & "" = "" then
 			dtContract = " NULL "

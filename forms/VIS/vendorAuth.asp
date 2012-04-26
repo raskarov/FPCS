@@ -108,7 +108,7 @@ sqlAuth = "SELECT ig.szName, i.szName AS item_name, pos.szSubject_Name, " & _
           "trefPOS_Subjects pos ON va.intPOS_SUbject_ID = pos.intPOS_Subject_ID " & _
 		  "WHERE (va.intVendor_ID = " & request("intVendor_ID") & ")" & _
 		  "order by ig.szName, i.szName,pos.szSubject_Name "
-rsAuth.Open sqlAuth,oFunc.FPCScnn
+rsAuth.Open sqlAuth,Application("cnnFPCS")'oFunc.FPCScnn
 
 if rsAuth.RecordCount > 0 then
 %>

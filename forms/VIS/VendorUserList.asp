@@ -36,7 +36,7 @@ sql = "SELECT v.intVendor_ID, v.szVendor_Name, vu.szUser_ID, v.szVendor_Email, v
 		
 set rs = server.CreateObject("ADODB.RECORDSET")
 rs.CursorLocation = 3
-rs.Open sql, oFunc.FpcsCnn
+rs.Open sql, Application("cnnFPCS")'oFunc.FpcsCnn
 rsCount = rs.RecordCount
 %>
 <table cellpadding="3">

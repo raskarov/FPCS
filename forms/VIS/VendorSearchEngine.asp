@@ -293,7 +293,7 @@ if request.Form("Search") <> "" then
 	'response.Write sql 
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if request("PageNumber") <> "" and request("hdnReset") = "" then
 		intPageNum = cint(request("PageNumber"))	

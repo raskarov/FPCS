@@ -36,7 +36,7 @@ if request("intSponsor_Teacher_ID") <> "" then
 	sqlSponsor = "select intSponsor_Teacher_ID from tblEnroll_Info " & _
 				 " where intStudent_ID = " & intStudent_ID & _
 				 " and sintSchool_Year = " & intSchool_Year
-	rsSponsor.Open sqlSponsor, oFunc.FPCScnn	
+	rsSponsor.Open sqlSponsor, Application("cnnFPCS")'oFunc.FPCScnn	
 	
 	if rsSponsor.RecordCount < 1 then
 	' Insert a new Sponsor Teacher Record

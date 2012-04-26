@@ -64,7 +64,7 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 			
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	' Set up rs for guardian list
 	set rsGuard = server.CreateObject("ADODB.RECORDSET")
@@ -124,7 +124,7 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 							"FROM tascFAM_GUARD fg INNER JOIN " & _
 							" tblGUARDIAN g ON fg.intGUARDIAN_ID = g.intGUARDIAN_ID " & _
 							"WHERE (fg.intFamily_ID = " & rs(6) & ")"
-					rsGuard.Open sql,oFunc.FPCScnn
+					rsGuard.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 					
 					strGuardList = ""
 					
