@@ -472,7 +472,8 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
                     <td class="gray">End</td>
                     <td class="gray">Description</td>
                     </tr>
-                    <% If rsSyllabus<>Empty Then
+                    <% If not rsSyllabus is Nothing Then
+                    If rsSyllabus.State = 1 Then
                     do while not rsSyllabus.EOF %>
                     <% if bolLock Then %>
                     <tr>
@@ -500,6 +501,7 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
                     Loop
                     rsSyllabus.Close()
                     Set rsSyllabus = Nothing
+                    End If
                     End If
                      %>
                      <%if not bolLock and strILPTable<>" tblILP_Generic " Then %>
