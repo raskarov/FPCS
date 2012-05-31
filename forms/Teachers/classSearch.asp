@@ -29,7 +29,8 @@ end if
 
 if request("intStudent_ID") <> "" then
 	set oBudget = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/StudentBudgetInfo.wsc"))
-	oBudget.PopulateStudentFunding oFunc.FPCScnn, request("intStudent_ID"), session.Contents("intSchool_Year") 
+	'oBudget.PopulateStudentFunding oFunc.FPCScnn, request("intStudent_ID"), session.Contents("intSchool_Year") 
+	oBudget.PopulateStudentFunding Application("cnnFPCS"), request("intStudent_ID"), session.Contents("intSchool_Year") 
 	strSqlFamily = " AND tascClass_Family.intFamily_ID <> " & oBudget.FamilyID & " "
 	set oBudget = nothing
 	
@@ -332,7 +333,7 @@ if request.Form("Search") <> "" then
 	
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 if ucase(session.contents("strUserId")) = "SCOTT" then response.write sql
 	

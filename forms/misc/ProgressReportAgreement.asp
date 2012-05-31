@@ -21,7 +21,8 @@ if request("intFamily_ID") <> "" then
 	intFamily_ID = request("intFamily_ID")
 elseif request("intStudent_ID") <> "" then
 	set oStudent = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/StudentBudgetInfo.wsc"))
-	oStudent.PopulateStudentFunding oFunc.FpcsCnn,request("intStudent_ID"), session.Contents("intSchool_Year")
+	'oStudent.PopulateStudentFunding oFunc.FpcsCnn,request("intStudent_ID"), session.Contents("intSchool_Year")
+	oStudent.PopulateStudentFunding Application("cnnFPCS"),request("intStudent_ID"), session.Contents("intSchool_Year")
 	intFamily_ID = oStudent.FamilyId
 	set oStudent = nothing
 else
@@ -46,7 +47,7 @@ sql = "SELECT     s.intSTUDENT_ID, s.szFIRST_NAME, s.szLAST_NAME, tblENROLL_INFO
 		
 set rs = server.CreateObject("ADODB.RECORDSET")
 rs.CursorLocation = 3
-rs.Open sql, oFunc.FpcsCnn
+rs.Open sql, Application("cnnFPCS")'oFunc.FpcsCnn
 
 %>
 	

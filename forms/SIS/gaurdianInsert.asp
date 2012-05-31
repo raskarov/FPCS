@@ -109,7 +109,7 @@ elseif  Request.Form("changed") <> ""  and Request.Form("intGuardian_ID") <> "" 
 		  "where sg.intStudent_ID = s.intStudent_ID " & _
 		  "and s.intFamily_id = " & Request.Form("intFamily_id") & _
 		  " and intGuardian_id = " & Request.Form("intGuardian_ID")
-	rsAssoc.Open sql, oFunc.FPCScnn
+	rsAssoc.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	do while not rsAssoc.EOF
 		delete = "delete from tascStudent_Guardian where intAssoc_ID = " & rsAssoc("intAssoc_ID")

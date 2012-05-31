@@ -66,7 +66,7 @@ if Request.QueryString("intStudent_id") <> "" then
 						"FROM tblSTUDENT s " & _
 						"WHERE (s.intSTUDENT_ID = " & intStudent_ID & ") " 
 	
-		rsStudent.Open sqlStudent,oFunc.FPCScnn	
+		rsStudent.Open sqlStudent,Application("cnnFPCS")'oFunc.FPCScnn	
 
 	Session.Contents("strStudentName") = rsStudent("szFirst_Name") & " " & rsStudent("szLast_Name")				 
 	rsStudent.Close
@@ -115,7 +115,7 @@ elseif Request.QueryString("intInstructor_ID") <> "" then
 		rsTeacher.CursorLocation = 3
 		sqlTeacher = "select szFirst_Name,szLast_Name " & _
 						"from tblInstructor where intInstructor_ID=" & Request.QueryString("intInstructor_ID")
-		rsTeacher.Open sqlTeacher,oFunc.FPCScnn	
+		rsTeacher.Open sqlTeacher,Application("cnnFPCS")'oFunc.FPCScnn	
 
 	Session.Contents("strTeacherFirstName") = rsTeacher("szFirst_Name")
 	Session.Contents("strTeacherLastName") = rsTeacher("szLast_Name")
@@ -163,7 +163,7 @@ end if
 
 set rsClasses = server.CreateObject("ADODB.RECORDSET")
 rsClasses.CursorLocation = 3
-rsClasses.Open sql, oFunc.FPCScnn
+rsClasses.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 %>
 <script language=javascript>

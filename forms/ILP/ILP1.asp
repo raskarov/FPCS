@@ -54,7 +54,7 @@ else
 					 "on s.intStudent_ID = ss.intStudent_ID and " & _
 					 "ss.intSchool_year = " & session.Contents("intSchool_Year") & " " & _
 					 " where s.intStudent_ID=" & intStudent_ID
-		.Open sqlStudent, oFunc.FPCScnn	
+		.Open sqlStudent, Application("cnnFPCS")'oFunc.FPCScnn	
 		'bkm 18-jun-02
 		'added check for valid intStudent_ID - redirects to home page if invalid
 		if not .BOF and not .EOF then
@@ -94,7 +94,7 @@ else
 		sqlSponsor = "select intSponsor_Teacher_ID from tblEnroll_Info " & _
 					 "where intStudent_ID = " & intStudent_ID & _
 					 " and sintSchool_YEAR = " & intSchoolYear
-		rsSponsor.Open sqlSponsor, oFunc.FPCScnn	
+		rsSponsor.Open sqlSponsor, Application("cnnFPCS")'oFunc.FPCScnn	
 			
 		if rsSponsor.RecordCount > 0 then
 			if rsSponsor("intSponsor_Teacher_ID") & "" <> "" then
@@ -208,7 +208,7 @@ end if
 					rsGetPOS.CursorLocation = 3
 					sql = "select intPOS_Subject_ID from tblILP_Short_Form " & _
 						  " where intShort_ILP_ID = " & request("intShort_ILP_ID")
-					rsGetPOS.Open sql, oFunc.FPCScnn
+					rsGetPOS.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 						
 					if rsGetPOS.RecordCount > 0 then
 						Session.Contents("intPOS_Subject_ID") = rsGetPOS(0)

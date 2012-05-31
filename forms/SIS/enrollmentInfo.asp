@@ -80,7 +80,7 @@ if isArray(session.Value("arStudents")) = false and request("bolForced") <> "" t
 		"	WHERE e.sintSchool_Year = " & Session.Value("intSchool_Year") & " AND s.intStudent_ID = e.intStudent_ID)) " & _ 
 		"AND (ss.intSchool_Year = " & Session.Value("intSchool_Year") & ") AND (ss.intReEnroll_State IN (" & Application.Contents("ActiveEnrollList") & ") )"		  
 		  
-	rsGetStudents.Open sql, oFunc.FPCScnn
+	rsGetStudents.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsGetStudents.RecordCount > 0 then
 		redim arStudents(rsGetStudents.RecordCount,5)
@@ -129,7 +129,7 @@ else
 		  
 	set rsEnrollInfo = server.CreateObject("ADODB.RECORDSET")
 	rsEnrollInfo.CursorLocation = 3
-	rsEnrollInfo.Open sql, oFunc.FPCScnn
+	rsEnrollInfo.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsEnrollInfo.RecordCount > 0 then
 		'This for loop dimentions and defines all the columns we selected in sql

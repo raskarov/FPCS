@@ -68,7 +68,7 @@ if intStudent_ID <> "" then
 	sql = "select szFirst_Name + ' ' + szLast_name as name " & _
 		  "from tblStudent " & _
 		  "where intStudent_ID = " & intStudent_ID
-	rsGetName.Open sql,oFunc.FPCScnn
+	rsGetName.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	strStudent_Name = rsGetName(0)
 	
 	rsGetName.Close
@@ -78,7 +78,7 @@ if intStudent_ID <> "" then
 			"    tblClasses ON " & _
 			"    tblILP.intClass_ID = tblClasses.intClass_ID " & _
 			"WHERE (tblILP.intILP_ID = " & intILP_ID & ")" 
-	rsGetName.Open sql, oFunc.FPCScnn
+	rsGetName.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	strClassName = rsGetName(0)
 	intPOS_Subject_ID = rsGetName(1)
@@ -97,7 +97,7 @@ if intStudent_ID <> "" then
 elseif intClass_ID <> "" then
 	' Get Class Name
 	sql = "Select szClass_Name,intPOS_Subject_ID,intInstructor_ID, intContract_Status_ID from tblClasses where intClass_ID = " & intClass_ID 
-	rsGetName.Open sql, oFunc.FPCScnn
+	rsGetName.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	strClassName = rsGetName(0)
 	intPOS_Subject_ID = rsGetName(1)
 	intInstructor_ID = rsGetName(2)
@@ -208,17 +208,17 @@ set rsGetName = nothing
 						<input type=button value="Add a Service" class="NavLink" onClick="jfAddEditItem('<% = intILP_ID %>','<% = intStudent_ID %>','<% = intClass_ID %>','','1');" NAME="Button2">
 						<% end if %>
 						<%if request.QueryString("bolFromILPInsert") <> "" then
-							if intStudent_ID <> "" then
+							if intStudent_ID <> "" then'remove /
 						%>
-						<input type=button value="Finished"  class="NavLink" onclick="window.location.href='<%=Application.Value("strWebRoot")%>/forms/packet/packet.asp?intStudent_ID=<%=intstudent_ID%><% = session.Contents("strSimpleHeader") %>';" NAME="Button4">
+						<input type=button value="Finished"  class="NavLink" onclick="window.location.href='<%=Application.Value("strWebRoot")%>forms/packet/packet.asp?intStudent_ID=<%=intstudent_ID%><% = session.Contents("strSimpleHeader") %>';" NAME="Button4">
 						<%
 							elseif intInstructor_ID <> "" then
 						%>
-						<input type=button value="Finished"  class="NavLink" onclick="window.location.href='<%=Application.Value("strWebRoot")%>/forms/teachers/viewclasses.asp?intInstructor_ID=<%=intInstructor_ID%>';" NAME="Button4">
+						<input type=button value="Finished"  class="NavLink" onclick="window.location.href='<%=Application.Value("strWebRoot")%>forms/teachers/viewclasses.asp?intInstructor_ID=<%=intInstructor_ID%>';" NAME="Button4">
 						<%
 							else
 						%>
-						<input type=button value="Finished"  class="NavLink" onclick="window.location.href='<%=Application.Value("strWebRoot")%>/default.asp?strMessage=Class Added';" NAME="Button4">
+						<input type=button value="Finished"  class="NavLink" onclick="window.location.href='<%=Application.Value("strWebRoot")%>default.asp?strMessage=Class Added';" NAME="Button4">
 						<%  end if 
 						else
 						%>
@@ -308,7 +308,7 @@ end if
 set rsItems = server.CreateObject("ADODB.Recordset")
 rsItems.CursorLocation = 3
 
-rsItems.Open sqlItems, oFunc.FPCScnn
+rsItems.Open sqlItems, Application("cnnFPCS")'oFunc.FPCScnn
 
 if rsItems.RecordCount < 1 then
 %>
@@ -476,7 +476,7 @@ if intStudent_ID <> "" and intClass_ID <> "" then
 			   "	WHERE	oi.intClass_Item_ID = ci.intClass_Item_ID AND oi.intStudent_ID = " & intStudent_ID & ")) " & _
 			   "order by i.szName "
 		
-	rsItems.Open sql, oFunc.Fpcscnn
+	rsItems.Open sql, Application("cnnFPCS")'oFunc.Fpcscnn
 	
 	if rsItems.RecordCount > 0 then
 		dblGrandTotal = 0
@@ -593,7 +593,7 @@ sub vbsCopyToOrdered()
 		sql_s = "select * from tblOrdered_Items where intILP_ID = " & intILP_ID
 		set rsVerify = server.CreateObject("ADODB.RECORDSET")
 		rsVerify.CursorLocation = 3
-		rsVerify.Open sql_s, oFunc.FPCScnn
+		rsVerify.Open sql_s, Application("cnnFPCS")'oFunc.FPCScnn
 		intRC_s = rsVerify.recordcount
 		rsVerify.close	
 		set rsVerify = nothing
@@ -621,7 +621,7 @@ sub vbsCopyToOrdered()
 		sql_s = sql_s & "WHERE (ci.intClass_Item_ID = " & 	request.QueryString("intClass_Item_ID") & ")"
 	end if 
 			
-	rsGetGS.Open sql_s, oFunc.FPCScnn
+	rsGetGS.Open sql_s, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	'copy class items to ordered items
 	do while not rsGetGS.EOF
@@ -646,7 +646,7 @@ sub vbsCopyToOrdered()
 		sql_s = "select intItem_Attrib_ID, szValue, intOrder " & _
 				"from tblClass_Attrib " & _
 				"where intClass_Item_ID = " & rsGetGS("intClass_Item_ID")
-		rsGetAttr.Open sql_S,oFunc.FPCScnn
+		rsGetAttr.Open sql_S,Application("cnnFPCS")'oFunc.FPCScnn
 		
 		' Now we copy all attributes for a given item
 		intItemCount = 0

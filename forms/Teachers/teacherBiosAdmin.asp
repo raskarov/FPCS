@@ -71,7 +71,7 @@ function vbfGetBio(instructor_ID)
 				 "ON i.intInstructor_ID = b.intInstructor_ID " & _
 				 "where i.intInstructor_ID = " & instructor_ID
 	
-	rsInstInfo.Open sqlTeacher, oFunc.FPCScnn
+	rsInstInfo.Open sqlTeacher, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	'This for loop dimentions and defines all the columns we selected in sqlTeacher
 	'and we use the variables created here to populate the form.

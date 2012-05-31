@@ -128,7 +128,7 @@ end if
 if ucase(intClass_ID) = "ALL" or ucase(intILP_ID) = "ALL"  or ucase(request("strAction")) = "A" then
 	set rsAll = server.CreateObject("ADODB.RECORDSET")
 	rsAll.CursorLocation = 3
-	rsAll.Open sql, oFunc.FPCScnn
+	rsAll.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 end if
 
 ' Fusebox logic
@@ -199,7 +199,7 @@ select case ucase(request("strAction"))
 				
 		set rsPacket = server.CreateObject("ADODB.RECORDSET")
 		rsPacket.CursorLocation = 3
-		rsPacket.Open sql, oFunc.FPCScnn
+		rsPacket.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		do while not rsPacket.EOF
 			if rsPacket("intStudent_ID") <> LastStudent then
@@ -332,7 +332,7 @@ function vbfPrintContract(intClass_ID)
 					" tblGUARDIAN g ON c.intGuardian_ID = g.intGUARDIAN_ID LEFT OUTER JOIN " & _
 					" tblINSTRUCTOR i ON c.intInstructor_ID = i.intINSTRUCTOR_ID " & _ 
 					"where c.intClass_ID = " & intClass_Id 
-		rsClass.Open sqlClass, oFunc.FPCScnn		
+		rsClass.Open sqlClass, Application("cnnFPCS")'oFunc.FPCScnn		
 		
 		'This for loop dimentions and defines all the columns we selected in sqlClass
 		'and we use the variables created here to populate the form.
@@ -358,7 +358,7 @@ function vbfPrintContract(intClass_ID)
 			    sql4 ="select intFlat_Inst_Id, flatRate from tblInstructor_Flat_Rate where intSchool_year = " & session.Contents("intSchool_Year")
                 set rs4 = server.CreateObject("ADODB.RECORDSET")
                 rs4.CursorLocation = 3
-                rs4.Open sql4, oFunc.FPCScnn
+                rs4.Open sql4, Application("cnnFPCS")'oFunc.FPCScnn
                 curinstructionrate = formatNumber(rs4("flatRate"), 2)
                 rs4.Close()
             end if
@@ -373,7 +373,7 @@ function vbfPrintContract(intClass_ID)
 						"where a.intClass_ID = " & intClass_ID & _
 						" and a.intFamily_ID = f.intFamily_ID " & _
 						" order by f.szFamily_Name "  
-		rsClass.Open sqlRestricted, oFunc.FPCScnn
+		rsClass.Open sqlRestricted, Application("cnnFPCS")'oFunc.FPCScnn
 
 		strFamilyValues = "no"
 		if rsClass.RecordCount > 0 then		
@@ -486,7 +486,7 @@ function vbfPrintContract(intClass_ID)
 														" and i.intStudent_ID = " & intStudent_ID &_
 														" and i.intClass_ID = " & intClass_ID & _
 														" order by szLast_Name"	
-										rsInfo.Open sqlGaurdian, oFunc.FPCScnn
+										rsInfo.Open sqlGaurdian, Application("cnnFPCS")'oFunc.FPCScnn
 										if rsInfo.RecordCount > 0 then
 											Response.Write rsInfo("name")	
 										end if		
@@ -623,7 +623,7 @@ function vbfPrintContract(intClass_ID)
 			   			
 					set rsItems = server.CreateObject("ADODB.Recordset")
 					rsItems.CursorLocation = 3
-					rsItems.Open sqlItems, oFunc.FPCScnn
+					rsItems.Open sqlItems, Application("cnnFPCS")'oFunc.FPCScnn
 					
 					
 					if rsItems.RecordCount < 1 then		
@@ -877,7 +877,7 @@ Server.Execute(Application.Value("strWebRoot") & "Includes/footer.asp")
 	end if 
 	
 	sqlChargeID = "select szDesc from trefCharge_Type where intCharge_Type_ID = " & intCharge_Type_ID
-	rsInfo.Open sqlChargeID,oFunc.FPCScnn
+	rsInfo.Open sqlChargeID,Application("cnnFPCS")'oFunc.FPCScnn
 	if rsInfo.RecordCount > 0 then
 		strChargeList = rsInfo("szDesc")
 	end if
@@ -1044,7 +1044,7 @@ Server.Execute(Application.Value("strWebRoot") & "Includes/footer.asp")
 								if szDays_Meet_On <> "" then						
 									dim sqlDays
 									sqlDays = "select strText from common_lists where intList_ID = 4 and strValue='" & szDays_Meet_On & "'"
-									rsInfo.Open sqlDays,oFUnc.FPCScnn
+									rsInfo.Open sqlDays,Application("cnnFPCS")'oFUnc.FPCScnn
 									if rsInfo.RecordCount > 0 then
 										do while not rsInfo.EOF
 											Response.Write 	rsInfo("strText") 
@@ -1216,7 +1216,7 @@ function vbfPrintILP(intILP_ID)
 	set rsILP = server.CreateObject("ADODB.RECORDSET")
 	rsILP.CursorLocation = 3	
 	
-	rsILP.Open sql,oFunc.FPCScnn
+	rsILP.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 
 	intCount = 0
 	'This for loop dimentions and defines all the columns we selected in sqlClass
@@ -1242,7 +1242,7 @@ function vbfPrintILP(intILP_ID)
 				"intC_Upper,intC_Lower,intD_Upper,intD_Lower,intF_Upper,intF_Lower " & _
 				"from " & strGradeTable  & _
 				" where intGrading_Scale_Id = " & intGrading_Scale_ID
-		rsGrade.Open sql,oFunc.FPCScnn
+		rsGrade.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	
 		if rsGrade.RecordCount > 0 then
 			for each item in rsGrade.Fields
@@ -1625,7 +1625,7 @@ function vbfGoodsServices()
 
 	set rsItems = server.CreateObject("ADODB.Recordset")
 	rsItems.CursorLocation = 3
-	rsItems.Open sqlItems, oFunc.FPCScnn
+	rsItems.Open sqlItems, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsItems.recordcount < 1 then
 		rsItems.close
@@ -1835,7 +1835,8 @@ function vbfStudentPacket
 
 	if intStudent_ID <> "" then	
 		
-		oBudget.PopulateStudentFunding oFunc.FPCScnn,intStudent_ID,session.Contents("intSchool_Year")
+		'oBudget.PopulateStudentFunding oFunc.FPCScnn,intStudent_ID,session.Contents("intSchool_Year")
+		oBudget.PopulateStudentFunding Application("cnnFPCS"),intStudent_ID,session.Contents("intSchool_Year")
 		
 		dblDeposits = oBudget.Deposits
 		dblWithdraw = oBudget.Withdrawls
@@ -2029,7 +2030,10 @@ function vbfStudentPacket
 							</tr>
 						</table>
 					</td>
-					<% oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId,session.Contents("intSchool_Year") %>
+					<% 
+                    'oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId,session.Contents("intSchool_Year") 
+                    oBudget.PopulateFamilyBudgetInfoApplication("cnnFPCS"), oBudget.FamilyId,session.Contents("intSchool_Year") 
+                    %>
 					<td valign="top" style="Width:50%;">
 						<table cellpadding="4" style="Width:100%;" ID="Table47">
 							<tr>
@@ -2259,7 +2263,7 @@ function vbfStudentPacket
 
 set rsBudget = server.CreateObject("ADODB.RECORDSET")
 rsBudget.CursorLocation = 3
-rsBudget.Open sql,oFunc.FPCScnn
+rsBudget.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 
 intPreviousID = 0
 
@@ -2675,7 +2679,8 @@ do while not rsBudget.EOF
 			
 		dblBudgetCost = formatNumber(rsBudget("Total"),2)
 		'Get Line Item info
-		liInfo = LineItemInfo(rsBudget("intOrdered_Item_ID"),dblBudgetCost, rsBudget("bolClosed"), oFunc.FPCScnn,strClass)
+		'liInfo = LineItemInfo(rsBudget("intOrdered_Item_ID"),dblBudgetCost, rsBudget("bolClosed"), oFunc.FPCScnn,strClass)
+		liInfo = LineItemInfo(rsBudget("intOrdered_Item_ID"),dblBudgetCost, rsBudget("bolClosed"), Application("cnnFPCS"),strClass)
 		bStatus = GetBudgetStatus(rsBudget("intItem_Group_ID"),rsBudget("bolApproved"),liInfo(4),rsBudget("bolReimburse"))		
 		
 		dblCharge = formatNumber(liInfo(1),2)
@@ -3043,7 +3048,7 @@ function vbForms(pFormName)
 		dim rs1
 		set rs1 = server.CreateObject("ADODB.RECORDSET")
 		rs1.CursorLocation = 3	
-		rs1.Open sql, oFunc.FPCScnn
+		rs1.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if rs1.RecordCount > 0 then		
 			do while not rs1.EOF
@@ -3151,7 +3156,7 @@ function vbfMakeTestTable()
 			dim rs
 			set rs = server.CreateObject("ADODB.RECORDSET")
 			rs.CursorLocation = 3
-			rs.Open sql, oFunc.FPCScnn
+			rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 			
 			if rs.RecordCount > 0 then
 				do while not rs.EOF
@@ -3236,7 +3241,7 @@ function Philiosophy(pStudentID)
 			"WHERE (tblENROLL_INFO.intSTUDENT_ID = " & pStudentID & ") AND (tblENROLL_INFO.sintSCHOOL_YEAR = " & session.Contents("intSchool_Year") & ") "
 	set rsP = server.CreateObject("ADODB.RECORDSET")
 	rsP.CursorLocation = 3
-	rsP.Open sql,oFunc.FPCScnn
+	rsP.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	%>
 	<table style='width:100%' >
 		<% = vbfFormHeader("ILP Philosophy for " & oFunc.StudentInfo(pStudentID,3)) %>
@@ -3302,7 +3307,7 @@ sql = "SELECT tblVendors.szVendor_Name, tblSTUDENT.szLAST_NAME, tblSTUDENT.szFIR
 	intStudent_id = 1
 	rs2.CursorLocation = 3
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	strVendName = ""
 	
 	if rs.RecordCount > 0 then
@@ -3359,7 +3364,7 @@ sql = "SELECT tblVendors.szVendor_Name, tblSTUDENT.szLAST_NAME, tblSTUDENT.szFIR
 						   " FROM tblLINE_ITEMS LEFT OUTER JOIN " & _
 						   "	tblORDERED_ITEMS on tblORDERED_ITEMS.intORDERED_ITEM_ID =  tblLINE_ITEMS.intORDERED_ITEM_ID " & _
 						   " WHERE tblORDERED_ITEMS.intILP_ID = " & rs("intILP_ID") 
-					rs2.Open sql, oFunc.FPCScnn
+					rs2.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 					if rs2.RecordCount > 0 then
 						if rs2("szPO_Number") & "" <> "" then
 							szPO_Number = rs2("szPO_Number")

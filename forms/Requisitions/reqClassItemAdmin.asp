@@ -355,7 +355,7 @@ if isnumeric(request("selClassId")) and request("selClassId") & ""  <> "" then
 
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rs.RecordCount > 0 then 
 		set rsLI = server.CreateObject("ADODB.RECORDSET")
@@ -418,7 +418,7 @@ if isnumeric(request("selClassId")) and request("selClassId") & ""  <> "" then
 						"WHERE (intClass_Item_ID = "  & rs("intClass_Item_ID") & ") " & _
 						" ORDER BY intClass_Line_Item_ID"					
 						
-					rsLI.Open sql, oFunc.FPCScnn
+					rsLI.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 					dblLineItemCosts = 0
 					if rsLI.RecordCount > 0 then
 						do while not rsLI.EOF
@@ -453,7 +453,7 @@ if isnumeric(request("selClassId")) and request("selClassId") & ""  <> "" then
 							"WHERE	(oi.intClass_Item_ID = " & rs("intClass_Item_ID") & ") " & _
 							" ORDER BY s.szLAST_NAME, s.szFIRST_NAME "
 							
-					myRs.Open mySql, oFunc.FPCScnn
+					myRs.Open mySql, Application("cnnFPCS")'oFunc.FPCScnn
 					
 					myTable = "<table cellpadding='2'><tr class='navywhite8' style='font-weight:bold;'>" & _
 							  "<td>Student Name</td>" & _
@@ -975,7 +975,7 @@ sub vbsSaveLineItems
 				sql = "select intOrdered_Item_ID from tblOrdered_Items where intClass_Item_ID = " & request.Form("intClass_Item_IDLI"&arList(i)) & _
 					  " AND intStudent_ID in (" & StudentsList & ")" 
 					 response.Write sql 
-				rsChild.Open sql, oFunc.FPCScnn
+				rsChild.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 				
 				if rsChild.RecordCount > 0 then
 					do while not rsChild.eof	

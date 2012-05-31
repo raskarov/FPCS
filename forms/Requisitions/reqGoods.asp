@@ -87,7 +87,7 @@ if ExistingItemID <> "" and intStudent_Id <> "" then
 			
 	set rsRead = server.CreateObject("ADODB.RECORDSET")
 	rsRead.CursorLocation = 3
-	rsRead.Open sql, oFunc.FPCScnn
+	rsRead.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsRead.RecordCount > 0 then
 		intVendor_ID = rsRead("intVendor_ID")
@@ -124,7 +124,7 @@ elseif ExistingItemID <> "" and intClass_ID <> "" then
 			"ORDER BY tblClass_Attrib.intOrder"
 	set rsRead = server.CreateObject("ADODB.RECORDSET")
 	rsRead.CursorLocation = 3
-	rsRead.Open sql, oFunc.FPCScnn
+	rsRead.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 	if rsRead.RecordCount > 0 then
 		intVendor_ID = rsRead("intVendor_ID")
@@ -615,7 +615,7 @@ function vbfAttribForm
 		sql = "SELECT szDesc, intQTY, curUnit_Price, curShipping " & _
 				"FROM tblBudget b " & _
 				"WHERE (intBudget_id = " & intBudget_ID & ")"
-		rsBudget.Open sql,oFunc.FPCScnn
+		rsBudget.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if rsBudget.RecordCount > 0 then
 			intQTY = rsBudget("intQTY")
@@ -656,7 +656,7 @@ function vbfAttribForm
 	'response.Write sqlAttrib		
 	set rsAttrib = server.CreateObject("ADODB.recordset")
 	rsAttrib.CursorLocation = 3
-	rsAttrib.Open sqlAttrib, oFunc.FPCScnn
+	rsAttrib.Open sqlAttrib, Application("cnnFPCS")'oFunc.FPCScnn
 
 	if rsAttrib("szALT_QTY_Text") & "" <> "" then
 		strQTYText = rsAttrib("szALT_QTY_Text")
@@ -976,11 +976,13 @@ function vbfAttribForm
 </script>
 			<% 
 				set oBudget = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/StudentBudgetInfo.wsc"))
-				oBudget.PopulateStudentFunding oFunc.FPCSCnn,intStudent_ID, session.contents("intSchool_Year") 
+				'oBudget.PopulateStudentFunding oFunc.FPCSCnn,intStudent_ID, session.contents("intSchool_Year") 
+				oBudget.PopulateStudentFunding Application("cnnFPCS"),intStudent_ID, session.contents("intSchool_Year") 
 				myBudget = oBudget.BudgetBalance
 				bolLimit = false
 				if oFunc.IsSpendingLimitSubject(intPOS_SUBJECT_ID) then
-					oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId, session.contents("intSchool_Year") 
+					'oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId, session.contents("intSchool_Year") 
+					oBudget.PopulateFamilyBudgetInfo Application("cnnFPCS"), oBudget.FamilyId, session.contents("intSchool_Year") 
 					if oBudget.BudgetBalance > oBudget.AvailableElectiveBudget then
 						myBudget = oBudget.AvailableElectiveBudget
 						bolLimit = true

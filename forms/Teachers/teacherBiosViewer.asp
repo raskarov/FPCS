@@ -61,7 +61,7 @@ elseif Request.Form("keywords") <> "" then
 	
 	set rsSearch = server.CreateObject("ADODB.RECORDSET")
 	rsSearch.CursorLocation = 3
-	rsSearch.Open sql, oFunc.FPCScnn
+	rsSearch.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	intCount = 0 
 	if rsSearch.RecordCount > 0 then					
@@ -124,7 +124,7 @@ function vbfGetBio(instructor_ID)
 				 "ON i.intInstructor_ID = b.intInstructor_ID " & _
 				 "where i.intInstructor_ID = " & instructor_ID
 	
-	rsInstInfo.Open sqlTeacher, oFunc.FPCScnn
+	rsInstInfo.Open sqlTeacher, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	'This for loop dimentions and defines all the columns we selected in sqlTeacher
 	'and we use the variables created here to populate the form.
@@ -260,7 +260,7 @@ function vbfBioTable
 		var arIDS = ids.split("|");
 		var class_ID = arIDS[0];
 		var ilp_ID = arIDS[1];
-		var strURL = "<%=Application.Value("strWebRoot")%>/forms/printableForms/allPrintable.asp?";
+		var strURL = "<%=Application.Value("strWebRoot")%>forms/printableForms/allPrintable.asp?";
 		strURL += "noprint=true&intClass_ID="+class_ID+"&intILP_ID="+ilp_ID;	
 		classWin = window.open(strURL,"classWin","width=640,height=500,scrollbars=yes,resizable=yes");
 		classWin.moveTo(0,0);
@@ -333,7 +333,7 @@ function vbfBioTable
 <%	if request.QueryString("simpleHeader") = "" then %>
 <input type=button value="Home" onClick="window.location.href='<%=Application.Value("strWebRoot")%>';" class="btSmallGray" >
 <input type=button value="Back to List" onClick="history.go(-1);" class="btSmallGray" NAME="Button1">
-<input type=button value="New Search" onClick="window.location.href='<%=Application.Value("strWebRoot")%>/forms/teachers/teacherBiosViewer.asp';" class="btSmallGray">
+<input type=button value="New Search" onClick="window.location.href='<%=Application.Value("strWebRoot")%>forms/teachers/teacherBiosViewer.asp';" class="btSmallGray">
 <%	else %>
 <input type="button" value="close window" class="btSmallGray" onclick="window.close();">
 <%

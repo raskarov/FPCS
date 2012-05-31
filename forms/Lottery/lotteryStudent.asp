@@ -84,7 +84,7 @@ if intStudent_id <> "" and btSaveStudentInfo = "" then
 				"from tblStudent where intStudent_ID=" & intStudent_id & _
 				" and intFamily_ID = " & session.Contents("intFamily_ID")
 					
-	rsStudent.Open sqlStudent,oFunc.FPCScnn
+	rsStudent.Open sqlStudent,Application("cnnFPCS")'oFunc.FPCScnn
 	if not rsStudent.BOF and not rsStudent.EOF then
 		'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 		'' This for loop will dimension AND assign our student info variables

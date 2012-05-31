@@ -73,7 +73,8 @@ if request("intStudent_ID") <> "" then
 		end if
 	end if
 	
-	oBudget.PopulateStudentFunding oFunc.FPCScnn,intStudent_ID,session.Contents("intSchool_Year")
+	'oBudget.PopulateStudentFunding oFunc.FPCScnn,intStudent_ID,session.Contents("intSchool_Year")
+	oBudget.PopulateStudentFunding Application("cnnFPCS"),intStudent_ID,session.Contents("intSchool_Year")
 	
 	dblDeposits = oBudget.Deposits
 	dblWithdraw = oBudget.Withdrawls
@@ -600,7 +601,10 @@ strColorTable = "<table>" & _
 							</tr>
 						</table>
 					</td>
-					<% oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId,session.Contents("intSchool_Year") %>
+					<% 
+                    'oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId,session.Contents("intSchool_Year") 
+                    oBudget.PopulateFamilyBudgetInfo Application("cnnFPCS"), oBudget.FamilyId,session.Contents("intSchool_Year") 
+                    %>
 					<td valign="top" style="Width:50%;">
 						<table cellpadding="2" style="Width:100%;" ID="Table3">
 							<tr>
@@ -841,7 +845,7 @@ sql = "SELECT     ISF.szCourse_Title, POS.txtCourseTitle, ISF.intShort_ILP_ID, I
 
 set rsBudget = server.CreateObject("ADODB.RECORDSET")
 rsBudget.CursorLocation = 3
-rsBudget.Open sql,oFunc.FPCScnn
+rsBudget.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 
 intPreviousID = 0
 
@@ -1261,7 +1265,8 @@ do while not rsBudget.EOF
 			
 		dblBudgetCost = formatNumber(rsBudget("Total"),2)
 		'Get Line Item info
-		liInfo = LineItemInfo(rsBudget("intOrdered_Item_ID"),dblBudgetCost, rsBudget("bolClosed"), oFunc.FPCScnn,strClass)
+		'liInfo = LineItemInfo(rsBudget("intOrdered_Item_ID"),dblBudgetCost, rsBudget("bolClosed"), oFunc.FPCScnn,strClass)
+		liInfo = LineItemInfo(rsBudget("intOrdered_Item_ID"),dblBudgetCost, rsBudget("bolClosed"), Application("cnnFPCS"),strClass)
 		bStatus = GetBudgetStatus(rsBudget("intItem_Group_ID"),rsBudget("bolApproved"),liInfo(4),rsBudget("bolReimburse"))		
 		
 		dblCharge = formatNumber(liInfo(1),2)
@@ -1580,7 +1585,7 @@ sub vbsDelete(id,pStudent_ID)
 	set rs = server.CreateObject("ADODB.Recordset")
 	rs.CursorLocation = 3
 	sql = "Select * from tblILP_Short_Form where intShort_ILP_ID = " & id
-	rs.Open sql,oFunc.FPCScnn
+	rs.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rs.RecordCount > 0 then
 		' Now delete the Short Form

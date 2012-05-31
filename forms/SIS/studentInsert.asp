@@ -295,7 +295,7 @@ function vbsUpdateEnroll
 			 "intPercent_Enrolled_Fpcs = '" & oFunc.CheckDecimal(Request.Form("intPercent_Enrolled_Fpcs")) & "'," & _
 			 "bolCharter_Grad = '" & oFunc.EscapeTick(Request.Form("bolCharter_Grad")) & "'," & _
 			 "szUser_Modify = '" & oFunc.EscapeTick(session.Contents("strUserID")) & "'," & _
-			 "dtModify = '" & now() & "' " & _
+			 "dtModify = '" & oFunc.DateTimeFormat(now()) & "' " & _
 			 "where intEnroll_Info_ID = " & Request.Form("intEnroll_Info_ID")
 			  
 	oFunc.ExecuteCN(update)
@@ -317,7 +317,7 @@ sub vbsInsertExemptions
 				 "," & oFunc.CheckDecimal(request("intElective_Credit_Percent"))  & _
 				 ",'" & oFunc.EscapeTick(request("szElective_Exemption_Reason")) & "'" & _
 				 ",'" & session.Contents("strUserID") & "'" & _
-				 ",'" & now() & "')"
+				 ",'" & oFunc.DateTimeFormat(now()) & "')"
 	oFunc.ExecuteCN(insert)	
 end sub
 
@@ -331,7 +331,7 @@ sub vbsUpdateExemptions
 				"intElective_Credit_Percent = " & oFunc.CheckDecimal(request("intElective_Credit_Percent")) & "," & _
 				"szElective_Exemption_Reason = '" & oFunc.EscapeTick(request("szElective_Exemption_Reason")) & "', " & _				 
 				"szUser_Modify = '" & oFunc.EscapeTick(session.Contents("strUserID")) & "'," & _
-				"dtModify = '" & now() & "' " & _
+				"dtModify = '" & oFunc.DateTimeFormat(now()) & "' " & _
 				"where intStudent_Exemption_ID = " & request.Form("intStudent_Exemption_ID")
 	oFunc.ExecuteCN(update)
 end sub

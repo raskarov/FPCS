@@ -90,7 +90,7 @@ if intClass_ID <> "" then
 			sql = "select * from tblClass_Attrib " & _
 				  " where intClass_Item_Id = " & request("intClass_Item_ID") & _
 				  " and intItem_Attrib_Id = " &  arAttribList(i)
-			rsCheckAttrib.Open sql, oFunc.FPCScnn
+			rsCheckAttrib.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 			
 			if rsCheckAttrib.RecordCount > 0 then
 				update = "update tblClass_Attrib set " & _
@@ -175,7 +175,7 @@ elseif intStudent_ID <> "" then
 			sql = "select * from tblOrd_Attrib " & _
 				  " where intOrdered_Item_Id = " & request("intOrd_Item_ID") & _
 				  " and intItem_Attrib_Id = " &  arAttribList(i)
-			rsCheckAttrib.Open sql, oFunc.FPCScnn
+			rsCheckAttrib.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 			
 			if rsCheckAttrib.RecordCount > 0 then
 				update = "update tblOrd_Attrib set " & _
@@ -202,7 +202,7 @@ elseif intStudent_ID <> "" then
 		
 		' We need to make sure our budget reflects our actual ordered item
 		sql = "select intBudget_ID from tblBudget where intOrdered_Item_ID = " & request("intOrd_Item_ID")
-		rsCheckAttrib.open sql, oFunc.FPCScnn
+		rsCheckAttrib.open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if rsCheckAttrib.recordcount > 0 then
 			call vbsUpdateBudget(rsCheckAttrib("intBudget_ID"),request("intOrd_Item_ID"))
@@ -276,7 +276,7 @@ sub vbsInsertBudget(OrderedItemID)
 		  "Where i.intILP_ID = " & intILP_ID & _
 		  " and i.intShort_ILP_ID = isf.intShort_ILP_ID "
 		  
-	rsGetSILP.Open sql,oFunc.FPCScnn
+	rsGetSILP.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsGetSILP.RecordCount > 0 then
 		dim insert

@@ -78,7 +78,7 @@ dim mstrValidationError	'Error message indicating which items failed validation
 						"        FROM  tblIEP " & _
 						"        WHERE (intStudent_ID = " & intStudent_id & ")))"
 					
-		rsStudent.Open sqlStudent,oFunc.FPCScnn
+		rsStudent.Open sqlStudent,Application("cnnFPCS")'oFunc.FPCScnn
 		if not rsStudent.BOF and not rsStudent.EOF then
 			'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 			'' This for loop will dimension AND assign our student info variables
@@ -114,7 +114,7 @@ dim mstrValidationError	'Error message indicating which items failed validation
 		sqlStudent = "SELECT szLAST_NAME, szFIRST_NAME, sMID_INITIAL " & _
 					 "FROM   tblSTUDENT " & _
 					 "WHERE (intSTUDENT_ID = " & intStudent_id & ")"
-		rsStudent.Open sqlStudent,oFunc.FPCScnn
+		rsStudent.Open sqlStudent,Application("cnnFPCS")'oFunc.FPCScnn
 		if not rsStudent.BOF and not rsStudent.EOF then	
 			intCount = 0
 			for each item in rsStudent.Fields

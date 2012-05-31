@@ -68,7 +68,7 @@ if intReEnroll_State <> "" then
 			"WHERE     (ss.intReEnroll_State = " & intReEnroll_State & ") " & _
 			" and ss.intSchool_Year = " & session.Contents("intSchool_Year") & _
 			" ORDER BY s.szLAST_NAME"	    
-	rsReport.Open sql,oFunc.FPCScnn
+	rsReport.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	
 	
 %>

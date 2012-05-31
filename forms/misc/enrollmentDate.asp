@@ -59,7 +59,7 @@ if Request.QueryString("intStudent_ID") <> "" then
 	sql = "select szFirst_Name + ' ' + szLast_name as name " & _
 		  "from tblStudent " & _
 		  "where intStudent_ID = " & Request.QueryString("intStudent_ID")
-	rsGetName.Open sql,oFunc.FPCScnn
+	rsGetName.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	strStudent_Name = rsGetName(0)
 	rsGetName.Close
 	set rsGetName = nothing
@@ -72,7 +72,7 @@ if Request.QueryString("intStudent_ID") <> "" then
 				 "where intStudent_ID = " & Request.QueryString("intStudent_ID") & _
 				 " and sintSchool_Year = " & session.Contents("intSchool_Year") & _
 				 " and i.intClass_ID = c.intClass_ID order by c.szClass_Name " 		 
-	rsGetILPs.Open sqlGetILPs,oFunc.FPCScnn
+	rsGetILPs.Open sqlGetILPs,Application("cnnFPCS")'oFunc.FPCScnn
 else
 	'close html. nothing else to show until we get a student id
 %>

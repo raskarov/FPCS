@@ -63,7 +63,7 @@ else
 			rsTeacher.CursorLocation = 3
 			sqlTeacher = "select szFirst_Name,szLast_Name " & _
 						 "from tblInstructor where intInstructor_ID=" & Request.QueryString("intInstructor_ID")
-			rsTeacher.Open sqlTeacher,oFunc.FPCScnn	
+			rsTeacher.Open sqlTeacher,Application("cnnFPCS")'oFunc.FPCScnn	
 
 		Session.Contents("strTeacherFirstName") = rsTeacher("szFirst_Name")
 		Session.Contents("strTeacherLastName") = rsTeacher("szLast_Name")
@@ -122,7 +122,7 @@ else
 
 	set rsClasses = server.CreateObject("ADODB.RECORDSET")
 	rsClasses.CursorLocation = 3
-	rsClasses.Open sql, oFunc.FPCScnn
+	rsClasses.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 'response.Write "<B>TESTSING...<BR></b>" & sql
 %>
 <script language=javascript>

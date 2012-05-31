@@ -21,7 +21,7 @@ if ucase(request.QueryString("bolOrdered_Item")) = "TRUE" then
 	
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3		    
-	rs.Open sql,oFunc.FPCScnn
+	rs.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	if rs.RecordCount < 1 then
 			delAttrib = "delete from tblOrd_Attrib " & _
 						" where intOrdered_Item_ID = " & request.QueryString("id") & _

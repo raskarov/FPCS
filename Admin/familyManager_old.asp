@@ -73,7 +73,7 @@ if (intFamily_ID <> "" and ucase(intFamily_ID) <> "NEW") OR (session.Contents("s
 			"from tblFamily " & _
 			"where intFamily_ID = " & intFamily_Id 
 			
-	rsFamily.Open sql, oFunc.FPCScnn
+	rsFamily.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsFamily.RecordCount > 0 then
 		intCount = 0
@@ -124,7 +124,7 @@ if (intFamily_ID <> "" and ucase(intFamily_ID) <> "NEW") OR (session.Contents("s
 					"GROUP BY s.intSTUDENT_ID, s.szFIRST_NAME, s.szLAST_NAME, " & _
 					"ei.intENROLL_INFO_ID, ss.intStudent_State_id"
 					
-	rsStudents.Open sqlStudents,oFunc.FPCScnn
+	rsStudents.Open sqlStudents,Application("cnnFPCS")'oFunc.FPCScnn
 	
 	do while not rsStudents.EOF
 		strStudentList = strStudentList & rsStudents("intStudent_ID") & ", "
@@ -193,7 +193,7 @@ if (intFamily_ID <> "" and ucase(intFamily_ID) <> "NEW") OR (session.Contents("s
 					"from tblGuardian g, tascFam_Guard fg " & _ 
 					"where fg.intFamily_ID = " & intFamily_Id & _
 					" and fg.intGuardian_ID = g.intGuardian_ID "  
-	rsGuardian.Open sqlGuardian,oFunc.FPCScnn
+	rsGuardian.Open sqlGuardian,Application("cnnFPCS")'oFunc.FPCScnn
 	
 	do while not rsGuardian.EOF
 		strGuardianList = strGuardianList & rsGuardian("intGuardian_ID") & ", "
@@ -766,7 +766,7 @@ function vbfUpdateGuardian(fam_id)
 	rsExisting.CursorLocation = 3
 	sql = "select intGuardian_Id, intFamGuard_ID,bolLives_With,dtCreate ,szUser_Create " & _
 		  "from tascFam_Guard where intFamily_ID = '" & replace(intFamily_Id,"new","") & "'"
-	rsExisting.Open sql, oFunc.FPCScnn			
+	rsExisting.Open sql, Application("cnnFPCS")'oFunc.FPCScnn			
 	
 	if rsExisting.RecordCount > 0 then
 		' We have existing records so we'll delete them all and recreate based on what the

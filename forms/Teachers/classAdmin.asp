@@ -1197,7 +1197,7 @@ function vbfClassDetailsForASD
 				strAlert += "a <% if bolLimit then %>Family Elective Spending <% end if %>balance of -$<% = formatNumber((dblBudgetAfterCost*-1),2)%>. You can not add this class ";
 				strAlert += "until you free up some funding (by transfering funds or deleting an existing expense) or until more students enroll bringing the total class cost down. "
 				alert(strAlert);
-				window.location.href = "<% =Application.Value("strWebRoot")%>/forms/packet/packet.asp?intStudent_ID=<% = intStudent_ID %>";
+				window.location.href = "<% =Application.Value("strWebRoot")%>forms/packet/packet.asp?intStudent_ID=<% = intStudent_ID %>";
 				return false;	
 			<% end if %>
 		}

@@ -75,7 +75,7 @@ sql =   "SELECT     intBenefit_Tax_Rate_ID, fltTRS, fltMedicare, fltWorkmans_Com
 
 set rs1 = server.CreateObject("ADODB.RECORDSET")
 rs1.CursorLocation = 3
-rs1.Open sql, oFunc.FPCScnn				
+rs1.Open sql, Application("cnnFPCS")'oFunc.FPCScnn				
 
 sql2 =  "SELECT     a.gradeK, a.intFunding_ID as IDk, b.grade1, b.intFunding_ID as ID1, c.grade2, c.intFunding_ID as ID2, " & _
 		" d.grade3,  d.intFunding_ID as ID3, e.grade4, e.intFunding_ID as ID4, f.grade5, f.intFunding_ID as ID5, " & _
@@ -123,7 +123,7 @@ sql2 =  "SELECT     a.gradeK, a.intFunding_ID as IDk, b.grade1, b.intFunding_ID 
 
 set rs2 = server.CreateObject("ADODB.RECORDSET")
 rs2.CursorLocation = 3
-rs2.Open sql2, oFunc.FPCScnn				
+rs2.Open sql2, Application("cnnFPCS")'oFunc.FPCScnn				
 
 
 sql3 =  "SELECT     intGlobal_Variable_ID, dtLock_Spending, dtSem_One_Progress_Deadline,  " & _ 
@@ -137,7 +137,7 @@ sql3 =  "SELECT     intGlobal_Variable_ID, dtLock_Spending, dtSem_One_Progress_D
 
 set rs3 = server.CreateObject("ADODB.RECORDSET")
 rs3.CursorLocation = 3
-rs3.Open sql3, oFunc.FPCScnn	
+rs3.Open sql3, Application("cnnFPCS")'oFunc.FPCScnn	
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 if rs3.RecordCount > 0 then
@@ -150,7 +150,7 @@ end if
 sql4 ="select intFlat_Inst_Id, flatRate from tblInstructor_Flat_Rate where intSchool_year = " & session.Contents("intSchool_Year")
 set rs4 = server.CreateObject("ADODB.RECORDSET")
 rs4.CursorLocation = 3
-rs4.Open sql4, oFunc.FPCScnn
+rs4.Open sql4, Application("cnnFPCS")'oFunc.FPCScnn
 ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 
 'Print the header

@@ -78,7 +78,7 @@ if Request.Form("strBody") <> "" or request("listOnly") <> "" then
 	strWhere
 	
 	set rsGetEmail = server.CreateObject("ADODB.RECORDSET")
-	rsGetEmail.Open sqlGetEmail, oFunc.FPCScnn
+	rsGetEmail.Open sqlGetEmail, Application("cnnFPCS")'oFunc.FPCScnn
 
 'response.write sqlGetEmail
 
@@ -169,7 +169,7 @@ end if
 							sqlTypes = "select szPay_Type_Name, intPay_Type_ID " & _
 									   "from trefPay_Types " & _
 									   "order by szPay_Type_Name"
-							rsPayTypes.Open sqlTypes, oFunc.FPCScnn
+							rsPayTypes.Open sqlTypes, Application("cnnFPCS")'oFunc.FPCScnn
 							
 							do while not rsPayTypes.EOF
 								Response.Write "<option value='*" & rsPayTypes(1) & "'>ALL " & rsPayTypes(0) & " Teachers" & chr(10)

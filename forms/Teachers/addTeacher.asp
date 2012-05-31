@@ -45,7 +45,7 @@ if Request.form("intInstructor_ID") <> "" or Request.QueryString("intInstructor_
 		  "from tblInstructor " & _
 		  "where intInstructor_ID = " & request("intInstructor_ID")
 		  'LINE 36 IS FOR TESTING AND WILL NEED TO BE DELETED
-	rsIns.Open sql,oFunc.FPCScnn
+	rsIns.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	
 
 	'This for loop dimentions and defines all the columns we selected in sqlClass
@@ -106,7 +106,7 @@ if Request.form("intInstructor_ID") <> "" or Request.QueryString("intInstructor_
 		  "ORDER BY dtEffective_Start desc, intInstructor_Pay_Data_ID DESC "
 		  'response.Write sql
 		  
-		rsGetPayData.Open sql,oFunc.FPCScnn
+		rsGetPayData.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 		intCount = 0
 		'added the IF NOT..THEN bkm 3-may-2002		
 		if not rsGetPayData.BOF and not rsGetPayData.EOF then
@@ -133,7 +133,7 @@ if Request.form("intInstructor_ID") <> "" or Request.QueryString("intInstructor_
     sql4 ="select intFlat_Inst_Id, flatRate from tblInstructor_Flat_Rate where intSchool_year = " & session.Contents("intSchool_Year")
     set rs4 = server.CreateObject("ADODB.RECORDSET")
     rs4.CursorLocation = 3
-    rs4.Open sql4, oFunc.FPCScnn
+    rs4.Open sql4, Application("cnnFPCS")'oFunc.FPCScnn
     InstructorFlatRate = rs4("flatRate")
     rs4.Close()
     end if
@@ -526,20 +526,20 @@ end if
 						<table>
 							<tr>	
 								<Td class=gray>
-										&nbsp;Status with Anchorage School District<BR>
-										&nbsp;(Check all that apply)
+										&nbsp;Status with Anchorage School District besides FPCS<BR>
+										&nbsp;(Check only 1 box for benefit pay)
 								</td>						
 							</tr>
 							<tr>
 								<td class=svplain10>
 									<input type=checkbox name="bolASD_Full_Time" <% if bolASD_Full_Time then Response.Write " checked " %> onChange="jfChanged();jfSetPrompt();">
-									Full-time teacher at <input type=text size=3 maxlength=3 name="fltASD_Full_Time_Percent" value="<%=fltASD_Full_Time_Percent%>" onChange="jfChanged();jfSetPrompt();">%
+									Benefit paid by other ASD school <input type=text size=3 maxlength=3 name="fltASD_Full_Time_Percent" value="<%=fltASD_Full_Time_Percent%>" onChange="jfChanged();jfSetPrompt();">% (ASD FTE)
 								</td>
 							</tr>
 							<Tr>
 								<td class=svplain10>
 									<input type=checkbox name="bolASD_Part_Time" <% if bolASD_Part_Time then Response.Write " checked " %> onChange="jfChanged();jfSetPrompt();">
-									Part-time teacher at <input type=text size=3 maxlength=3 name="fltASD_Part_Time_Percent" value="<%=fltASD_Part_Time_Percent%>" onChange="jfChanged();jfSetPrompt();">%
+									Only works at FTCS <input type=text size=3 maxlength=3 name="fltASD_Part_Time_Percent" value="<%=fltASD_Part_Time_Percent%>" onChange="jfChanged();jfSetPrompt();">% (FTCS FTE)
 								</td>	
 							</tr>
 							<Tr>
@@ -583,8 +583,8 @@ end if
 						<table>
 							<tr>	
 								<Td class=gray>
-										&nbsp;Goal for FPCS hours:<BR>
-										&nbsp;(Percentage based on 100% = 1410 hrs)
+										&nbsp;FPCS FTE Percentage:<BR>
+										&nbsp;(Percentage based on 100% = 1365 hrs) 20% = 0.2 FTE
 								</td>						
 							</tr>
 							<tr>

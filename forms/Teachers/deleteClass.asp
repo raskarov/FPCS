@@ -15,7 +15,7 @@ if Request.QueryString("intClass_id") <> "" then
 	set rsILP = server.CreateObject("ADODB.RECORDSET")
 	rsILP.CursorLocation = 3
 	sql = "select * from tblILP where intClass_ID = " & Request.QueryString("intClass_id")
-	rsILP.Open sql,oFunc.FPCScnn
+	rsILP.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsILP.RecordCount > 0 then
 		strMessage = "You can not delete this class because it has enrolled students. To " & _
@@ -28,7 +28,7 @@ if Request.QueryString("intClass_id") <> "" then
 			  "from tblILP_Generic " & _
 			  "where intClass_ID = " & Request.QueryString("intClass_id") & _
 			  " and bolILP_Bank <> 1 "
-		rsILP.Open sql,oFunc.FPCScnn
+		rsILP.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 		
 		oFunc.BeginTransCN
 		if rsILP.RecordCount > 0 then	
@@ -61,7 +61,7 @@ if Request.QueryString("studentdrop") <> ""  then
 	set rsStudents = server.CreateObject("ADODB.RECORDSET")
 	rsStudents.CursorLocation = 3
 	sql = "select intILP_Id from tblILP where intClass_Id = " & Request.QueryString("studentdrop")
-	rsStudents.Open sql,oFunc.FPCScnn
+	rsStudents.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	Dim studentCount 
 	studentCount = rsStudents.RecordCount
 Do While NOT rsStudents.EOF
@@ -79,7 +79,7 @@ Do While NOT rsStudents.EOF
 	sql = "select count(*) " & _
 		  "from tblOrdered_Items " & _
 		  "where bolApproved = 1 and intILP_ID = " & currentILP
-	rsMaterials.Open sql , oFunc.FPCScnn
+	rsMaterials.Open sql , Application("cnnFPCS")'oFunc.FPCScnn
 
 	
 	' if rsMaterials(0) > 0 then
@@ -98,7 +98,7 @@ Do While NOT rsStudents.EOF
 				
 		' we'll reuse rsMaterials quite a bit
 		rsMaterials.Close
-		rsMaterials.Open sql, oFunc.FPCScnn
+		rsMaterials.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if rsMaterials.RecordCount > 0 then
 			' Class is taught by guardian.
@@ -108,7 +108,7 @@ Do While NOT rsStudents.EOF
 			rsMaterials.Close
 			sql = "select * from tblILP where intClass_ID = " & intClass_ID 
 			
-			rsMaterials.Open sql, oFunc.FPCScnn
+			rsMaterials.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 			
 			' if rsMaterials.RecordCount = 1 then
 				' ' only one student enrolled in the class so we can delete it
@@ -135,7 +135,7 @@ Do While NOT rsStudents.EOF
 		if strMessage = "" then
 			rsMaterials.Close
 			sql = "select intShort_ILP_ID from tblILP where intILP_ID = " & currentILP
-			rsMaterials.Open sql, oFunc.FPCScnn
+			rsMaterials.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 			
 			oFunc.BeginTransCN
 			'Delete the Ordered Goods/Services (ordered Item attributes are auto deleted using
@@ -194,7 +194,7 @@ if Request.QueryString("intILP_ID") <> "" then
 	sql = "select count(*) " & _
 		  "from tblOrdered_Items " & _
 		  "where bolApproved = 1 and intILP_ID = " & Request.QueryString("intILP_ID")
-	rsMaterials.Open sql , oFunc.FPCScnn
+	rsMaterials.Open sql , Application("cnnFPCS")'oFunc.FPCScnn
 
 	
 	if rsMaterials(0) > 0 then
@@ -213,7 +213,7 @@ if Request.QueryString("intILP_ID") <> "" then
 				
 		' we'll reuse rsMaterials quite a bit
 		rsMaterials.Close
-		rsMaterials.Open sql, oFunc.FPCScnn
+		rsMaterials.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if rsMaterials.RecordCount > 0 then
 			' Class is taught by guardian.
@@ -223,7 +223,7 @@ if Request.QueryString("intILP_ID") <> "" then
 			rsMaterials.Close
 			sql = "select * from tblILP where intClass_ID = " & intClass_ID 
 			
-			rsMaterials.Open sql, oFunc.FPCScnn
+			rsMaterials.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 			
 			if rsMaterials.RecordCount = 1 then
 				' only one student enrolled in the class so we can delete it
@@ -250,7 +250,7 @@ if Request.QueryString("intILP_ID") <> "" then
 		if strMessage = "" then
 			rsMaterials.Close
 			sql = "select intShort_ILP_ID from tblILP where intILP_ID = " & request("intILP_ID")
-			rsMaterials.Open sql, oFunc.FPCScnn
+			rsMaterials.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 			
 			oFunc.BeginTransCN
 			'Delete the Ordered Goods/Services (ordered Item attributes are auto deleted using

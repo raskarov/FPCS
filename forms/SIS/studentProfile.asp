@@ -79,7 +79,7 @@ end if
 					"WHERE     (S.intSTUDENT_ID = " & intStudent_id & ")"
 
 					
-		rsStudent.Open sqlStudent,oFunc.FPCScnn
+		rsStudent.Open sqlStudent,Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if not rsStudent.BOF and not rsStudent.EOF then
 			'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -460,7 +460,7 @@ end if
 												rsCheck.CursorLocation = 3
 												sql = "select * from tblEnroll_info where intStudent_id = " & intStudent_id & _
 													" and sintSchool_year = " & session.Contents("intSchool_Year") -1
-												rsCheck.Open sql, oFunc.FPCScnn
+												rsCheck.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 												
 												if rsCheck.RecordCount > 0 then
 													bolExistingStudent = true
@@ -589,7 +589,7 @@ end if
 									dim rsNeed 
 									set rsNeed = server.CreateObject("ADODB.RECORDSET")
 									rsNeed.CursorLocation = 3
-									rsNeed.Open sql, oFunc.FPCScnn
+									rsNeed.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 									
 									if  request("intStudent_ID") & "" <> "" then 
 										sql = "select NeededEnrollInfoCD from STUDENT_ENROLL_INFO_NEEDED " & _
@@ -597,7 +597,7 @@ end if
 											'response.Write sql 									  
 										set rsNeed2 = server.CreateObject("ADODB.RECORDSET")
 										rsNeed2.CursorLocation = 3
-										rsNeed2.Open sql, oFunc.FPCScnn
+										rsNeed2.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 									end if
 									
 									do while not rsNeed.EOF

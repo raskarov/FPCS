@@ -84,7 +84,7 @@ else
 
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	set oBudget = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/StudentBudgetInfo.wsc"))
 	do while not rs.EOF
@@ -96,7 +96,8 @@ else
 				rs.MoveNext
 				response.Write "<tr><td colspan='2'><p></p></td></tr>"				
 			end if
-			oBudget.PopulateStudentFunding oFunc.FPCScnn, rs("intStudent_ID"), session.Contents("intSchool_Year") 
+			'oBudget.PopulateStudentFunding oFunc.FPCScnn, rs("intStudent_ID"), session.Contents("intSchool_Year") 
+			oBudget.PopulateStudentFunding Application("cnnFPCS"), rs("intStudent_ID"), session.Contents("intSchool_Year") 
 			curBudgetBalance = formatNumber(oBudget.BudgetBalance,2)
 			call vbfHeader
 		end if

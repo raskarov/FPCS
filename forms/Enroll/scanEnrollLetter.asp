@@ -46,7 +46,7 @@ if Request.Form("scanData") <> "" then
 						   "where intStudent_ID = " & arState(0) & _
 						   " and intSchool_Year = " & Request.Form("intSchool_Year")
 		
-				rsState.Open sqlCheck, oFunc.FPCScnn
+				rsState.Open sqlCheck, Application("cnnFPCS")'oFunc.FPCScnn
 					
 				if rsState.RecordCount > 0 then
 					'The following is a case where the staterecord needs to be updated

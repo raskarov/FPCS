@@ -93,7 +93,7 @@ sql = "SELECT r.dtApproval_Changed, r.szFamily_Name, f.szDesc, f.szHome_Phone,  
 		"AND (CONVERT(varchar, r.dtApproval_Changed, 101) = '" & request("date") & "')"
 set rs = server.CreateObject("ADODB.RECORDSET")
 rs.CursorLocation = 3 'adUseClient
-rs.Open sql,oFunc.FPCScnn
+rs.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 
 if rs.RecordCount > 0 then
 %>

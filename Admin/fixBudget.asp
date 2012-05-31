@@ -38,7 +38,7 @@ sql = "SELECT oi.intItem_ID, oi.intOrdered_Item_ID, oi.intQty," & _
 		"ORDER BY oi.intStudent_ID"
 set rs = server.CreateObject("ADODB.RECORDSET")
 rs.CursorLocation = 3
-rs.Open sql, oFunc.FPCScnn
+rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 if rs.RecordCount > 0 then
 	do while not rs.EOF

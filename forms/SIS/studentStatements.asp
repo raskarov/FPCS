@@ -182,7 +182,7 @@ sub vbsShowStatement
 				"WHERE tblStudent_States.intReEnroll_State IN (" & Application.Contents("ActiveEnrollList") & ")  " & _
 				" AND (tblStudent_States.intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 				"ORDER BY tblSTUDENT.szLAST_NAME, tblSTUDENT.szFIRST_NAME"
-		rsGetStudents.Open sql, oFunc.FPCScnn
+		rsGetStudents.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 		reDim arStudents((rsGetStudents.RecordCount-1))
 		intCount = 0
@@ -205,7 +205,7 @@ sub vbsShowStatement
 				" AND (tblStudent_States.intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 				"ORDER BY tblSTUDENT.szLAST_NAME, tblSTUDENT.szFIRST_NAME"
 				
-		rsGetStudents.Open sql, oFunc.FPCScnn
+		rsGetStudents.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		reDim arStudents((rsGetStudents.RecordCount-1))
 		intCount = 0
@@ -236,7 +236,7 @@ sub vbsShowStatement
 					" AND (FD.intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 					" AND (ss.intSchool_Year = " & session.Contents("intSchool_Year") & ") " 
 					 
-			rsStudent.Open sql, oFunc.FPCScnn			
+			rsStudent.Open sql, Application("cnnFPCS")'oFunc.FPCScnn			
 			
 			if rsStudent.RecordCount < 1  then
 				response.Write "ERROR: Student #" & arStudents(i) & _
@@ -408,7 +408,7 @@ function vbfASDTeacherCosts(student_ID)
 		  "WHERE (sintSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 		  " AND (intStudent_ID = " & student_ID & " )" & _
 		  "ORDER BY Teachers_Name "
-	rsASDInfo.Open sql, oFunc.FPCScnn
+	rsASDInfo.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 	if rsASDInfo.RecordCount > 0 then
 		strHTML = strHTML & "<tr><td><table border=1 bordercolor=e6e6e6 cellpadding=0 cellspacing=4><td class=svplain10><b>&nbsp;" & _
@@ -472,7 +472,7 @@ function vbfGoods(student_ID)
 			" AND (bolReimburse = 0 OR bolReimburse IS NULL) " & _
 			"ORDER BY szClass_Name"
 			
-	rsGoods.Open sql, oFunc.FPCScnn
+	rsGoods.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 	if rsGoods.RecordCount > 0 then		
 		strHTML = strHTML & "<tr><td><table border=1 bordercolor=e6e6e6 cellpadding=0 cellspacing=4><tr><td class=svplain10><b>&nbsp;" & _
@@ -539,7 +539,7 @@ function vbfServices(student_ID)
 			" AND (intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 		    " AND (intStudent_ID = " & student_ID & " )" & _
 			"ORDER BY szVendor_Name"
-	rsServices.Open sql, oFunc.FPCScnn
+	rsServices.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsServices.RecordCount > 0 then
 		strHTML = strHTML & "<tr><td><table border=1 bordercolor=e6e6e6 cellpadding=0 cellspacing=4><TR>" & _
@@ -612,7 +612,7 @@ function vbfReimburse(student_ID)
 		   "WHERE (intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 		   " AND (intStudent_ID = " & student_ID & " ) " & _
 		   "ORDER BY Payee"
-	rsReimburse.Open sql, oFunc.FPCScnn
+	rsReimburse.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsReimburse.RecordCount > 0 then
 		strHTML = strHTML & "<tr><td><table border=1 bordercolor=e6e6e6 cellpadding=0 cellspacing=4>" & _
@@ -690,7 +690,7 @@ function vbfTransfers(student_ID)
 			"WHERE (bt.intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 			"AND (bt.intTo_Student_ID = " & student_ID & ")"
 			
-	rsDeposit.Open sql, oFunc.FPCScnn
+	rsDeposit.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 	if rsDeposit.RecordCount > 0 then				
 		dblSubTotal = 0  
@@ -716,7 +716,7 @@ function vbfTransfers(student_ID)
 			"WHERE (bt.intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 			"AND (bt.intFrom_Student_ID = " & student_ID & ")"
 			
-	rsDeposit.Open sql, oFunc.FPCScnn
+	rsDeposit.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 	if rsDeposit.RecordCount > 0 then				
 		do while not rsDeposit.EOF

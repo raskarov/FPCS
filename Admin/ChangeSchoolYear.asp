@@ -13,7 +13,7 @@ if Request.Form("intSchool_Year") <> "" then
 				sql = "select intStudent_ID from tblEnroll_Info " & _
 					" where intSponsor_Teacher_ID = " & Session.Contents("instruct_id") & _
 					" and sintSchool_Year = " & session.Value("intSchool_Year")
-				rsValidate.Open sql, oFunc.FPCScnn
+				rsValidate.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 				' This list is used to ensure that this teacher can only access 
 				' their own students and not try to bypass the system and get into
 				' other accounts
@@ -39,7 +39,7 @@ if Request.Form("intSchool_Year") <> "" then
 							"   g.intGuardian_id = fg.intGuardian_id AND " & _
 							"   fg.intFamily_id = f.intFamily_id "
 				
-			rsValidate.Open sqlGetFamilies,oFunc.FPCScnn
+			rsValidate.Open sqlGetFamilies, Application("cnnFPCS")'oFunc.FPCScnn
 			
 			' NEED TO PUT CODE IN HERE TO  DEAL WITH MULTIPLE FAMILES.  PROBALLY REDIRECT TO A
 			' SCREEN THAT ASKS WHICH FAMILY THEY WOULD LIKE TO TWORK WITH.
@@ -49,7 +49,7 @@ if Request.Form("intSchool_Year") <> "" then
 				Session.Contents("intGuardian_ID") = rsValidate("intGuardian_ID")				
 				sql = "select intStudent_ID from tblStudent where intFamily_ID = " & rsValidate("intFamily_id")
 				rsValidate.Close
-				rsValidate.Open sql, oFunc.FPCScnn
+				rsValidate.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 				
 				' This list is used to ensure that this guardian can only access 
 				' their own students and not try to bypass the system and get into

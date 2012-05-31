@@ -57,7 +57,7 @@ if Request.Form("strBody") <> "" or request("listOnly") <> "" then
 		
 'response.write sqlGetEmail & " ORDER BY FAM_NAME "		
 	set rsGetEmail = server.CreateObject("ADODB.RECORDSET")
-	rsGetEmail.Open sqlGetEmail, oFunc.FPCScnn
+	rsGetEmail.Open sqlGetEmail, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if request("listOnly") = "" then 
 		' Set up CDO object and set properties

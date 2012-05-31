@@ -41,7 +41,7 @@ end if
 					  "intPhone_Ext, szCell_Phone, szPager,bolActive_Military,szRank, " & _
 					  "szEmail,szAddress,szCity,szState,szCountry,szZip_Code,szHome_Phone " & _
 					  "from tblGuardian where intGuardian_id = " & Request.QueryString("intGuardian_id")
-		rsGuardian.Open sqlGuardian, oFunc.FPCScnn
+		rsGuardian.Open sqlGuardian, Application("cnnFPCS")'oFunc.FPCScnn
 			
 		intCount = 0
 			
@@ -288,7 +288,7 @@ end if
 					  "LEFT outer join tascStudent_Guardian sg on s.intStudent_ID = sg.intStudent_ID " & _
 					  strGuard & _
 					  "where " & strWhere
-				rsRelations.Open sql, oFunc.FPCScnn
+				rsRelations.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 			else
 				strMessage = "No students selected."
 			end if 

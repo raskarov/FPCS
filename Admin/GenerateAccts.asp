@@ -68,7 +68,7 @@ if Request("chkTeachers") = "on" then
 	with rs
 		.CursorLocation = 3
 		.LockType = 4 'adLockBatchOptimistic
-		.Open strSQL, oFunc.FPCScnn
+		.Open strSQL, Application("cnnFPCS")'oFunc.FPCScnn
 		if not .BOF and not .EOF then
 			do until .EOF
 				'decrypt password for database compare

@@ -52,7 +52,7 @@ if Request.Form("strBody") <> "" or request("listOnly") <> "" then
 
 set rsGetEmail = server.CreateObject("ADODB.RECORDSET")
 rsGetEmail.CursorLocation = 3
-	rsGetEmail.Open sqlGetEmail, oFunc.FPCScnn
+	rsGetEmail.Open sqlGetEmail, Application("cnnFPCS")'oFunc.FPCScnn
 	
 
 	if request("listOnly") = "" then 

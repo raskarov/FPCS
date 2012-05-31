@@ -200,7 +200,7 @@ if ucase(session.Contents("strUserID")) = "SCOTT" then
 	'response.Write sql
 end if 
 
-rsGetItems.Open sql, oFunc.FPCScnn
+rsGetItems.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 if rsGetItems.RecordCount > 0 then
 	rsGetItems.PageSize = intNumToShow
 	rsGetItems.AbsolutePage = intPageNum
@@ -708,7 +708,7 @@ if rsGetItems.RecordCount > 0 then
 					  "FROM tblLine_Items " & _ 
 					  "WHERE (intOrdered_Item_ID = "  & rsGetItems("intOrdered_Item_ID") & ") " & _
 					  " ORDER BY intLine_Item_ID"
-				rsLI.Open sql, oFunc.FPCScnn
+				rsLI.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 				dblLineItemCosts = 0
 				if rsLI.RecordCount > 0 then
 					do while not rsLI.EOF

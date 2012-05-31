@@ -38,7 +38,7 @@ sql = "SELECT tblINSTRUCTOR.dtInactive, tblINSTRUCTOR.szLAST_NAME, tblINSTRUCTOR
 		
 set rs = server.CreateObject("ADODB.RECORDSET")
 rs.CursorLocation = 3
-rs.Open sql, oFunc.FPCScnn
+rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 if rs.RecordCount > 0 then
 	id = 0

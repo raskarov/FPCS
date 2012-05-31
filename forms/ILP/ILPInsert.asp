@@ -132,7 +132,7 @@ function vbfInsertILP
 		set rsI = server.CreateObject("ADODB.RECORDSET")
 		rsI.CursorLocation = 3
 		sql = "select * from tblILP where intShort_ILP_ID = " & Session.Contents("intShort_ILP_ID")
-		rsI.Open sql,oFunc.FPCScnn
+		rsI.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if rsI.RecordCount > 0 then
 			%>
@@ -187,7 +187,7 @@ function vbfInsertRecords()
 	insert = "insert into " & strILPTable & "(intClass_Id,sintSchool_year," & _
 				"intSemester,decCourse_Hours" & strEnrolledField & strShortILPField & ",szCurriculum_Desc," & _
 			    "szGoals,szRequirements,szTeacher_Role,szStudent_Role,bolILP_Bank,szILP_Name," & _
-			    "szParent_Role" & strField & ",szEvaluation,bolPass_Fail,szOther_Grading,szUSER_CREATE,bolGradingScale,szILP_Additions) Values (" & _		     
+			    "szParent_Role" & strField & ",szEvaluation,szEvaluationFrequency,bolPass_Fail,szOther_Grading,szUSER_CREATE,bolGradingScale,szILP_Additions) Values (" & _		     
 				"'" & Session.Contents("intClass_Id") & "'," & _
 				"'" & session.Contents("intSchool_Year") & "'," & _
 			    "'" & oFunc.EscapeTick(request("intSemester")) & "'," & _
@@ -203,6 +203,7 @@ function vbfInsertRecords()
 				"'" & oFunc.EscapeTick(request("szParent_Role")) & "'," & _
 				strValues & _
 				"'" & oFunc.EscapeTick(request("szEvaluation")) & "'," & _
+				"'" & oFunc.EscapeTick(request("szEvaluationFrequency")) & "'," & _
 				bolPass_Fail & "," & _
 				"'" & oFunc.EscapeTick(szOther_Grading) & "'," & _
 				"'" & Session.Contents("strUserID")	& "', " & bolGradingScale & "," & _
@@ -219,6 +220,53 @@ function vbfInsertRecords()
 		call vbsUpdateHrs(Session.Contents("intShort_ILP_ID"),request("decCourse_Hours"))
 	end if	
 end function 
+Function vbfSaveSyllabus
+Dim intILP_ID
+		intILP_ID = oFunc.EscapeTick(Request.Form("intILP_ID"))
+        'If intILP_ID = Empty Then
+		'intILP_ID = oFunc.EscapeTick(Request.Form("intILP_ID_Generic"))
+        'End If
+Dim insert
+Dim update
+Dim cmd
+insert = "insert dbo.tblSyllabus(intILP_ID, weekNo, dtStart, dtEnd, szDescription) values(@intILP_ID, @weekNo, '@dtStart', '@dtEnd', '@szDescription')"
+update = "update dbo.tblSyllabus set weekNo=@weekNo, dtStart='@dtStart', dtEnd='@dtEnd', szDescription='@szDescription' where syllabusId=@syllabusId"
+For i = 1 to Request.Form("syllabusId").Count
+If Request.Form("syllabusId")(i)="new" Then
+    If Request.Form("weekNo")(i)>"" Then
+        cmd = Replace(insert,"@intILP_ID",intILP_ID)
+        cmd = Replace(cmd,"@weekNo",oFunc.EscapeTick(Request.Form("weekNo")(i)))
+        cmd = Replace(cmd,"@dtStart",oFunc.EscapeTick(Request.Form("dtStart")(i)))
+        cmd = Replace(cmd,"@dtEnd",oFunc.EscapeTick(Request.Form("dtEnd")(i)))
+        cmd = Replace(cmd,"@szDescription",oFunc.EscapeTick(Request.Form("szDescription")(i)))
+        ok=true
+    Else
+    ok=false
+    'GoTo NextLoop:
+    End If
+Else
+    If Request.Form("weekNo")(i)>"" Then
+        cmd = Replace(update,"@syllabusId",oFunc.EscapeTick(Request.Form("syllabusId")(i)))
+        cmd = Replace(cmd,"@weekNo",oFunc.EscapeTick(Request.Form("weekNo")(i)))
+        cmd = Replace(cmd,"@dtStart",oFunc.EscapeTick(Request.Form("dtStart")(i)))
+        cmd = Replace(cmd,"@dtEnd",oFunc.EscapeTick(Request.Form("dtEnd")(i)))
+        cmd = Replace(cmd,"@szDescription",oFunc.EscapeTick(Request.Form("szDescription")(i)))
+        ok=true
+    Else
+        ok=False
+    'GoTo NextLoop:
+    End If
+
+End If
+        If intILP_ID = Empty Then
+        ok=false
+        End If
+If ok Then
+	oFunc.ExecuteCN(cmd)
+End If
+'NextLoop:
+Next
+End Function
 
 function vbfUpdateILP
 	' It's time to Update the ILP. We start with the main table ... 
@@ -235,7 +283,7 @@ function vbfUpdateILP
 					" szILP_Additions = '" &  oFunc.escapeTick(request("szILP_Additions")) & "'," 
 		strILPTable = "tblILP"			
 	end if 
-	oFunc.BeginTransCN
+	'oFunc.BeginTransCN
 		
 	update = "update " & strILPTable & " set " & _
 				"intSemester = '" & oFunc.EscapeTick(Request("intSemester")) & "'," & _
@@ -248,6 +296,7 @@ function vbfUpdateILP
 				"szStudent_Role = '" & oFunc.EscapeTick(Request("szStudent_Role")) & "'," & _
 				"szParent_Role = '" &oFunc.EscapeTick( Request("szParent_Role")) & "'," & _
 				"szEvaluation = '" & oFunc.EscapeTick(Request("szEvaluation")) & "'," & _
+				"szEvaluationFrequency = '" & oFunc.EscapeTick(Request("szEvaluationFrequency")) & "'," & _
 				"bolILP_Bank= " & bolILP_Bank & "," & _
 				"bolGradingScale= " & bolGradingScale & "," & _
 				"szILP_Name='" & oFunc.EscapeTick(request("szILP_Name")) & "', " & _				
@@ -257,13 +306,13 @@ function vbfUpdateILP
 				"where intILP_ID = " & intILP_ID
 				
 	oFunc.ExecuteCN(update)
-	oFunc.CommitTransCN
+	'oFunc.CommitTransCN
 	
 	' Update hours in short ilp
 	if intILP_ID <> "" and request("hdnHrsChanged") <> "" then 'and session.Contents("strRole") <> "TEACHER" then
 		sql = "select intShort_ILP_ID from tblILP where intILP_ID = " & intILP_ID
 		set rs = server.CreateObject("ADODB.RECORDSET")
-		rs.Open sql,oFunc.FPCScnn
+		rs.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if rs.RecordCount > 0 then
 			if rs("intShort_ILP_ID") & "" <> ""  then
@@ -273,6 +322,7 @@ function vbfUpdateILP
 		rs.Close
 		set rs = nothing
 	end if
+    Call vbfSaveSyllabus
 end function 
 
 sub vbfILPAdds(pID,pTable,pText)
@@ -291,7 +341,7 @@ sub vbfILPAdds(pID,pTable,pText)
 	
 	update = "update " & pTable & " set " & _
 			 "szILP_Additions = '" & oFunc.EscapeTick(pText) & "'," & _
-			 "dtModify = '" & now() & "',"& _
+			 "dtModify = '" & oFunc.DateTimeFormat(now()) & "',"& _
 			 "szUser_Modify = '" & session.Contents("strUserID") & "',"  & _
 			 "bolILP_Bank= " & bolILP_Bank & "," & _
 			 "szILP_Name='" & oFunc.EscapeTick(request("szILP_Name")) & "' " & _
@@ -322,11 +372,11 @@ sub vbsCopyGenericToReal(pID)
 	
 	insert = "INSERT INTO tblILP " & _ 
 			" (intStudent_ID, intClass_ID, sintSchool_Year, intSemester, decCourse_Hours, intContract_Guardian_id, szCurriculum_Desc, szGoals, szRequirements,  " & _ 
-			" szTeacher_Role, szStudent_Role, szParent_Role, szEvaluation, bolPass_Fail, bolGradingScale,szOther_Grading, intEnroll_Info_ID,  " & _ 
+			" szTeacher_Role, szStudent_Role, szParent_Role, szEvaluation, szEvaluationFrequency, bolPass_Fail, bolGradingScale,szOther_Grading, intEnroll_Info_ID,  " & _ 
 			"  bolILP_Bank, szILP_Name, szILP_Additions,dtStudent_Enrolled,intShort_ILP_ID,szUSER_CREATE) " & _ 
 			"SELECT " & Session.Contents("intStudent_ID") & " as intStudent_ID, " & Session.Contents("intClass_ID")	 & " as intClass_ID, " & session.Contents("intSchool_Year") & " as sintSchool_Year, intSemester, decCourse_Hours, " & _
 			request("intContract_Guardian_ID") & " as intContract_Guardian_ID, szCurriculum_Desc, szGoals, szRequirements,  " & _ 
-			" szTeacher_Role, szStudent_Role, szParent_Role, szEvaluation, bolPass_Fail,bolGradingScale, szOther_Grading, intEnroll_Info_ID,  " & _ 
+			" szTeacher_Role, szStudent_Role, szParent_Role, szEvaluation, szEvaluationFrequency, bolPass_Fail,bolGradingScale, szOther_Grading, intEnroll_Info_ID,  " & _ 
 			 bolILP_Bank & " as bolILP_Bank,'" & oFunc.EscapeTick(request("szILP_Name")) & "' as szILP_Name, '" & oFunc.escapeTick(request("szIlp_Additions")) & "' as  szILP_Additions, " & _
 			" convert(datetime,'" & request("dtStudent_Enrolled") & "') as  dtStudent_Enrolled, " & strShortILPValue & " as intShort_ILP_ID, '" & Session.Contents("strUserID") & "' as szUSER_CREATE" & _
 			" FROM tblILP_Generic " & _ 

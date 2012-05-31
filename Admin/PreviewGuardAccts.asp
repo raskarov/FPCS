@@ -50,7 +50,7 @@ strSQLpreview = "SELECT DISTINCT " & _
 
 
 	rs.CursorLocation = 3
-	rs.Open strSQLpreview, oFunc.FPCScnn
+	rs.Open strSQLpreview, Application("cnnFPCS")'oFunc.FPCScnn
 	if not rs.BOF and not rs.EOF then
 %>
 <table border=1 cellspacing=0 cellpadding=1 ID="Table1">

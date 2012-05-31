@@ -122,7 +122,7 @@ if (session.Contents("intFamily_ID") <> "" and strError = "" and bolAdditionalGu
 			"WHERE (fg.intFamily_ID = " & session.Contents("intFamily_ID") & ") " & _
 			strWhere & _
 			" order by g.intGUARDIAN_ID "
-	rsGuardInfo.Open sql, oFunc.FPCScnn
+	rsGuardInfo.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsGuardInfo.RecordCount > 0 then
 		intGuardCount = 1
@@ -162,7 +162,7 @@ if (session.Contents("intFamily_ID") <> "" and strError = "" and bolAdditionalGu
 	sql = "SELECT szLAST_NAME + ', ' + szFIRST_NAME as Name, intSTUDENT_ID " & _
 			"FROM tblSTUDENT " & _
 			"WHERE (intFamily_ID = " & session.Contents("intFamily_ID") & ")"	
-	rsGuardInfo.Open sql, oFunc.FPCScnn
+	rsGuardInfo.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsGuardInfo.RecordCount > 0 then
 		do while not rsGuardInfo.EOF
@@ -1021,7 +1021,7 @@ sub vbsDeleteGuardian()
 		  session.Contents("intFamily_ID") & _
 		  " and intGuardian_ID = " & intGuardian_ID
 	
-	rsCheck.Open sql, oFunc.FPCScnn
+	rsCheck.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rsCheck.RecordCount > 0 then	  
 		delete = "delete from tblGuardian " & _

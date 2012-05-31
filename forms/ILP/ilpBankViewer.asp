@@ -308,7 +308,7 @@ if request.Form("isSubmitted") <> "" and (strSQL <> "" or wi > 0 or (oFunc.IsAdm
 	rsSearch.CursorLocation = 3
 	'response.Write sql
 	'response.End
-	rsSearch.Open sql, oFunc.FPCScnn
+	rsSearch.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 'if ucase(session.contents("strUserId")) = "CHRONIH30" then response.write "<h1>TESTing</h1>" & sql
 	

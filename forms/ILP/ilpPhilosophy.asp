@@ -60,7 +60,7 @@ sql = "SELECT p.szPhilosophy, p.intPhilosophy_ID " & _
 		" AND (e.intSTUDENT_ID = " & intStudent_ID & ")"
 set rs = server.CreateObject("ADODB.Recordset")
 rs.CursorLocation = 3 
-rs.Open sql, oFunc.FPCScnn
+rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 if rs.RecordCount > 0 then
 	strPhilosophy = rs(0)
@@ -73,7 +73,7 @@ else
 		"WHERE (e.intSTUDENT_ID = " & intStudent_ID & ") " & _
 		" ORDER BY e.sintSchool_Year desc "
 	rs.CursorLocation = 3 
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	if rs.RecordCount > 0 then
 		strPhilosophy = rs(0)
 	end if
@@ -90,7 +90,7 @@ sql  ="SELECT s.intSTUDENT_ID, s.szFIRST_NAME, e.intPhilosophy_ID " & _
 			" AND ss.intReEnroll_State IN (" & Application.Contents("ActiveEnrollList") & ") AND (e.sintSCHOOL_YEAR = " & session.Contents("intSchool_Year") & ") " & _
 			"ORDER BY s.szFIRST_NAME"
 			
-rs.Open sql, oFunc.FPCScnn
+rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 %>
 <form action=ilpPhilosophy.asp method=post>

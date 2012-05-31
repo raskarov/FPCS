@@ -214,7 +214,7 @@ if Session.Value("strRole") = "ADMIN" then
 		with rs
 			.CursorLocation = 3
 
-			.Open strSQL, oFunc.FPCScnn
+			.Open strSQL, Application("cnnFPCS")'oFunc.FPCScnn
 			if not .BOF and not .EOF then
 				strAction = "Update"
 				'**********************************************************************
@@ -252,7 +252,7 @@ if Session.Value("strRole") = "ADMIN" then
 				strVisibility = "visibile"
 				'***************GUARDIAN INFO****************
 				strSQL = "SELECT intGuardian_ID FROM tascGUARD_USERS WHERE (szUser_ID = '" & szUser_ID & "')"
-				.Open strSQL, oFunc.FPCScnn
+				.Open strSQL, Application("cnnFPCS")'oFunc.FPCScnn
 				if not .BOF and not .EOF then
 					strGuardians = rs("intGuardian_ID")					
 				end if
@@ -260,7 +260,7 @@ if Session.Value("strRole") = "ADMIN" then
 			elseif strRoles = "TEACHER" then
 				strVisibility = "visibile"
 				strSQL = "SELECT intINSTRUCTOR_ID FROM tascINSTR_USER WHERE  (szUser_ID = '" & szUser_ID & "')"
-				.Open strSQL, oFunc.FPCScnn
+				.Open strSQL, Application("cnnFPCS")'oFunc.FPCScnn
 				if not .BOF and not .EOF then
 					strTeachers =  rs("intINSTRUCTOR_ID")
 				end if
@@ -268,7 +268,7 @@ if Session.Value("strRole") = "ADMIN" then
 			elseif strRoles = "VENDOR" then
 				strVisibility = "visibile"
 				strSQL = "SELECT intVendor_ID FROM tascVendor_USER WHERE  (szUser_ID = '" & szUser_ID & "')"
-				.Open strSQL, oFunc.FPCScnn
+				.Open strSQL, Application("cnnFPCS")'oFunc.FPCScnn
 				if not .BOF and not .EOF then
 					strVendor = rs("intVendor_ID")
 				end if				

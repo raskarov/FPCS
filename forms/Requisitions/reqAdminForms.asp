@@ -138,7 +138,7 @@ if strWhere <> "" then
 			"HAVING (intSchool_Year = '" & session.Contents("intSchool_Year") &"') " & _
 			"ORDER BY szFamily_Name, szVendor_Name,  " & _
 			"CONVERT(varChar, dtApproval_Changed, 101)"
-	rs.Open sql,oFunc.FPCScnn
+	rs.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	if rs.RecordCount > 0 then
 		call vbfPrintResults(rs)
 	else

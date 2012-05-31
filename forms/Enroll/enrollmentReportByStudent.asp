@@ -117,7 +117,7 @@ if strStudents <> "" then
 		 "from tblStudent " & _
 		 strWhere & _
 		 "order by szLast_Name "              
-	rsReport.Open sql,oFunc.FPCScnn
+	rsReport.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	
 	set rsStates = server.CreateObject("ADODB.RECORDSET")
 	rsStates.CursorLocation = 3
@@ -127,7 +127,7 @@ if strStudents <> "" then
 			  "from tblStudent_States " & _
 			  "where intStudent_ID = " & rsReport("intStudent_ID") & _
 			  " and intSchool_Year = " & request("intSchool_Year")
-		rsStates.Open sql, oFunc.FPCScnn
+		rsStates.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		' Reset State Values 		
 		str1 = ""

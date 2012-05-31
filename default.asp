@@ -45,7 +45,7 @@ end if
 if sqlMessage <> "" then
 	set rsMessages = server.CreateObject("ADODB.RECORDSET")
 	rsMessages.CursorLocation = 3
-	rsMessages.Open sqlMessage, oFunc.FPCScnn
+	rsMessages.Open sqlMessage, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	' Create html table and insert the message to display
 	if rsMessages.RecordCount > 0 then
@@ -199,7 +199,7 @@ end if
 <% if ucase(session.contents("strUserID")) = "SCOTT" then %>
 <a href="./UserAdmin/SessionBridge.asp">Test Link</a><br><br>
 <% end if %>
-<script language="javascript">
+<script type="text/javascript" language="javascript">
 	function jfViewProgress(pPage){
 		var winProgress;
 		var strURL = "<%=Application.Value("strWebRoot")%>useradmin/sessionbridge.asp?page=" + pPage;
@@ -510,7 +510,7 @@ end if
 	
 			set rsList = server.CreateObject("ADODB.RECORDSET")
 			rsList.CursorLocation = 3
-			rsList.Open sql, oFunc.FPCSCnn
+			rsList.Open sql, Application("cnnFPCS")'oFunc.FPCSCnn
 
 
 			
@@ -775,7 +775,7 @@ may be some bugs.  Please report any bugs to <a href="mailto:fpcs_admin@fpcs.net
 										'if ucase(session.Contents("strUserID")) = "CHRONIH30" then
 										'	response.Write sql
 										'end if	 					
-									rsList.Open sql, oFunc.FPCScnn
+									rsList.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 									
 									if rsList.RecordCount > 0 then
 										do while not rsList.EOF
@@ -983,7 +983,7 @@ may be some bugs.  Please report any bugs to <a href="mailto:fpcs_admin@fpcs.net
 								with rsActions
 									intCntAction = 0
 									.CursorLocation = 3
-									.Open sqlScripts, oFunc.FPCScnn
+									.Open sqlScripts, Application("cnnFPCS")'oFunc.FPCScnn
 									if not .BOF and not .EOF then
 										do until .EOF
 											intCntAction = intCntAction + 1
@@ -1159,10 +1159,11 @@ may be some bugs.  Please report any bugs to <a href="mailto:fpcs_admin@fpcs.net
 				<%
 				dim rsSdt
 				set rsSdt = server.CreateObject("ADODB.RECORDSET")
-				rsSdt.Open sqlStudent, oFunc.FPCScnn
+				rsSdt.Open sqlStudent, Application("cnnFPCS")'oFunc.FPCScnn
 				do while not rsSdt.EOF
 					set oBudget = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/StudentBudgetInfo.wsc"))
-					oBudget.PopulateStudentFunding oFunc.FPCSCnn, rsSdt(0), session.Contents("intSchool_Year")
+					'oBudget.PopulateStudentFunding oFunc.FPCSCnn, rsSdt(0), session.Contents("intSchool_Year")
+					oBudget.PopulateStudentFunding Application("cnnFPCS"), rsSdt(0), session.Contents("intSchool_Year")
 																	
 					dblTotalTFund = dblTotalTFund + cdbl(oBudget.BudgetFunding)
 					dblTotalAFund = dblTotalAFund + cdbl(oBudget.ActualFunding)

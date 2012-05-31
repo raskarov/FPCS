@@ -133,7 +133,7 @@ sql = sql &	" ORDER BY student_name, tblVendors.szVendor_Name"
 
 'response.write sql
 		
-rs.Open sql,oFunc.FPCScnn
+rs.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 
 
 if rs.RecordCount > 0 then

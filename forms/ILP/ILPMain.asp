@@ -92,6 +92,8 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 	if Session.Contents("strStudentName") <> "" then
 		strStudentName = "for " & Session.Contents("strStudentName")
 	end if 
+        Dim rsSyllabus
+		set rsSyllabus = server.CreateObject("ADODB.RECORDSET")
 	
 	if request("intILP_ID") <> "" or request("intILP_ID_Generic") <> "" then	
 		''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -160,12 +162,17 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 			strGetClassInfo = " c.szClass_Name, i.intClass_ID,"
 		end if 
 		sql =	"SELECT     " & strILPFields & strGetClassInfo & " i.intSemester, i.decCourse_Hours, i.szCurriculum_Desc, i.szGoals, i.szRequirements,  " & _
-				"i.szTeacher_Role, i.szStudent_Role, i.szParent_Role, i.szEvaluation, i.bolPass_Fail,i.szOther_Grading, ins.szFIRST_NAME, ins.szLAST_NAME,  " & _
+				"i.szTeacher_Role, i.szStudent_Role, i.szParent_Role, i.szEvaluation, i.szEvaluationFrequency, i.bolPass_Fail,i.szOther_Grading, ins.szFIRST_NAME, ins.szLAST_NAME,  " & _
 				"i.intContract_Guardian_id " & _
 				strFROM & " WHERE     (i.intILP_ID = " & sqlILPID & ")"	
 
-		rsILP.Open sql,oFunc.FPCScnn
+		rsILP.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 		
+		rsSyllabus.CursorLocation = 3
+        Dim sqlSyllabus
+        sqlSyllabus = "SELECT [syllabusId],[intILP_ID],[weekNo],[dtStart],[dtEnd],[szDescription] FROM [dbo].[tblSyllabus] where intILP_ID=" & sqlILPID & " order by weekNo"
+		rsSyllabus.Open sqlSyllabus,Application("cnnFPCS")'oFunc.FPCScnn
+
 		intCount = 0
 		'This for loop dimentions and defines all the columns we selected in sqlClass
 		'and we use the variables created here to populate the form.
@@ -200,7 +207,7 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 				"FROM tblClasses " & _
 				"WHERE (intClass_ID = " & intClass_ID & ")"
 		
-		rsTempILP.Open sql, oFunc.FPCScnn			
+		rsTempILP.Open sql, Application("cnnFPCS")'oFunc.FPCScnn			
 		
 		' Do we have an ILP Template?
 		if rsTempILP.RecordCount > 0 then
@@ -225,13 +232,13 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 			' We found an ILP so time to populate variables
 			 
 			sql = "select top 1 i.intILP_ID as intTempILPID, c.szClass_Name,i.intClass_id,i.intSemester,i.decCourse_Hours,i.szCurriculum_Desc," & _
-				  "i.szGoals,i.szRequirements,i.szTeacher_Role,i.szStudent_Role,i.szParent_Role,i.szEvaluation," & _
+				  "i.szGoals,i.szRequirements,i.szTeacher_Role,i.szStudent_Role,i.szParent_Role,i.szEvaluation,i.szEvaluationFrequency," & _
 				  " ins.szFirst_Name, ins.szLast_Name, i.bolGradingScale,c.intContract_Status_ID " & _
 				  "FROM " & strILPTable & " i inner join tblClasses c ON i.intClass_ID = c.intClass_ID LEFT OUTER JOIN " & _
 				  strTeacherJoin & _
 				  "WHERE c.intClass_ID = " & intClass_ID
 				  
-			rsTempILP.Open sql,oFunc.FPCScnn
+			rsTempILP.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 		
 			intCount = 0
 			
@@ -419,7 +426,7 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 			<table style="width:100%;" ID="Table4">
 				<tr>
 					<td class=gray  style="width:100%;">
-							&nbsp;<B>1. Description of the course including methods, curriculum and supplies needed ...</B>
+							&nbsp;<B>1. Description of the course including methods needed ...</B>
 					</td>									
 				</tr>
 				<tr>
@@ -439,8 +446,8 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 								<tr>
 									<td valign=top><b>2.</b></td>
 									<td>
-										<b>The student will learn ... </b><br>
-											(a minimum of 2 examples)
+										<b>Scope and sequence</b><br>
+											(add entire syllabus plan. ex. wk 1 - 8/2/12 to 8/6/12 Coniferous Tree Study)
 									</td>
 								</tr>
 							</table>
@@ -450,7 +457,7 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 								<tr>
 									<td valign=top><b>3.</b></td>
 									<td>
-										<b>Student will be involved in these <BR>activities/assignments ... </B>
+										<b>Activities student will be involved</B>
 									</td>
 								</tr>
 							</table>
@@ -458,11 +465,65 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 				</tr>
 				<tr>
 					<td valign="top" class="svplain8">
-					<% if not bolLock then %>
-						<textarea name="szGoals" style="width:100%;" rows=4 wrap=virtual onFocus="this.rows=12;" onBlur="this.rows=4;" onKeyDown="jfMaxSize(7000,this);" ID="Textarea2"><%=szGoals%></textarea>
-					<% else 
-						response.Write szGoals					
-					end if %>
+                    <table>
+                    <tr>
+                    <td class="gray">Week</td>
+                    <td class="gray">Start</td>
+                    <td class="gray">End</td>
+                    <td class="gray">Description</td>
+                    </tr>
+                    <% If rsSyllabus<>Empty Then
+                    do while not rsSyllabus.EOF %>
+                    <% if bolLock Then %>
+                    <tr>
+                    <td>
+                    <%=rsSyllabus("WeekNo")%>
+                    </td>
+                    <td><%=rsSyllabus("dtStart")%></td>
+                    <td><%=rsSyllabus("dtEnd")%></td>
+                    <td><%=rsSyllabus("szDescription")%></td>
+                    </tr>
+                    <%Else %>
+                    <tr>
+                    <td><input type="hidden" name="syllabusId" value='<%=rsSyllabus("syllabusId") %>' />
+                    <input type="text" name="WeekNo" value='<%=rsSyllabus("WeekNo")%>' maxlength="2" size="2" />
+                    </td>
+                    <td><input type="text" class="date" name="dtStart" value='<%=rsSyllabus("dtStart")%>' maxlength="10" size="10" />
+                    </td>
+                    <td><input type="text" class="date" name="dtEnd" value='<%=rsSyllabus("dtEnd")%>' maxlength="10" size="10" />
+                    </td>
+                    <td><input type="text" name="szDescription" value='<%=rsSyllabus("szDescription")%>' maxlength="200" size="20" /></td>
+                    </tr>
+
+                    <%End If
+                    rsSyllabus.MoveNext()
+                    Loop
+                    rsSyllabus.Close()
+                    Set rsSyllabus = Nothing
+                    End If
+                     %>
+                     <%if not bolLock and strILPTable<>" tblILP_Generic " Then %>
+                    <tr>
+                    <td><input type="hidden" name="syllabusId" value='new' />
+                    <input class="syllabus" type="text" name="WeekNo" value='' maxlength="2" size="2" />
+                    </td>
+                    <td><input type="text" class="date syllabus" name="dtStart" value='' maxlength="10" size="10" />
+                    </td>
+                    <td><input type="text" class="date syllabus" name="dtEnd" value='' maxlength="10" size="10" />
+                    </td>
+                    <td><input class="syllabus" type="text" name="szDescription" value='' maxlength="200" size="20" /></td>
+                    </tr>
+
+
+                     <%End If %>
+                    </table>
+                     <%if not bolLock Then %>
+                     <%End If %>
+				 	<%' if not bolLock then %>
+						<%'<textarea name="szGoals" style="width:100%;" rows=4 wrap=virtual onFocus="this.rows=12;" onBlur="this.rows=4;" onKeyDown="jfMaxSize(7000,this);" ID="Textarea2"><%=szGoals% ></textarea>%>
+					<%' else 
+						'response.Write szGoals					
+					'end if %>
 					</td>
 					<td valign="top" class="svplain8">
 					<% if not bolLock then %>
@@ -474,26 +535,19 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 				</tr>
 			</table>
 			<table width=100% ID="Table8">
-				<tr>	
-					<Td colspan=3>
-						<font class=svplain11>
-							<b><i>Roles</I></B> 
-						</font>
-					</td>
-				</tr>
 				<tr>
 					<td class=gray style="width:33%;"> 
-							&nbsp;<b>4. Role of ASD Teacher</B>
+							&nbsp;<b>4. Standards: Common core or GLE</B>
 					</td>
 					<td class=gray style="width:33%;">
-							&nbsp;<b>5. Role of Student</B>
+							&nbsp;<b>5. Materials, Resources and</B>
 					</td>		
 					<td class=gray style="width:33%;">
 							<table cellpadding=3 cellspacing=0 class=gray ID="Table9">
 								<tr>
 									<td valign=top><b>6.</b></td>
 									<td>
-										<b>Role of Parent/Teacher/Vendor</b>
+										<b>Role of Parent/Teacher/Vendor/any aditional responcibilities of the student</b>
 									</td>
 								</tr>
 							</table>
@@ -615,7 +669,7 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 									<td>
 										<b>What will be evaluated? 
 										</b>(worksheets, tests, class participation, daily work, logs, attendance, etc.)<br>
-										<b>How will student be evaluated?</b> (# of projects, work correction, logs, informal/formal evaluations,  portfolios, oral presentations, etc.)
+										<b>What will be the measurable outcomes?</b> (Logs are not permissable without measurable goals included, i.e. run 1.5 hours without stopping, run 4 days per week, or 40 minutes without stopping )
 									</td>
 								</tr>
 							</table>
@@ -627,6 +681,29 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
 						<textarea name="szEvaluation" style="width:100%;" onFocus="this.rows=12;" onBlur="this.rows=5;" cols=60 rows=5 wrap=virtual onKeyDown="jfMaxSize(7000,this);"><% = szEvaluation %></textarea>
 					<% else 
 						response.Write szEvaluation					
+					end if %>
+					</td>
+				</tr>
+				<tr>
+					<td class=gray colspan=3>
+							<table cellpadding=3 cellspacing=0 class=gray ID="Table12">
+								<tr>
+									<td valign=top><b>9.</b></td>
+									<td>
+										<b>How often will evaluation marks to be teacher of record? 
+										</b>(the end of weeks 4, 8, 12, and 18)<br>
+										
+									</td>
+								</tr>
+							</table>
+					</td>
+				</tr>
+				<tr>
+					<td valign=top colspan=3 class="svplain8">
+					<% if not bolLock then %>
+						<textarea name="szEvaluationFrequency" style="width:100%;" onFocus="this.rows=12;" onBlur="this.rows=5;" cols=60 rows=5 wrap=virtual onKeyDown="jfMaxSize(500,this);"><% = szEvaluationFrequency %></textarea>
+					<% else 
+						response.Write szEvaluationFrequency					
 					end if %>
 					</td>
 				</tr>
@@ -768,6 +845,30 @@ if not oFunc.LockYear then
 end if
 %>
 </form>
+<%If Not bolLock Then %>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $(".date").datepicker({ showAnim: 'fade', numberOfMonths: 1, showOn: "focus", changeMonth: true, maxDate: '+1y' });
+        $('.syllabus').change(function () { AddRow(this); });
+        function AddRow(elem) {
+            var tr = $(elem).parent().parent();
+            var newTr = tr.parent().append('<tr> \
+                    <td><input type="hidden" name="syllabusId" value="new" /> \
+                    <input class="syllabus" type="text" name="WeekNo" value="" maxlength="2" size="2" /> \
+                    </td> \
+                    <td><input type="text" class="date syllabus" name="dtStart" value="" maxlength="10" size="10" /> \
+                    </td> \
+                    <td><input type="text" class="date syllabus" name="dtEnd" value="" maxlength="10" size="10" /> \
+                    </td> \
+                    <td><input class="syllabus" type="text" name="szDescription" value="" maxlength="200" size="20" /></td> \
+                    </tr>');
+            $('input[type="text"]', tr).removeClass('syllabus').unbind('change');
+            $('.syllabus', newTr).change(function () { AddRow(this); });
+            $(".date", newTr).datepicker({ showAnim: 'fade', numberOfMonths: 1, showOn: "focus", changeMonth: true, maxDate: '+1y' });
+        }
+    });
+</script>
+<%End If %>
 <%
 call oFunc.CloseCN()
 set oFunc = nothing

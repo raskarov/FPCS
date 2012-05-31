@@ -49,7 +49,7 @@ sql = "SELECT     tblClasses.intClass_ID, tblClasses.szClass_Name, trefPOS_Subje
 	'response.Write sql 	
 set rs = server.CreateObject("ADODB.RECORDSET")
 rs.CursorLocation = 3
-rs.Open sql, oFunc.FpcsCnn
+rs.Open sql, Application("cnnFPCS")'oFunc.FpcsCnn
 set oHtml = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/htmlFuncs.wsc")) 
 %>
 <script language="javascript">

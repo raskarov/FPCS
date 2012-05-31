@@ -171,7 +171,7 @@ function vbfPrintContract
 		rsGetInstructor.CursorLocation = 3
 		sqlInstructor = "select szFirst_Name, szLast_Name, curPay_Rate from tblInstructor " & _
 						"where intInstructor_ID = " & intInstructor_ID
-		rsGetInstructor.Open sqlInstructor, oFunc.FPCScnn
+		rsGetInstructor.Open sqlInstructor, Application("cnnFPCS")'oFunc.FPCScnn
 		strTeacherName = rsGetInstructor("szFirst_Name") & " " & rsGetInstructor("szLast_Name")
 		curPay_Rate = rsGetInstructor("curPay_Rate")
 		rsGetInstructor.Close
@@ -198,7 +198,7 @@ function vbfPrintContract
 			  "from tblVendors v, trefCharge_Type c " & _
 			  "where v.intCharge_Type_ID = c.intCharge_Type_id " & _
 			  "and v.intVendor_id = " & intVendor_ID
-		rsVendor.Open sqlVendor,oFunc.FPCScnn
+		rsVendor.Open sqlVendor,Application("cnnFPCS")'oFunc.FPCScnn
 		
 		'vbfPrint sqlVendor
 		szVendor_Name =rsVendor("szVendor_Name")
@@ -243,7 +243,7 @@ function vbfPrintContract
 				set rsIDS = server.CreateObject("ADODB.RECORDSET")
 				rsIDS.CursorLocation = 3
 				
-				rsIDS.Open sqlContracts, oFunc.FPCScnn									
+				rsIDS.Open sqlContracts, Application("cnnFPCS")'oFunc.FPCScnn									
 
 				strSelectContract = "<table><tr><td class=gray>&nbsp;Copy an Existing Contract:</td>" & _
 									"<td><select name=intContract_ID onChange='jfGetContract(this);'>" & _
@@ -297,7 +297,7 @@ function vbfPrintContract
 				   "c.szSchedule_Comments,c.decHours_Student,c.decHours_Planning,c.szDays_Meet_On, " & _
 				   "c.decOriginal_Student_Hrs, c.decOriginal_Planning_hrs, dtHrs_Last_Updated, " & _
 				   	strAddSQL 
-		rsClass.Open sqlClass, oFunc.FPCScnn		
+		rsClass.Open sqlClass, Application("cnnFPCS")'oFunc.FPCScnn		
 		
 		'This for loop dimentions and defines all the columns we selected in sqlClass
 		'and we use the variables created here to populate the form.
@@ -323,7 +323,7 @@ function vbfPrintContract
 						"where a.intClass_ID = " & intClass_ID & _
 						" and a.intFamily_ID = f.intFamily_ID " & _
 						" order by f.szFamily_Name "  
-		rsClass.Open sqlRestricted, oFunc.FPCScnn
+		rsClass.Open sqlRestricted, Application("cnnFPCS")'oFunc.FPCScnn
 
 		strFamilyValues = "no"
 		if rsClass.RecordCount > 0 then		
@@ -393,7 +393,7 @@ function vbfPrintContract
 		sqlMaterials = "select intClass_Materials_ID,szMaterial_Name,szMaterial_Desc," & _
 					   "intMaterial_QTY,curUnit_Price " & _
 					   "from tblClass_Materials where intClass_id = " & intClass_ID
-		rsMaterials.Open sqlMaterials,oFunc.FPCScnn
+		rsMaterials.Open sqlMaterials,Application("cnnFPCS")'oFunc.FPCScnn
 		strMaterials = strMaterials & "<table><tr><Td class=gray valign=top> Item Name</td>" & chr(13)
 		strMaterials = strMaterials & "<Td class=gray valign=top> Description</td>" & chr(13)
 		strMaterials = strMaterials & "<Td class=gray valign=top> Qty</td>" & chr(13)
@@ -479,7 +479,7 @@ function vbfPrintContract
 													 " and i.intStudent_ID = " & intStudent_ID &_
 													 " and i.intClass_ID = " & intClass_ID & _
 													 " order by szLast_Name"	
-									rsInfo.Open sqlGaurdian, oFunc.FPCScnn
+									rsInfo.Open sqlGaurdian, Application("cnnFPCS")'oFunc.FPCScnn
 									if rsInfo.RecordCount > 0 then
 										Response.Write rsInfo("name")	
 									end if		
@@ -530,7 +530,7 @@ function vbfPrintContract
 							
 							<%
 								sql = "select intPOS_Subject_ID, szSubject_Name from trefPOS_Subjects where intPOS_Subject_ID = " & intPOS_Subject_ID
-								rsInfo.Open sql, oFunc.FPCScnn
+								rsInfo.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 								if rsInfo.RecordCount > 0 then
 									Response.Write rsInfo("szSubject_Name")	
 								end if 
@@ -605,7 +605,7 @@ function vbfPrintContract
 							<% 							
 								dim sqlDays
 								sqlDays = "select strText from common_lists where intList_ID = 4 and strValue='" & szDays_Meet_On & "'"
-								rsInfo.Open sqlDays,oFUnc.FPCScnn
+								rsInfo.Open sqlDays,Application("cnnFPCS")'oFUnc.FPCScnn
 								if rsInfo.RecordCount > 0 then
 									do while not rsInfo.EOF
 										Response.Write 	rsInfo("strText") 
@@ -872,7 +872,7 @@ Server.Execute(Application.Value("strWebRoot") & "Includes/footer.asp")
 	end if 
 	
 	sqlChargeID = "select szDesc from trefCharge_Type where intCharge_Type_ID = " & intCharge_Type_ID
-	rsInfo.Open sqlChargeID,oFunc.FPCScnn
+	rsInfo.Open sqlChargeID,Application("cnnFPCS")'oFunc.FPCScnn
 	if rsInfo.RecordCount > 0 then
 		strChargeList = rsInfo("szDesc")
 	end if
