@@ -134,11 +134,16 @@ if request("updatelist") <> "" then call vbsUpdateStatus
 <%
 
 if request.Form("Search") <> "" then
-	sql = "SELECT c.intClass_ID, c.szClass_Name, i.intINSTRUCTOR_ID, i.szLAST_NAME, i.szFIRST_NAME, CASE isNull(c.intContract_Status_ID,1) when 1 then '1' else c.intContract_Status_ID end as intContract_Status_ID, c.dtReady_For_Review,  " & _ 
-			" c.dtApproved, c.szUser_Approved, c.szComments, ilp.intILP_ID, c.szInstructor_Comments  " & _ 
+	'sql = "SELECT c.intClass_ID, c.szClass_Name, i.intINSTRUCTOR_ID, i.szLAST_NAME, i.szFIRST_NAME, CASE isNull(c.intContract_Status_ID,1) when 1 then '1' else c.intContract_Status_ID end as intContract_Status_ID, c.dtReady_For_Review,  " & _ 
+	'		" c.dtApproved, c.szUser_Approved, c.szComments, ilp.intILP_ID, c.szInstructor_Comments  " & _ 
+	'		"FROM tblClasses c INNER JOIN " & _ 
+	'		" tblINSTRUCTOR i ON c.intInstructor_ID = i.intINSTRUCTOR_ID INNER JOIN " & _ 
+	'		" tblILP_Generic ilp ON ilp.intClass_ID = c.intClass_ID " & _
+	'		"WHERE (c.intSchool_Year = " & session.Contents("intSchool_Year") & ") " 
+	sql = "SELECT c.intClass_ID, c.szClass_Name, i.intINSTRUCTOR_ID, i.szLAST_NAME, i.szFIRST_NAME,  isNull(c.intContract_Status_ID,1) intContract_Status_ID, c.dtReady_For_Review,  " & _ 
+			" c.dtApproved, c.szUser_Approved, c.szComments, dbo.ilpGeneric_class(c.intClass_ID) ilp, c.szInstructor_Comments  " & _ 
 			"FROM tblClasses c INNER JOIN " & _ 
-			" tblINSTRUCTOR i ON c.intInstructor_ID = i.intINSTRUCTOR_ID INNER JOIN " & _ 
-			" tblILP_Generic ilp ON ilp.intClass_ID = c.intClass_ID " & _
+			" tblINSTRUCTOR i ON c.intInstructor_ID = i.intINSTRUCTOR_ID " & _ 
 			"WHERE (c.intSchool_Year = " & session.Contents("intSchool_Year") & ") " 
 
 	if request("intInstructor_ID") <> "" then
@@ -229,10 +234,22 @@ if request.Form("Search") <> "" then
 					<% = rs("szClass_Name") %>
 				</td>
 				<td >
-					<% = rs("dtReady_For_Review") %>
+					<% = FormatDateTime(rs("dtReady_For_Review"),2) %>
 				</td>	
 				<td align="center">
-					<input type="button" value="View" onCLick="jfPrintAll('<% =rs("intClass_ID")%>','<% = rs("intILP_ID") %>');" class="btSmallGray">
+                <%  Dim xDoc
+                    set xDoc= CreateObject("MSXML2.DOMDocument")
+                    xDoc.LoadXml(rs("ilp"))
+                    Dim xLst
+                    set xLst = xDoc.selectNodes("//ILP")
+                    For Each xNode in xLst
+                    Dim name
+                    name=xNode.Attributes(2).Value
+                    If name="" then name="ILP "+xNode.Attributes(0).value
+
+ %>
+					<input type="button" value="View" title='<%=name %>' onCLick="jfPrintAll('<% =rs("intClass_ID")%>','<% = xNode.Attributes(1).Value %>');" class="btSmallGray"><br />
+ <%Next %>
 				</td>
 				<td align="center">
 					<select name="intContract_Status_ID<% = rs("intClass_Id") %>" onchange="jfUpdateList('<% = rs("intClass_ID") %>');">
@@ -322,11 +339,12 @@ sub vbsUpdateStatus
 	for i = 0 to ubound(list)
 		if list(i) <> "" then
 	'response.write list(i) & " - " & i & "<BR>"
-
-			if request("intContract_Status_ID" & list(i)) = 1 or _
-				request("intContract_Status_ID" & list(i)) = 3 then
+    dim intTmp
+    intTmp=request("intContract_Status_ID" & list(i))
+			if intTmp = 1 or _
+				intTmp = 3 then
 				updateAdd = " , dtReady_For_Review = NULL "
-			elseif request("intContract_Status_ID" & list(i)) = 4 or request("intContract_Status_ID" & list(i)) = 5  then
+			elseif intTmp = 4 or intTmp = 5  then
 				 updateAdd = " , dtApproved = CURRENT_TIMESTAMP, szUser_Approved = '" & oFunc.EscapeTick(session.Contents("strUserID")) & "' "
 			end if
 			update = "Update tblClasses set intContract_Status_ID = " & request("intContract_Status_ID" & list(i)) & _
