@@ -286,7 +286,7 @@ end if
 
 if intItem_ID <> "" then
 	if intItem_ID = 1 and intVendor_ID & "" = "" then
-		intVendor_ID = 157
+		intVendor_ID = 2362
 	end if
 	call vbfVendorList
 end if 
@@ -301,7 +301,7 @@ function vbfVendorList
 					<tr>
 						<Td class="HeadLine">
 							<b>
-								<% if bolReimbursement = "1" then%>
+								<% if bolReimburse = "1" then 'bolReimbursement %>
 								Which vendor did you use?
 								<% else %>
 								Which vendor would you like to use? (Note: if you can't find the vendor, please contact the office)
@@ -313,7 +313,7 @@ function vbfVendorList
 						<td class="svplain8">
 							<% 
                             'if intVendor_ID & "" = "157" and intItem_ID & "" = "1" then 
-                            if intVendor_ID  = "157" and intItem_ID  = "1" then 
+                            if intVendor_ID  = "2362" and intItem_ID  = "1" then 
                             %>
 							<input type="hidden" name="intVendor_ID" value="<% = intVendor_ID %>"/> A S D 
 							Administration BLDG.<br>
@@ -371,8 +371,8 @@ sqlVendor="SELECT distinct v.intVendor_ID, v.szVendor_Name Vend_Name " _
 & "FROM  tblVendors AS v INNER JOIN " _
 & "tblVendor_Status AS s ON v.intVendor_ID = s.intVendor_ID " _
 & "where year(s.dtContract_start) <=" & session.Contents("intSchool_Year") _
-& " and v.intVendor_ID in (select intVendor_ID from dbo.tblClass_Items where intSchool_year=" & session.Contents("intSchool_Year") & ") " _
 & "order by 2"
+'& " and v.intVendor_ID in (select intVendor_ID from dbo.tblClass_Items where intSchool_year=" & session.Contents("intSchool_Year") & ") " 
 bReplace = False
 									end if
 								case 2
@@ -673,7 +673,7 @@ function vbfAttribForm
 					<tr>
 						<td colspan="2" class="Headline">
 							Please fill in the <b>
-								<% if bolReimbursement = "1" then%>
+								<% if bolReimburse = "1" then 'bolReimbursement %>
 								Reimbursement
 								<% else %>
 								Requisition

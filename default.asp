@@ -8,7 +8,6 @@ dim strMessageHTML		'HTML table that contains the message in strMessage
 
 Response.Expires = -1000	'Makes the browser not cache this page
 
-
 set oFunc = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/FPCSfunctions.wsc"))
 set oList = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/dbOptionsList.wsc"))
 
@@ -600,6 +599,7 @@ end if
 								<BR>Click <a href="<% = Application.Value("strWebRoot") %>forms/teachers/ContractManager.asp">HERE</a> to go to the Instructor Contract Manager.
 							</td>
 						</tr>
+                        <%If False Then %>
 						<tr>
 							<td colspan="5">
 								<span style="font-family:arial;color:red;font-size:15pt;"><b>NEW!</b></span>
@@ -614,6 +614,7 @@ may be some bugs.  Please report any bugs to <a href="mailto:fpcs_admin@fpcs.net
 							
 							</td>	
 						</tr>
+                        <%End If %>
 						<% if session.Contents("student_List") <> "" then%>
 						<tr>
 							<td align="center" colspan='5'>
@@ -1004,7 +1005,7 @@ may be some bugs.  Please report any bugs to <a href="mailto:fpcs_admin@fpcs.net
 								end with
 								
 								%>
-						
+					<%If False Then %>	
 					<tr>									
 						<td class="svplain10" onclick="jfViewProgress('progressForm.aspx');" style="CURSOR:pointer;" nowrap>
 							<u>Student Progress Report</u>							
@@ -1013,7 +1014,7 @@ may be some bugs.  Please report any bugs to <a href="mailto:fpcs_admin@fpcs.net
 							<i>Access to online progress reports, questionnaires and Year End Eval for Elementary Students.</i>
 						</td>
 					</tr>	
-								
+					<%End If %>			
 					
 							</table>
 						</td>
@@ -1021,8 +1022,10 @@ may be some bugs.  Please report any bugs to <a href="mailto:fpcs_admin@fpcs.net
 					</tr>		
 					<tr>					
 						<td>
-						<input type="button" class="btSmallGray" value="Change School Year" onclick="window.location.href='<%=Application.Value("strWebRoot")%>Admin/ChangeSchoolYear.asp';" ID="Button10" NAME="Button10">
-						<input type="button" class="btSmallGray" value="Change Password" onclick="window.location.href='<%=Application.Value("strWebRoot")%>UserAdmin/ChangePassword.asp';" ID="Button11" NAME="Button1">
+						<%If False Then %>
+                        <input type="button" class="btSmallGray" value="Change School Year" onclick="window.location.href='<%=Application.Value("strWebRoot")%>Admin/ChangeSchoolYear.asp';" ID="Button10" NAME="Button10">
+						<%End If %>
+                        <input type="button" class="btSmallGray" value="Change Password" onclick="window.location.href='<%=Application.Value("strWebRoot")%>UserAdmin/ChangePassword.asp';" ID="Button11" NAME="Button1">
 						<input type="button" class="btSmallGray" value="Reimbursement Form" onclick="jfReimburse();">
 						<input type="button" class="btSmallGray" value="Family Manager" onclick="window.location.href='<% = Application.Contents("strSSLWebRoot") & "admin/familyManager.asp?intFamily_ID=" & session.Contents("intFamily_ID") %>';">
 						<br>

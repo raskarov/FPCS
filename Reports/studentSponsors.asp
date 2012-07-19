@@ -97,8 +97,8 @@ sql = "SELECT s.szLAST_NAME + ', ' + s.szFIRST_NAME AS studentName, " & _
 		"WHERE (ei.sintSCHOOL_YEAR = " & session.Contents("intSchool_Year") & ") AND (tblStudent_States.intReEnroll_State IN (" & Application.Contents("ActiveEnrollList") & ")) AND (tblStudent_States.intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _ 
 		strOrderBy
 		
-		response.Write sql
-rs.Open sql,oFunc.FPCScnn	
+		'response.Write sql
+rs.Open sql,Application("cnnFPCS")'oFunc.FPCScnn	
 
 intColorCount = 0
 if rs.RecordCount > 0 then

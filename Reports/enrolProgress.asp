@@ -68,7 +68,7 @@ sql = "SELECT tblSTUDENT.intStudent_ID,tblSTUDENT.szLast_Name + ' ' + tblSTUDENT
 		
 set rs = server.CreateObject("ADODB.Recordset")
 rs.CursorLocation = 3
-rs.Open sql, oFunc.FPCScnn
+rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 set rsCheck = server.CreateObject("ADODB.Recordset")
 rsCheck.CursorLocation = 3
@@ -105,7 +105,7 @@ do while not rs.EOF
 				"    tascUsers_Action.intAction_ID = tblForce_Action.intAction_ID  " & _
 				"WHERE (tascUsers_Action.szUser_ID = '" & rs("szUser_ID") & "') " & _
 				"ORDER BY tblForce_Action.intAction_ID " 
-		rsCheck.Open sql,oFunc.FPCScnn
+		rsCheck.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	
 		if rsCheck.RecordCount < 1 then
 			bolShow = false

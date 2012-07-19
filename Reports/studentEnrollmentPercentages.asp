@@ -47,7 +47,7 @@ sqlStudents = "SELECT s.intSTUDENT_ID, s.szLAST_NAME + ', ' + s.szFIRST_NAME AS 
  
 set rsStudents = server.CreateObject("ADODB.RECORDSET")
 rsStudents.CursorLocation = 3
-rsStudents.Open sqlStudents, oFunc.FPCScnn
+rsStudents.Open sqlStudents, Application("cnnFPCS")'oFunc.FPCScnn
 
 ' Print the HTML header
 Session.Value("strTitle") = "Student Enrollment Percentages"

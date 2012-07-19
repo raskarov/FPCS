@@ -539,7 +539,7 @@ end if
 							<Tr>
 								<td class=svplain10>
 									<input type=checkbox name="bolASD_Part_Time" <% if bolASD_Part_Time then Response.Write " checked " %> onChange="jfChanged();jfSetPrompt();">
-									Only works at FTCS <input type=text size=3 maxlength=3 name="fltASD_Part_Time_Percent" value="<%=fltASD_Part_Time_Percent%>" onChange="jfChanged();jfSetPrompt();">% (FTCS FTE)
+									Check only if less than 50% (Will not include benefits in calculations) <input type=text size=3 maxlength=3 name="fltASD_Part_Time_Percent" value="<%=fltASD_Part_Time_Percent%>" onChange="jfChanged();jfSetPrompt();">% (FTCS FTE)
 								</td>	
 							</tr>
 							<Tr>

@@ -113,6 +113,7 @@
    <method name="MakeCheckListRS"/>  
    <method name="GreatestDate"/>  
    <method name="FormatPhone"/>
+	<method name="DateTimeFormat"/>
 </public>
 
 <implements type="ASP" id="ASP"/>
@@ -150,6 +151,11 @@ end function
 
 function ExecuteCN(byval pstrData)
 	' Executes SQL statement in pstrData
+	If mcnn is Nothing then
+	set mcnn = Server.CreateObject("ADODB.CONNECTION")
+	mcnn.Open Application.Contents("cnnFPCS")	
+	End If
+
 	mcnn.Execute(pstrData)
 end function
 
@@ -454,7 +460,7 @@ function SchoolYear()
 	
 	intCurrentMonth = datePart("m",now())
 	
-	if intCurrentMonth < 7 then
+	if intCurrentMonth < 6 then
 		intSchoolYear = datePart("yyyy",now())
 	else
 		intSchoolYear = datePart("yyyy",dateAdd("yyyy",1,now()))
@@ -1949,7 +1955,13 @@ function GreatestDate(dtArray)
 end function
 
 function get_FPCScnn()
-	get_FPCScnn = mcnn
+	set mcnn = Server.CreateObject("ADODB.CONNECTION")
+	mcnn.Open Application("cnnFPCS")	
+
+	set get_FPCScnn = mcnn
+	'
+	'Application("cnnFPCS")
+	'mcnn
 end function
 
 function get_SelectedListText()
@@ -2116,6 +2128,9 @@ end function
 
 function get_ShowLockMsg()
 	get_ShowLockMsg = mShowLockMsg
+end function
+function DateTimeFormat(d)
+DateTimeFormat=year(d) & "-" & month(d) & "-" & day(d) & " " & hour(d) & ":" & minute(d) & ":" & second(d)
 end function
 ]]>
 </script>

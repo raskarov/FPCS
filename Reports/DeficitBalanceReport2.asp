@@ -146,7 +146,7 @@ start = now()
 	dim rs 
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 	if rs.RecordCount > 0 then			
 %>	
@@ -572,7 +572,7 @@ sub vbsPrintFPCSAccountTotals
 				"WHERE (bt.intSchool_Year = " & session.Contents("intSchool_Year")& ") AND (bt.intFrom_Student_ID = " & SBA  & ") OR " & _ 
 				"	(bt.intSchool_Year = " & session.Contents("intSchool_Year")& ") AND (bt.intTo_Student_ID = " & SBA & ") " & _ 
 				"ORDER BY bt.dtCREATE "	
-		rs2.Open sql, oFunc.FPCScnn
+		rs2.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if rs2.RecordCount > 0 then
 %>

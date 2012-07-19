@@ -97,7 +97,7 @@ end if
 					</td>
 					<td class="yellowHeader" valign="top" style="width:0%;"  id="t2">
 						<select name="pRange" style="font-family:arial;size:7pt;" ID="sRange" multiple size=2>
-							<option>Print All</option>
+							<option value="''">Print All</option>
 							<option value="'A'">A</option>
 							<option value="'B'">B</option>
 							<option value="'C'">C</option>
@@ -224,7 +224,7 @@ end if
 	
 	rs2.CursorLocation = 3
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql,Application("cnnFPCS")' oFunc.FPCScnn
 	strVendName = ""
 	intVendor_ID = ""
 	if rs.RecordCount > 0 then
@@ -309,7 +309,7 @@ end if
 						"	tblORDERED_ITEMS on tblORDERED_ITEMS.intORDERED_ITEM_ID =  tblLINE_ITEMS.intORDERED_ITEM_ID " & _
 						" WHERE tblORDERED_ITEMS.intILP_ID = " & rs("intILP_ID")  & _
 						" AND tblORDERED_ITEMS.intVendor_ID = " & intVendor_ID
-					rs2.Open sql, oFunc.FPCScnn
+					rs2.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 					if rs2.RecordCount > 0 then
 						if rs2("szPO_Number") & "" <> "" then
 							szPO_Number = rs2("szPO_Number")

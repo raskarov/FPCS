@@ -183,7 +183,8 @@ function vbfInsertRecords()
 			response.Write "ERROR- A value is required for intShort_ILP_ID"
 			response.End 
 		end if
-	end if 		
+	end if 	
+'				"'" & oFunc.EscapeTick(request("szGoals")) & "'," & _
 	insert = "insert into " & strILPTable & "(intClass_Id,sintSchool_year," & _
 				"intSemester,decCourse_Hours" & strEnrolledField & strShortILPField & ",szCurriculum_Desc," & _
 			    "szGoals,szRequirements,szTeacher_Role,szStudent_Role,bolILP_Bank,szILP_Name," & _
@@ -194,7 +195,7 @@ function vbfInsertRecords()
 				"'" & oFunc.EscapeTick(request("decCourse_Hours")) & "'," & _
 				strEnrolledValue & strShortILPValue & _
 				"'" & oFunc.EscapeTick(request("szCurriculum_Desc")) & "'," & _
-				"'" & oFunc.EscapeTick(request("szGoals")) & "'," & _
+				"'" & vbfGetSyllabusString() & "'," & _
 				"'" & oFunc.EscapeTick(request("szRequirements")) & "'," & _
 				"'" & oFunc.EscapeTick(request("szTeacher_Role")) & "'," & _
 				"'" & oFunc.EscapeTick(request("szStudent_Role")) & "'," & _
@@ -220,6 +221,24 @@ function vbfInsertRecords()
 		call vbsUpdateHrs(Session.Contents("intShort_ILP_ID"),request("decCourse_Hours"))
 	end if	
 end function 
+Function vbfGetSyllabusString
+If Request.Form("szGoals")>"" Then
+vbfGetSyllabusString=oFunc.EscapeTick(request("szGoals"))
+Exit Function
+end If
+vbfGetSyllabusString="<tbody>"'<tr><td class=""gray"">Week</td><td class=""gray"">Start</td><td class=""gray"">End</td><td class=""gray"">Description</td></tr>"
+For i = 1 to Request.Form("weekNo").Count
+    If Request.Form("weekNo")(i)>"" Then
+vbfGetSyllabusString = vbfGetSyllabusString & "<tr><td id=""week"">" & oFunc.EscapeTick(Request.Form("weekNo")(i)) & "</td>" _
+    & "<td id=""description"">" & oFunc.EscapeTick(Request.Form("szDescription")(i)) & "</td></tr>"
+    
+    '& "<td id=""start"">" & oFunc.EscapeTick(Request.Form("dtStart")(i)) & "</td>" 
+    '& "<td id=""end"">" & oFunc.EscapeTick(Request.Form("dtEnd")(i)) & "</td>" 
+    End If
+Next
+vbfGetSyllabusString = vbfGetSyllabusString & "</tbody>"
+
+End Function
 Function vbfSaveSyllabus
 Dim intILP_ID
 		intILP_ID = oFunc.EscapeTick(Request.Form("intILP_ID"))
@@ -285,12 +304,14 @@ function vbfUpdateILP
 	end if 
 	'oFunc.BeginTransCN
 		
+'				"szGoals = '" & oFunc.EscapeTick(Request("szGoals")) & "'," & _
+'
 	update = "update " & strILPTable & " set " & _
 				"intSemester = '" & oFunc.EscapeTick(Request("intSemester")) & "'," & _
 				"decCourse_Hours = '" & oFunc.EscapeTick(Request("decCourse_Hours")) & "'," & _
 			    strField & _
 				"szCurriculum_Desc = '" & oFunc.EscapeTick(Request("szCurriculum_Desc")) & "'," & _
-				"szGoals = '" & oFunc.EscapeTick(Request("szGoals")) & "'," & _
+				"szGoals = '" & vbfGetSyllabusString() & "'," & _
 				"szRequirements = '" & oFunc.EscapeTick(Request("szRequirements")) & "'," & _
 				"szTeacher_Role = '" & oFunc.EscapeTick(Request("szTeacher_Role")) & "'," & _
 				"szStudent_Role = '" & oFunc.EscapeTick(Request("szStudent_Role")) & "'," & _
@@ -344,6 +365,7 @@ sub vbfILPAdds(pID,pTable,pText)
 			 "dtModify = '" & oFunc.DateTimeFormat(now()) & "',"& _
 			 "szUser_Modify = '" & session.Contents("strUserID") & "',"  & _
 			 "bolILP_Bank= " & bolILP_Bank & "," & _
+             "szGoals='" & vbfGetSyllabusString() & "'," & _
 			 "szILP_Name='" & oFunc.EscapeTick(request("szILP_Name")) & "' " & _
 			 strAddUpdate & _
 			 " where intILP_ID = " & pID

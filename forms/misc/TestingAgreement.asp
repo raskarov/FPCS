@@ -85,8 +85,8 @@ do while not rs.EOF
 					<td class="svplain8">
 						<% if rs("bolASD_Testing") then 
 								response.Write " will participate "	
-						   else
-								response.Write " will not participate "
+						   'else
+							'	response.Write " will not participate "
 						   end if
 						%>
 						in all mandatory testing. <i>(Signed on <% = rs("dtASD_Signed") %> By

@@ -155,7 +155,7 @@ sqlVendor = "SELECT     intVendor_ID, szVendor_Name, bolNonProfit, VendorAddress
 			" WHERE 1 = 1 " & sqlWhere & _
 			"ORDER BY szVendor_Name "
 			
-rsVendor.Open sqlVendor,oFunc.FPCScnn	
+rsVendor.Open sqlVendor,Application("cnnFPCS")'oFunc.FPCScnn	
 
 intColorCount = 0
 if rsVendor.RecordCount > 0 then
@@ -247,7 +247,7 @@ sub UpdateStatus(pList)
 					" WHERE intVendor_ID = " & arList(i) & _
 					" AND intSchool_Year = " & session.Contents("intSchool_Year")  & _
 				    " ORDER BY intSchool_Year DESC,intVendor_Status_ID DESC "
-				rsc.Open sql, oFunc.FpcsCnn
+				rsc.Open sql,Application("cnnFPCS")' oFunc.FpcsCnn
 				
 				if rsc.RecordCount > 0 then
 					update = "update tblVendor_Status set szVendor_Status_CD = '" & request.Form("Status" & arList(i)) & "', " & _

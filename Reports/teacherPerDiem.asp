@@ -23,7 +23,7 @@ sql= "SELECT i.szLast_Name,i.szFirst_Name,p.curPay_Rate,i.intInstructor_id, " & 
 	 "where i.intInstructor_ID = p.intInstructor_ID " & _
 	 "and p.dtEffective_End is null order by i.szLast_Name"
                
-rsReport.Open sql,oFunc.FPCScnn
+rsReport.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 intCount = rsReport.RecordCount
 
 ' Print the HTML header

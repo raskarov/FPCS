@@ -119,7 +119,7 @@ if intReporting_Period_ID <> "" then
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3
 	'response.Write "TESTING <BR>" & sql 
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 	if rs.RecordCount > 0 then	
 		

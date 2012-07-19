@@ -135,7 +135,7 @@ sqlStudent = "SELECT     s.szLAST_NAME + ', ' + s.szFIRST_NAME AS Name, f.szHome
 "WHERE     (e.sintSCHOOL_YEAR = " & session.contents("intSchool_year") & " ) AND (ss.intSchool_Year = " & session.contents("intSchool_year") & " ) AND ss.intReEnroll_State  IN (" & Application.Contents("ActiveEnrollList") & ") " & _ 
 "ORDER BY s.szLAST_NAME "	
 
-rsStudent.Open sqlStudent,oFunc.FPCScnn	
+rsStudent.Open sqlStudent,Application("cnnFPCS")'oFunc.FPCScnn	
 
 		intColorCount = 0
 		if rsStudent.RecordCount > 0 then

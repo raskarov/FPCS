@@ -67,7 +67,7 @@ sqlVendor = "SELECT intVendor_ID, szVendor_Name, VendorAddress, VendorCity," & _
 			" AND intVendor_ID = " & request("intVendor_ID") & _
 			" ORDER BY szVendor_Name"
 
-rsVendor.Open sqlVendor,oFunc.FPCScnn	
+rsVendor.Open sqlVendor,Application("cnnFPCS")'oFunc.FPCScnn	
 
 intColorCount = 0
 if rsVendor.RecordCount > 0 then
@@ -126,7 +126,7 @@ sqlVendor = "SELECT tblVendor_Auth.intVendor_ID, trefItems.szName, trefPOS_Subje
 			" trefPOS_Subjects ON tblVendor_Auth.intPOS_SUbject_ID = trefPOS_Subjects.intPOS_Subject_ID " & _
 			"WHERE (tblVendor_Auth.intVendor_ID = " & request("intVendor_ID") & ") " & _
 			"ORDER BY trefItems.szName, trefPOS_Subjects.szSubject_Name"
-rsVendor.Open sqlVendor,oFunc.FPCScnn	
+rsVendor.Open sqlVendor,Application("cnnFPCS")'oFunc.FPCScnn	
 
 dim strLastItem
 if rsVendor.RecordCount > 0 then	

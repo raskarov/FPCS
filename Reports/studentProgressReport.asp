@@ -220,7 +220,7 @@ if intReporting_Period_ID <> "" then
 	dim rs 
 	set rs = server.CreateObject("ADODB.RECORDSET")
 	rs.CursorLocation = 3
-	rs.Open sql, oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 	if rs.RecordCount > 0 then
 		dim bolChecked
@@ -231,7 +231,7 @@ if intReporting_Period_ID <> "" then
 		sql = "SELECT     intProgress_Rating_ID, szProgress_Rating_Name, szProgress_Rating_Short_Name " & _ 
 				"FROM         trefProgress_Ratings " & _ 
 				"ORDER BY intProgress_Rating_ID "
-		rs2.Open sql,oFunc.FPCScnn
+		rs2.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 		
 		if (rs("szUser_Create") & "" <> "" and ucase(rs("szUser_Create")) <> ucase(session.Contents("strUserID"))) or bolPrint then
 			strDiasbled = " disabled "
@@ -469,7 +469,7 @@ if intReporting_Period_ID <> "" then
 									"                      tblUsers ON tascGUARD_USERS.szUser_ID = tblUsers.szUser_ID " & _ 
 									"WHERE     (tblUsers.szUser_ID = '" & rs("szUser_Create") & "') "
 							
-							rsG.Open sql, oFunc.FPCScnn
+							rsG.Open sql,Application("cnnFPCS")' oFunc.FPCScnn
 							
 							if rsG.RecordCount > 0 then response.Write rsG(0)
 							rsG.Close

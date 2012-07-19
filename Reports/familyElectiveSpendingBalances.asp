@@ -48,7 +48,7 @@ sql = "SELECT DISTINCT f.szFamily_Name, f.intFamily_ID, f.szDesc, f.szHome_Phone
 	
 set rs = server.CreateObject("ADODB.RECORDSET")
 rs.CursorLocation = 3
-rs.Open sql,oFunc.FPCScnn
+rs.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 
 if rs.RecordCount > 0 then
 %>
@@ -63,7 +63,8 @@ if rs.RecordCount > 0 then
 <%	
 	do while not rs.EOF
 		set oBudget = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/StudentBudgetInfo.wsc"))
-		oBudget.PopulateFamilyBudgetInfo oFunc.FPCScnn, rs("intFamily_ID"), session.Contents("intSchool_Year")
+		'oBudget.PopulateFamilyBudgetInfo oFunc.FPCScnn, rs("intFamily_ID"), session.Contents("intSchool_Year")
+		oBudget.PopulateFamilyBudgetInfo Application("cnnFPCS"), rs("intFamily_ID"), session.Contents("intSchool_Year")
 		
 		if request("showAll") & "" <> ""  or (oBudget.AvailableElectiveBudget < 0 and _
 				request("showAll") & "" = "") then

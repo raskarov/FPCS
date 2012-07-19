@@ -3,16 +3,16 @@
 	dim sURL
 
 	'if Session.Value("strURL") & "" = "" then
-		'sURL = Application("strWebRoot") & "default.asp"
-		sURL = "http://localhost/empower/" & "default.asp"
+		sURL = Application("strWebRoot") & "default.asp"
+		'sURL = "http://localhost/empower/" & "default.asp"
 	'else
-		sURL = Session.Value("strURL")
+		'sURL = Session.Value("strURL")
 	'end if
 %>
 <HTML>
 <HEAD>
 	<title>FPCS - Application Starting...</title>
-	<script language="javascript">
+	<script language="javascript" type="text/javascript">
 		function jfLaunchApp(){
 			var strURL = "<%= sURL %>";
 			strFeatures = "toolbar=no,scrollbars=yes,resizable=yes,status=yes";
@@ -30,6 +30,6 @@
 FPCS application pop up window did not appear please
 click <a href="javascript:" onclick="jfLaunchApp();"><b>HERE</b></a> to open it.</font>
 <br><br>
-If you have further problems please email <a href="help@3shapes.com">help@3shapes.com</a>.
+If you have further problems please email <a href="fpcs_admin@fpcs.net">fpcs_admin@fpcs.net</a>.
 </BODY>
 </HTML>

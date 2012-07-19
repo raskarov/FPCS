@@ -1352,7 +1352,15 @@ end if
 				</tr>
 				<tr>
 					<td class=svplain10 valign=top>
-						<%=szGoals%>
+                    <%Dim re
+                    Set re=New RegExp
+                    re.Pattern="[<]tbody[>]"
+                    re.IgnoreCase=True
+                    If re.Test(szGoals) then %>
+						<table class="svplain10"><%=szGoals%></table>
+                    <%Else %>
+                    <%=szGoals %>
+                    <%End If %>
 					</td>
 					<td>&nbsp;</td>
 					<td class=svplain10 valign=top>
@@ -3272,8 +3280,11 @@ if request("hdnVendors") <> "" then
 end if
 
 if request("hdnRange") <> "" then 
-	sRange = left(request("hdnRange"),len(request("hdnRange"))-1)
+sRange=Replace(request("hdnRange"),"'',","")
+    If sRange<>"" Then
+	sRange = left(sRange,len(sRange)-1)
 	strWhere = strWhere & " AND SUBSTRING(UPPER(tblVendors.szVendor_Name),1,1) IN (" & sRange & ")"
+    End If
 end if
 
 sql = "SELECT tblVendors.szVendor_Name, tblSTUDENT.szLAST_NAME, tblSTUDENT.szFIRST_NAME,  " & _ 

@@ -25,7 +25,7 @@ sql= "SELECT i.szLast_Name,i.szFirst_Name,i.intInstructor_id, " & _
 	 "from tblInstructor i " & _
 	 "order by szLast_Name "
                
-rsReport.Open sql,oFunc.FPCScnn
+rsReport.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 intCount = rsReport.RecordCount
 
 Session.Value("strTitle") = "Teacher Hour Breakdown"
@@ -82,7 +82,7 @@ if intCount > 0 then
 					  "where intInstructor_ID = " & rsReport("intInstructor_ID") & _
 					  " and (c.intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 					  " order by szClass_Name"
-				rsClasses.Open sql, oFUnc.FPCScnn
+				rsClasses.Open sql, Application("cnnFPCS")'oFUnc.FPCScnn
 				
 				if rsClasses.RecordCount > 0 then
 				
@@ -106,7 +106,7 @@ if intCount > 0 then
 						  "where i.intClass_ID = " & rsClasses("intClass_ID") & _
 						  " and i.intStudent_id = s.intStudent_ID " & _
 						  " order by s.szLast_Name " 
-					rsILP.Open sql,oFUnc.FPCScnn
+					rsILP.Open sql,Application("cnnFPCS")'oFUnc.FPCScnn
 					intILPCount = rsILP.RecordCount
 					if intILPCount > 0 then
 				%>

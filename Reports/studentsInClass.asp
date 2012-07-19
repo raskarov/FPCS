@@ -41,7 +41,7 @@ sql = "SELECT     s.szLAST_NAME + ',' + s.szFIRST_NAME AS Name, c.szClass_Name, 
 
 set rsReport = server.CreateObject("ADODB.RECORDSET")
 rsReport.CursorLocation = 3
-rsReport.Open sql,oFunc.FPCScnn
+rsReport.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 intCount = rsReport.RecordCount
 
 if intCount > 0 then
@@ -66,7 +66,7 @@ if intCount > 0 then
 
 	set rsTInfo = server.CreateObject("ADODB.RECORDSET")
 	rsTInfo.CursorLocation = 3
-	rsTInfo.Open sqlTeacher,oFunc.FPCScnn 
+	rsTInfo.Open sqlTeacher,Application("cnnFPCS")'oFunc.FPCScnn 
 
 	strTeacherInfo = "Home Phone: " & 	rsTInfo(3) & _
 					 " Work Phone: " & rsTInfo(4)

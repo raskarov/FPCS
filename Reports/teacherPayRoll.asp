@@ -134,14 +134,14 @@ if strTeachers <> "" then
 		 strWhere & _
 		 "order by szLast_Name "     		 
 		     
-	rsReport.Open sql,oFunc.FPCScnn
+	rsReport.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	
     'JD: Get the flat rate
     if Session.Contents("intSchool_Year") => 2012 then
 	    set teacherFlatRate = server.CreateObject("ADODB.RECORDSET")
 	    teacherFlatRate.CursorLocation = 3
 	    sql = "SELECT flatRate from tblInstructor_Flat_Rate where intSchool_year = " & session.Contents("intSchool_year")
-	    teacherFlatRate.Open sql, oFunc.FPCScnn
+	    teacherFlatRate.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	    flatRate = teacherFlatRate("flatRate")
 	    teacherFlatRate.Close()
 	end if
@@ -158,7 +158,7 @@ if strTeachers <> "" then
 				"FROM tblBenefit_Tax_Rates " & _ 
 				"WHERE (intSchool_Year = " & session.Contents("intSchool_Year") & ") "
 				
-		rsClasses.Open sql, oFunc.FPCScnn
+		rsClasses.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
 		
 		if rsClasses.RecordCount > 0 then
@@ -183,7 +183,8 @@ if strTeachers <> "" then
 		intCurrentTeacher = -1
 		do while not rsReport.EOF	
 			set oTeacher = GetObject ("script:" & Server.MapPath(Application.Value("strWebRoot") & "wsc/TeacherInfo.wsc"))
-			oTeacher.PopulateObject oFunc.FPCScnn, rsReport("intInstructor_ID"), session.Contents("intSchool_Year")
+			'oTeacher.PopulateObject oFunc.FPCScnn, rsReport("intInstructor_ID"), session.Contents("intSchool_Year")
+			oTeacher.PopulateObject Application("cnnFPCS"), rsReport("intInstructor_ID"), session.Contents("intSchool_Year")
 				
 			' Get all the classes for a specific teacher								
 			sql = "select intClass_ID, szClass_Name,decHours_Student,decHours_Planning,intMin_Students, intMax_Students " & _
@@ -192,7 +193,7 @@ if strTeachers <> "" then
 				  " and (intSchool_Year = " & session.Contents("intSchool_Year") & ") " & _
 				  " order by szClass_Name"
 			
-			rsClasses.Open sql,oFunc.FPCScnn							
+			rsClasses.Open sql,Application("cnnFPCS")'oFunc.FPCScnn							
 			
 			if rsClasses.RecordCount > 0 then														
 			
@@ -225,7 +226,7 @@ if strTeachers <> "" then
 							  "where i.intClass_ID = " & rsClasses("intClass_ID") & _
 							  " and i.intStudent_id = s.intStudent_ID " & _	
 							  " order by s.szLast_Name " 
-						rsILP.Open sql,oFunc.FPCScnn	
+						rsILP.Open sql,Application("cnnFPCS")'oFunc.FPCScnn	
 						intILPCount = rsILP.RecordCount
 						bolTR = false
 						if intILPCount > 0 then

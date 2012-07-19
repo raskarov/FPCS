@@ -259,10 +259,7 @@ If intStudent_ID <> "" THEN
                "          (SELECT top 1 oa2.szValue " & _
                "             FROM          tblOrd_Attrib oa2 " & _
                "             WHERE      oa2.intOrdered_Item_Id = oi.intOrdered_Item_Id AND " & _
-               "			 (oa2.intItem_Attrib_ID = 9 OR " & _
-               "              oa2.intItem_Attrib_ID = 5 OR " & _
-               "              oa2.intItem_Attrib_ID = 6 OR " & _
-			   "              oa2.intItem_Attrib_ID = 22 or oa2.intItem_Attrib_ID = 33) order by oa2.intOrd_Attrib_ID) AS iName " & _
+               "			 (oa2.intItem_Attrib_ID in (9,5,6,22,33,18)) order by oa2.intOrd_Attrib_ID) AS iName " & _
 		       " FROM tblOrdered_Items oi INNER JOIN " & _
                "       tblVendors v ON oi.intVendor_ID = v.intVendor_ID INNER JOIN " & _
                "       trefItems i ON oi.intItem_ID = i.intItem_ID INNER JOIN " & _
@@ -271,7 +268,11 @@ If intStudent_ID <> "" THEN
                "       tblClass_Items ci ON oi.intClass_Item_ID = ci.intClass_Item_ID " & _			   
 			   " WHERE (oi.intILP_ID = " & intILP_ID & ") " & _
 			   " ORDER by i.szName "
-	
+	'oa2.intItem_Attrib_ID = 9 OR " & _
+     '          "              oa2.intItem_Attrib_ID = 5 OR " & _
+      '         "              oa2.intItem_Attrib_ID = 6 OR " & _
+		'	   "              oa2.intItem_Attrib_ID = 22 or oa2.intItem_Attrib_ID = 33
+			   '" WHERE (oi.intStudent_ID = " & intStudent_ID & ") " & _
 			   '" WHERE (oi.intILP_ID = " & intILP_ID & ") and (oi.bolApproved = 1 or oi.bolApproved is null) " & _
 elseif intClass_ID <> "" then
 
@@ -292,10 +293,7 @@ elseif intClass_ID <> "" then
                "          (SELECT  top 1   ca2.szValue " & _
                "             FROM          tblClass_Attrib ca2 " & _
                "             WHERE      ca2.intClass_Item_Id = ci.intClass_Item_Id AND " & _
-               "			 (ca2.intItem_Attrib_ID = 9 OR " & _
-               "              ca2.intItem_Attrib_ID = 5 OR " & _
-               "              ca2.intItem_Attrib_ID = 6 OR " & _
-			   "              ca2.intItem_Attrib_ID = 22 or ca2.intItem_Attrib_ID = 33) order by ca2.intItem_Attrib_ID ) AS iName, '' as szDeny_Reason, 1 as bolApproved, intContract_Status_ID " & _
+               "			 (ca2.intItem_Attrib_ID in (9,5,6,22,33,18)) order by ca2.intItem_Attrib_ID ) AS iName, '' as szDeny_Reason, 1 as bolApproved, intContract_Status_ID " & _
 		       " FROM tblClass_Items ci INNER JOIN " & _
                "       tblVendors v ON ci.intVendor_ID = v.intVendor_ID INNER JOIN " & _
                "       trefItems i ON ci.intItem_ID = i.intItem_ID INNER JOIN " & _
@@ -303,6 +301,10 @@ elseif intClass_ID <> "" then
                "	   tblClasses c ON c.intClass_ID = ci.intClass_ID " & _
 			   " WHERE (ci.intClass_ID = " & intClass_ID & ")  " & _
 			   "order by i.szName "
+               'ca2.intItem_Attrib_ID = 9 OR " & _
+              ' "              ca2.intItem_Attrib_ID = 5 OR " & _
+               '"              ca2.intItem_Attrib_ID = 6 OR " & _
+			   '"              ca2.intItem_Attrib_ID = 22 or ca2.intItem_Attrib_ID = 33
 end if
 
 set rsItems = server.CreateObject("ADODB.Recordset")

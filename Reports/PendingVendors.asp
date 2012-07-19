@@ -15,7 +15,7 @@ rs.CursorLocation = 3
 sql = "SELECT intVendor_ID, szVendor_Name, szVendor_Phone, szVendor_Email, dtCREATE " & _
 		"FROM tblVendors " & _
 		"WHERE (bolApproved IS NULL) ORDER BY dtCREATE"
-rs.Open sql, oFunc.FPCScnn
+rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 if rs.RecordCount > 0  then 
 %>

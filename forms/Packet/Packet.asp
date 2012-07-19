@@ -1,5 +1,6 @@
 <%@  language="VBScript" %>
 <%
+Response.LCID=1033
 
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
@@ -34,6 +35,8 @@ dim strDateField
 dim bStatus				' budgeted item status
 dim strItemType			' tells user if item is requiestion or reimbursement
 dim oHtml
+
+Dim dblGlobalReserve    'Global Reserve for the current School Year
 
 mLablelCount = 0
 mDivCount = 0		
@@ -85,6 +88,18 @@ if request("intStudent_ID") <> "" then
 	intEnroll_Info_ID = oBudget.EnrollInfoId	
 	myBudgetBalance = oBudget.BudgetBalance
 	myActualBalance = oBudget.ActualBalance
+
+    Dim sqlGR
+    sqlGR="select curFund_Amount from dbo.tblFunding where szGrade='G' and intSchool_Year=" & session.Contents("intSchool_Year")
+    Dim rsGR
+    Set rsGR = Server.CreateObject("ADODB.RecordSet")
+    rsGR.CursorLocation = 3
+	rsGR.Open sqlGR, Application("cnnFPCS")'
+    If Not rsGR.EOF and Not rsGR.BOF Then
+    dblGlobalReserve = rsGR("curFund_Amount")
+    End If
+    rsGR.Close
+    Set rsGR = Nothing
 else
 	'terminate page since page was improperly called.
 	response.Write "<html><body><H1>Page improperly called.</h1></body></html>"
@@ -305,8 +320,6 @@ end if
 		window.location.href = strURL;
 	}
 	
-	</script>
-    <script type="text/javascript">
 	function jfChangePercent(enrollId,percent){
 		SetPageScroll('<% = intStudent_id %>Packet');
 		var bolConfirm = window.confirm("Are you sure you want to change the 'Target Enrollment' percentage?");
@@ -375,8 +388,6 @@ end if
 		}
 	}	
 	
-	</script>
-    <script type="text/javascript">
 	function jfViewRoll(class_id) {
 		var winRoll;
 		winRoll = window.open('<%=Application.Value("strWebRoot")%>Reports/studentsInClass.asp?intClass_id='+class_id,"winRoll","width=640,height=480,scrollbars=yes,resizable=yes");
@@ -790,6 +801,10 @@ method="post" id="Form1">
                                     <b>Elective<br/>
                                         Balance</b>
                                 </td>
+                                <td class="gray" align="center">
+                                    <b>Global<br/>
+                                        Reserve</b>
+                                </td>
                             </tr>
                             <tr>
                                 <td class="gray">
@@ -819,6 +834,9 @@ method="post" id="Form1">
 									   '    response.Write "<span class='sverror'>$" & formatNumber(oBudget.AvailableElectiveBudget,2) & "</span>"	
 									   'end if
                                     %>
+                                </td>
+                                <td class="TableCell" align="right">
+                                    $<% = formatNumber(dblGlobalReserve,2) %>
                                 </td>
                             </tr>
                             <tr>
@@ -1002,7 +1020,7 @@ method="post" id="Form1">
                         &nbsp;
                     </td>
                     <td class="gray" align="right">
-                        <nobr>$<%=formatNumber(myBudgetBalance,2)%></nobr>
+                        <nobr>$<%=formatNumber(myBudgetBalance-dblGlobalReserve,2)%></nobr>
                     </td>
                     <% 'JD 041111: Take out the Spent Column %>
                     <% 'JD 052511: Return the Spent Column %>
@@ -1663,7 +1681,7 @@ do while not rsBudget.EOF
 			strSmallList = strSmallList & mDivCount & ","
 			'JD calculate with instructor flat rate
 			'JD edit 052611 fix script error
-			if Session.Contents("intSchool_Year") < 2012 then
+			if Session.Contents("intSchool_Year") < 2014 then
     			dblClassCharge = round(cdbl(rsBudget("TeacherCostPerStudent")),2)
 		    	dblClassBudget = round(cdbl(rsBudget("TeacherCostPerStudent")),2)
 			else
@@ -1691,7 +1709,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right" title="Teachers Hourly Rate">
         <%'JD Change to the Instructor flat rate
 						'$ formatNumber(round(rsBudget("HourlyRateTaxBen"),3),3)%>
-		<%if Session.Contents("intSchool_Year") < 2012 then %>
+		<%if Session.Contents("intSchool_Year") < 2014 then %>
 		    $<%= formatNumber(round(rsBudget("HourlyRateTaxBen"),3),3)%>
 		<%else %>
             $<%= formatNumber(round(rsBudget("InstructorFlatRate"),3),3)%>
@@ -1703,7 +1721,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right">
         <%'JD Change to the instructor flat rate
 						'$formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-	    <%if Session.Contents("intSchool_Year") < 2012 then %>
+	    <%if Session.Contents("intSchool_Year") < 2014 then %>
 		    $<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),3),3)%>
 		<%else %>
             $<%= formatNumber(round(rsBudget("FlatRateByHours"),3),3)%>
@@ -1712,7 +1730,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right">
         <%'JD Change to the instructor flat rate
 						'$formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-	    <%if Session.Contents("intSchool_Year") < 2012 then %>
+	    <%if Session.Contents("intSchool_Year") < 2014 then %>
 		    $<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),3),3)%>
 		<%else %>
             $<%= formatNumber(round(rsBudget("FlatRateByHours"),3),3)%>
@@ -1730,7 +1748,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right" nowrap>
         <%'JD Change to the instructor flat rate
 						'-$formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-		<%if Session.Contents("intSchool_Year") < 2012 then %>
+		<%if Session.Contents("intSchool_Year") < 2014 then %>
 		    -$<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),3),3)%>
 		<%else %>
             -$<%= formatNumber(round(rsBudget("FlatRateByHours"),3),3)%>
