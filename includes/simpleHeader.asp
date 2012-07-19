@@ -71,6 +71,10 @@ end if
 	<!-- This doesn't seem to work on a mac IE 5 -->
 <script language=javascript src="<%= Application.Value("strWebRoot") %>includes/formCheck.js"></script>	
 <script language=javascript src="<%= Application.Value("strWebRoot") %>includes/appJSFunctions.js"></script>	
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js" type="text/javascript"></script>
+    <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1/jquery-ui.min.js" type="text/javascript"></script>
+    <link href="http://ajax.googleapis.com/ajax/libs/jqueryui/1/themes/base/jquery-ui.css"
+        rel="Stylesheet" type="text/css" />
 <STYLE>
 p { page-break-before: always }
 </STYLE>

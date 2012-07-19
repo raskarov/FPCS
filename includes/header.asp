@@ -19,7 +19,7 @@ dim faI
 'if Request.ServerVariables("SERVER_PORT_SECURE") <> 1 then
 '	Response.Redirect "https://" & Request.ServerVariables("SERVER_NAME") & Request.ServerVariables("URL") & "?" & Request.ServerVariables("QUERY_STRING")
 'end if
-
+Response.LCID=1033
 ' No seeing webpages until you log in
 if Session("bolUserLoggedIn") = false  and inStr(1,Request.ServerVariables("URL"),"EmailPassword.asp") < 1 then
 	'session.Value("strURL") = "https://" & Request.ServerVariables("SERVER_NAME") & Request.ServerVariables("URL") & "?" & Request.ServerVariables("QUERY_STRING")
