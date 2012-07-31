@@ -222,7 +222,7 @@ function vbfInsertRecords()
 	end if	
 end function 
 Function vbfGetSyllabusString
-If Request.Form("szGoals")>"" Then
+If Request.Form("szGoals").Count>0 Then
 vbfGetSyllabusString=oFunc.EscapeTick(request("szGoals"))
 Exit Function
 end If

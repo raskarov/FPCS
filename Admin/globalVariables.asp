@@ -81,6 +81,7 @@ sql2 =  "SELECT     a.gradeK, a.intFunding_ID as IDk, b.grade1, b.intFunding_ID 
 		" d.grade3,  d.intFunding_ID as ID3, e.grade4, e.intFunding_ID as ID4, f.grade5, f.intFunding_ID as ID5, " & _
 		"g.grade6, g.intFunding_ID as ID6, h.grade7, h.intFunding_ID as ID7, i.grade8, i.intFunding_ID as ID8, " & _
 		"j.grade9, j.intFunding_ID as ID9, k.grade10, k.intFunding_ID as ID10, l.grade11, l.intFunding_ID as ID11, m.grade12, m.intFunding_ID as ID12 " & _ 
+        ", n.gradeG, n.intFunding_ID as IDg " & _
 		"FROM         (SELECT     curFund_Amount AS gradeK, intFunding_ID " & _ 
 		"                       FROM          tblFunding " & _ 
 		"                       WHERE      (szGrade = 'K') AND (intSchool_Year = '" & session.Contents("intSchool_Year") & "')) a , " & _ 
@@ -119,7 +120,10 @@ sql2 =  "SELECT     a.gradeK, a.intFunding_ID as IDk, b.grade1, b.intFunding_ID 
 		"                            WHERE      (szGrade = '11') AND (intSchool_Year = '" & session.Contents("intSchool_Year") & "')) l , " & _ 
 		"                          (SELECT     curFund_Amount AS grade12, intFunding_ID " & _ 
 		"                            FROM          tblFunding " & _ 
-		"                            WHERE      (szGrade = '12') AND (intSchool_Year = '" & session.Contents("intSchool_Year") & "')) m "		
+		"                            WHERE      (szGrade = '12') AND (intSchool_Year = '" & session.Contents("intSchool_Year") & "')) m , " & _ 
+		"                          (SELECT     curFund_Amount AS gradeG, intFunding_ID " & _ 
+		"                            FROM          tblFunding " & _ 
+		"                            WHERE      (szGrade = 'G') AND (intSchool_Year = '" & session.Contents("intSchool_Year") & "')) n "		
 
 set rs2 = server.CreateObject("ADODB.RECORDSET")
 rs2.CursorLocation = 3
@@ -458,6 +462,9 @@ Server.Execute(Application.Value("strWebRoot") & "includes/Header.asp")
 					<td class="TableCell" align="center">
 						12	
 					</td>
+					<td class="TableCell" align="center">
+						G	
+					</td>
 				</tr>
 				<tr>
 					<td align="center">
@@ -511,6 +518,10 @@ Server.Execute(Application.Value("strWebRoot") & "includes/Header.asp")
 					<td align="center">
 						<input type="text" size="5" name="grade12" value="<%if rs2.RecordCount > 0 then response.Write rs2("grade12")%>" ID="Text20" onchange="jfUpdateList(this.name);">
 						<input type="hidden" name="grade12ID" value="<%if rs2.RecordCount > 0 then response.Write rs2("ID12")%>" ID="Hidden14">						
+					</td>
+					<td align="center">
+						<input type="text" size="5" name="gradeG" value="<%if rs2.RecordCount > 0 then response.Write rs2("gradeG")%>" ID="Text21" onchange="jfUpdateList(this.name);">
+						<input type="hidden" name="gradeGID" value="<%if rs2.RecordCount > 0 then response.Write rs2("IDg")%>" ID="Hidden15">						
 					</td>
 				</tr>
 			</table>

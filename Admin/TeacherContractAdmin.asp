@@ -234,7 +234,7 @@ if request.Form("Search") <> "" then
 					<% = rs("szClass_Name") %>
 				</td>
 				<td >
-					<% = FormatDateTime(rs("dtReady_For_Review"),2) %>
+					<% if rs("dtReady_For_Review").ActualSize>0 then Response.Write FormatDateTime(rs("dtReady_For_Review"),2) %>
 				</td>	
 				<td align="center">
                 <%  Dim xDoc

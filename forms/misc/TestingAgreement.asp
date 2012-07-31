@@ -94,10 +94,13 @@ do while not rs.EOF
 					</td>
 					<% elseif ucase(session.Contents("strRole")) = "GUARD" then %>
 					<td class="svplain8">
-					(<input type="checkbox" name="<% = rs("intEnroll_INFO_ID") %>Selection" value="1">
-					Will Participate | 
+					(<input type="checkbox" name="<% = rs("intEnroll_INFO_ID") %>Selection" value="1" id='chk<%= rs("intEnroll_INFO_ID") %>'>
+					<label for='chk<%= rs("intEnroll_INFO_ID") %>'>Will Participate</label>
+                    <%If False Then %> | 
 					<input type="checkbox" name="<% = rs("intEnroll_INFO_ID") %>Selection" value="0" ID="Checkbox1">
-					Will Not Participate ) in all mandatory testing. The date you "sign" will be recorded.
+					Will Not Participate
+                    <%End If %> 
+                    ) in all mandatory testing. The date you "sign" will be recorded.
 					</td>
 					<%
 					strIds = strIds & rs("intEnroll_INFO_ID") & ","

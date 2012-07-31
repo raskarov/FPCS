@@ -1681,7 +1681,7 @@ do while not rsBudget.EOF
 			strSmallList = strSmallList & mDivCount & ","
 			'JD calculate with instructor flat rate
 			'JD edit 052611 fix script error
-			if Session.Contents("intSchool_Year") < 2014 then
+			if Session.Contents("intSchool_Year") < 2013 then
     			dblClassCharge = round(cdbl(rsBudget("TeacherCostPerStudent")),2)
 		    	dblClassBudget = round(cdbl(rsBudget("TeacherCostPerStudent")),2)
 			else
@@ -1709,7 +1709,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right" title="Teachers Hourly Rate">
         <%'JD Change to the Instructor flat rate
 						'$ formatNumber(round(rsBudget("HourlyRateTaxBen"),3),3)%>
-		<%if Session.Contents("intSchool_Year") < 2014 then %>
+		<%if Session.Contents("intSchool_Year") < 2013 then %>
 		    $<%= formatNumber(round(rsBudget("HourlyRateTaxBen"),3),3)%>
 		<%else %>
             $<%= formatNumber(round(rsBudget("InstructorFlatRate"),3),3)%>
@@ -1721,7 +1721,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right">
         <%'JD Change to the instructor flat rate
 						'$formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-	    <%if Session.Contents("intSchool_Year") < 2014 then %>
+	    <%if Session.Contents("intSchool_Year") < 2013 then %>
 		    $<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),3),3)%>
 		<%else %>
             $<%= formatNumber(round(rsBudget("FlatRateByHours"),3),3)%>
@@ -1730,7 +1730,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right">
         <%'JD Change to the instructor flat rate
 						'$formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-	    <%if Session.Contents("intSchool_Year") < 2014 then %>
+	    <%if Session.Contents("intSchool_Year") < 2013 then %>
 		    $<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),3),3)%>
 		<%else %>
             $<%= formatNumber(round(rsBudget("FlatRateByHours"),3),3)%>
@@ -1748,7 +1748,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right" nowrap>
         <%'JD Change to the instructor flat rate
 						'-$formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-		<%if Session.Contents("intSchool_Year") < 2014 then %>
+		<%if Session.Contents("intSchool_Year") < 2013 then %>
 		    -$<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),3),3)%>
 		<%else %>
             -$<%= formatNumber(round(rsBudget("FlatRateByHours"),3),3)%>
