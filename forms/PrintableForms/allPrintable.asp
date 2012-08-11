@@ -1,4 +1,4 @@
-<%@ Language=VBScript %>
+<%@  language="VBScript" %>
 <%
 response.Buffer = false
 server.ScriptTimeout = 900
@@ -234,11 +234,11 @@ select case ucase(request("strAction"))
 		oFunc.ExecuteCN(update)
 		
 	%>
-	<script language=javascript>
-		window.opener.location.reload();
-		window.focus();
-	</script>	
-	<%
+<script language="javascript">
+    window.opener.location.reload();
+    window.focus();
+	</script>
+<%
 	case else
 		call vbsContract
 		response.Write "<p></p>"
@@ -441,40 +441,38 @@ function vbfPrintContract(intClass_ID)
 	' This recordset is used many times to get Class Information 
 	set rsInfo = server.CreateObject("ADODB.recordset")
 	rsInfo.CursorLocation = 3		
-	%>	
-	<table width=100% ID="Table1">
-		<% = vbfFormHeader(strPrintTitle & " #" & intClass_ID) %></b>											
-		<tr>
-			<td colspan=2>
-			<table ID="Table3" style="width:100%;" cellpadding=3>		
-					<tr>	
-						<Td colspan=32>
-							<font class=svplain11>
-								<b><i>Parties Involved:</I></B> 
-							</font>
-						</td>
-					</tr>
-					<tr>
-						<% if iName <> "" then %>
-						<td class=gray nowrap>
-							ASD Teacher
-						</td>
-						<% end if %>
-						<td class=gray nowrap>
-							Parent
-						</td>	
-						<td class=gray style="width:100%;">
-							Student
-						</td>																
-					</tr>
-					<tr>
-						<% if iName <> "" then %>			
-						<td class=svplain10 nowrap>
-								<% = iName %>
-						</td>	
-						<% end if %>
-						<td align=center class=svplain10 nowrap>
-							<%		
+	%>
+<table width="100%" id="Table1">
+    <% = vbfFormHeader(strPrintTitle & " #" & intClass_ID) %></b>
+    <tr>
+        <td colspan="2">
+            <table id="Table3" style="width: 100%;" cellpadding="3">
+                <tr>
+                    <td colspan="32">
+                        <font class="svplain11"><b><i>Parties Involved:</i></b> </font>
+                    </td>
+                </tr>
+                <tr>
+                    <% if iName <> "" then %>
+                    <td class="gray" nowrap>
+                        ASD Teacher
+                    </td>
+                    <% end if %>
+                    <td class="gray" nowrap>
+                        Parent
+                    </td>
+                    <td class="gray" style="width: 100%;">
+                        Student
+                    </td>
+                </tr>
+                <tr>
+                    <% if iName <> "" then %>
+                    <td class="svplain10" nowrap>
+                        <% = iName %>
+                    </td>
+                    <% end if %>
+                    <td align="center" class="svplain10" nowrap>
+                        <%		
 								if gName <> "" then
 									response.Write gName
 								else		
@@ -493,61 +491,58 @@ function vbfPrintContract(intClass_ID)
 										rsInfo.Close
 									end if	
 								end if							 
-							%>	
-						</td>	
-						<td  class=svplain10 style="width:100%;">
-							<% = strStudentName%>
-						</td>									
-					</tr>
-				</table>
-				<table ID="Table4" style="width:100%;">
-					<tr>	
-						<Td colspan=2 nowrap>
-							<font class=svplain11>
-								<b><i><% = strFormType %> Information</I></B> 
-							</font>
-							<font class=svplain>
-							</font>
-						</td>
-					</tr>
-					<tr>
-						<td class=gray nowrap>
-								&nbsp;Name of Class
-						</td>
-						<td class=gray nowrap>
-								&nbsp;ASD Course ID
-						</td>
-						<td class=gray nowrap>
-								&nbsp;Course Category
-						</td>
-						<!--<td class=gray>
+							%>
+                    </td>
+                    <td class="svplain10" style="width: 100%;">
+                        <% = strStudentName%>
+                    </td>
+                </tr>
+            </table>
+            <table id="Table4" style="width: 100%;">
+                <tr>
+                    <td colspan="2" nowrap>
+                        <font class="svplain11"><b><i>
+                            <% = strFormType %>
+                            Information</i></b> </font><font class="svplain"></font>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="gray" nowrap>
+                        &nbsp;Name of Class
+                    </td>
+                    <td class="gray" nowrap>
+                        &nbsp;ASD Course ID
+                    </td>
+                    <td class="gray" nowrap>
+                        &nbsp;Course Category
+                    </td>
+                    <!--<td class=gray>
 							&nbsp;Subject
 						</td>-->
-						<td class=gray>
-							&nbsp;Location
-						</td>											
-					</tr>
-					<tr>
-						<td class=svplain10 nowrap>
-							<% = szClass_Name%>
-						</td>
-						<td class=svplain10>
-							<% = szASD_Course_ID%>
-						</td>
-						<td class=svplain10 align=center>
-							
-							<% = szSubject_Name %>
-						</td>
-						<!--
+                    <td class="gray">
+                        &nbsp;Location
+                    </td>
+                </tr>
+                <tr>
+                    <td class="svplain10" nowrap>
+                        <% = szClass_Name%>
+                    </td>
+                    <td class="svplain10">
+                        <% = szASD_Course_ID%>
+                    </td>
+                    <td class="svplain10" align="center">
+                        <% = szSubject_Name %>
+                    </td>
+                    <!--
 						<td>
 							<input type=text name="szSubject" value="<% = szSubject%>" maxlength=64 size=20 onChange="jfChanged();">
 						</td> -->
-						<td class=svplain10 style="width:100%;">
-							<% = szLocation%>
-						</td>									
-					</tr>
-				</table>
-				<% 
+                    <td class="svplain10" style="width: 100%;">
+                        <% = szLocation%>
+                    </td>
+                </tr>
+            </table>
+            <% 
 				' Determine which table to show
 				if intInstructor_ID & "" <> "" then
 					response.Write vbfInstructorFields 
@@ -557,24 +552,23 @@ function vbfPrintContract(intClass_ID)
 								
 				if strFamilyNames <> "" then 
 				%>
-				<table ID="Table7" style="width:100%;">
-					<tr>	
-						<Td colspan=2>
-							<font class=svplain11>
-								<b><i><% = strFormType %> Restrictions</I></B> 
-							</font>
-						</td>
-					</tr>
-					<tr>
-						
-						<td class=gray valign=top style="width:100%;">						
-							<b>Restricted to the following families:</b><BR>
-							<% = strFamilyNames%>						
-						</td>
-					</tr>				
-				</table>	
-				<BR>
-				<% end if 									
+            <table id="Table7" style="width: 100%;">
+                <tr>
+                    <td colspan="2">
+                        <font class="svplain11"><b><i>
+                            <% = strFormType %>
+                            Restrictions</i></b> </font>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="gray" valign="top" style="width: 100%;">
+                        <b>Restricted to the following families:</b><br>
+                        <% = strFamilyNames%>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <% end if 									
 				
 				dblGrandTotal = 0 
 				if intClass_ID <> "" AND intInstructor_ID <> "" then	
@@ -630,120 +624,118 @@ function vbfPrintContract(intClass_ID)
 						' do nothing for now
 					else
 				%>
-				<table cellpadding=3 ID="Table5">
-					<tr>
-						<td class=svplain11 colspan=6>
-							<B><i>Required Goods and Services</i></b>
-						</td>
-					</tr>
-					<tr>
-						<Td class=gray align=center>
-							<b>Type</b>
-						</td>
-						<td class=gray align=center>
-							<b>Category</b>
-						</td>
-						<Td class=gray align=center>
-							<b>Name</b>
-						</td>
-						<td class=gray align=center>
-							<b>Qty</b>
-						</td>
-						<Td class=gray align=center>
-							<b>Unit Price</b>
-						</td>
-						<td class=gray align=center>
-							<b>Total</b>
-						</td>
-					</tr>	
-					<%		
+            <table cellpadding="3" id="Table5">
+                <tr>
+                    <td class="svplain11" colspan="6">
+                        <b><i>Required Goods and Services</i></b>
+                    </td>
+                </tr>
+                <tr>
+                    <td class="gray" align="center">
+                        <b>Type</b>
+                    </td>
+                    <td class="gray" align="center">
+                        <b>Category</b>
+                    </td>
+                    <td class="gray" align="center">
+                        <b>Name</b>
+                    </td>
+                    <td class="gray" align="center">
+                        <b>Qty</b>
+                    </td>
+                    <td class="gray" align="center">
+                        <b>Unit Price</b>
+                    </td>
+                    <td class="gray" align="center">
+                        <b>Total</b>
+                    </td>
+                </tr>
+                <%		
 						dim dblTotal
 						
 						do while not rsItems.EOF
 					%>
-					<tr>
-						<Td class=gray align=center>
-							<% = rsItems("ItemType") %>
-						</td>
-						<td class=gray align=center>
-							<% = rsItems("szName") %>
-						</td>
-						<Td class=gray align=center>
-							<% if rsItems("Description") & "" = "" then
+                <tr>
+                    <td class="gray" align="center">
+                        <% = rsItems("ItemType") %>
+                    </td>
+                    <td class="gray" align="center">
+                        <% = rsItems("szName") %>
+                    </td>
+                    <td class="gray" align="center">
+                        <% if rsItems("Description") & "" = "" then
 									response.Write rsItems("szName")
 							else
 									response.Write rsItems("Description")
 							end if			
 							%>
-						</td>
-						<td class=gray align=center>
-							<% = rsItems("intQty") %>
-						</td>
-						<Td class=gray align=center>
-							$<% = rsItems("curUnit_Price") %>
-						</td>
-						<td class=gray align=right>
-							<% 
+                    </td>
+                    <td class="gray" align="center">
+                        <% = rsItems("intQty") %>
+                    </td>
+                    <td class="gray" align="center">
+                        $<% = rsItems("curUnit_Price") %>
+                    </td>
+                    <td class="gray" align="right">
+                        <% 
 								dblTotal = cdbl(rsItems("intQty")) * cdbl(rsItems("curUnit_Price"))
 								dblGrandTotal = dblGrandTotal + dblTotal
 								Response.Write "$" & dblTotal
 							%>
-						</td>
-					</tr>
-				<%
+                    </td>
+                </tr>
+                <%
 							rsItems.MoveNext
 						loop
 				%>
-					<tr>
-						<td colspan=5 class=gray align=right>
-							<B>Grand Total:</b>
-						</td>
-						<td class=gray align=right>
-							$<% = dblGrandTotal %>
-						</td>	
-					</tr>
-				</table>	
-				<br>
-					<%
+                <tr>
+                    <td colspan="5" class="gray" align="right">
+                        <b>Grand Total:</b>
+                    </td>
+                    <td class="gray" align="right">
+                        $<% = dblGrandTotal %>
+                    </td>
+                </tr>
+            </table>
+            <br>
+            <%
 							end if
 							rsItems.Close
 							set rsItems = nothing	
 						end if 
 					%>
-							
-				<table ID="Table9">				
-					<%
+            <table id="Table9">
+                <%
 						if intVendor_ID <> "" then
 							call vbfVendorFields
 						elseif intInstructor_ID & "" <> "" then
 							call vbfClassDetailsForASD(dblGrandTotal)
 						end if 
 					%>
-				</table>
-			</td>
-		</tr>
-	</table>
-	<% if intInstructor_ID & "" <>  "" and false then%>
-	<table ID="Table6">
-		<tr>
-			<td colspan=2 class=svplain10>
-				Signatures below indicate acceptance of all applicable<br> sections of the 
-				Educational Plan & Annual Budget.
-			</td>
-		</tr>
-		<tr>
-			<td>
-
-			</td>
-		</tr>
-	</table>
-	<% 
+            </table>
+        </td>
+    </tr>
+</table>
+<% if intInstructor_ID & "" <>  "" and false then%>
+<table id="Table6">
+    <tr>
+        <td colspan="2" class="svplain10">
+            Signatures below indicate acceptance of all applicable<br>
+            sections of the Educational Plan & Annual Budget.
+        </td>
+    </tr>
+    <tr>
+        <td>
+        </td>
+    </tr>
+</table>
+<% 
 	end if
 	set rsInfo = nothing			
 end function
 
 %>
-	<script language=javascript>
+<script language="javascript">
 		<% if request("noprint") = "" then %>
 		if (window.print){
 	      window.print()
@@ -759,105 +751,101 @@ Server.Execute(Application.Value("strWebRoot") & "Includes/footer.asp")
 
  function vbfClassDetailsForASD(pGSCost)
  %>
-				<tr>	
-					<Td colspan=2>
-						<font class=svplain11>
-							<b><i>Class Costs</I></B> 
-						</font>
-						<font class=svplain11>
-							 (Teachers Time)
-						</font>
-					</td>
-				</tr>
-				<tr>
-					<td class=gray align=right>
-						<% = formatNumber(decHours_Student,1) %>
-					</td>		
-					<td class=gray>
-						&nbsp;Number of teacher hours with student.
-					</td>							
-				</tr>		
-				<tr>
-					<td class=gray align=right>
-						<% = formatNumber(decHours_Planning,1) %>
-					</td>		
-					<td class=gray>
-						&nbsp;Number of hours for teacher planning.
-					</td>							
-				</tr>	
-				<tr>
-					<td class=gray align=right>
-						<% = formatNumber((CDBL(decHours_Student) + cdbl(decHours_Planning)),1) %>
-					</td>		
-					<td class=gray>
-						&nbsp;<B>Total teacher hours.</b>
-					</td>							
-				</tr>	
- 				<tr>
-					<td class=gray align=right>
-						<% = formatNumber((CDBL(decHours_Student) + cdbl(decHours_Planning))/intMax_Students,1)%>
-					</td>		
-					<td class=gray>
-						&nbsp;Minimum number of hours to be charged to each student.
-					</td>							
-				</tr>	
-				<tr>
-					<td class=gray align=right>
-						<% = formatNumber((CDBL(decHours_Student) + cdbl(decHours_Planning))/intMin_Students,1)%>
-					</td>		
-					<td class=gray>
-						&nbsp;Maximum number of hours to be charged to each student.
-					</td>							
-				</tr>	
-				<tr>
-					<td class=gray align=right>
-						$<% = curInstructionRate %>
-					</td>		
-					<td class=gray>
-						&nbsp;Teachers hourly rate.
-					</td>							
-				</tr>
-				<tr>
-					<td class=gray align=right>
-						$<% = formatNumber(((CDBL(decHours_Student) + cdbl(decHours_Planning))/intMax_Students)*curInstructionRate,2) %>
-					</td>		
-					<td class=gray>
-						&nbsp;Minimum total teacher cost per student.
-					</td>							
-				</tr>	
-				<tr>
-					<td class=gray align=right>
-						$<% = formatNumber(((CDBL(decHours_Student) + cdbl(decHours_Planning))/cdbl(intMin_Students))*cdbl(curInstructionRate),2) %>
-					</td>		
-					<td class=gray>
-						&nbsp;Maximum total teacher cost per student.
-					</td>							
-				</tr>	
-				<tr>
-					<td class=gray align="right">
-						$<% = pGSCost %>
-					</td>		
-					<td class=gray>
-						&nbsp;Total miscellaneous costs per student.
-					</td>							
-				</tr>		
-				<tr>
-					<td class=gray align="right">
-						$<% = formatNumber((((CDBL(decHours_Student) + cdbl(decHours_Planning))/intMax_Students)*curInstructionRate)+pGSCost,2) %>
-					</td>		
-					<td class=gray>
-						&nbsp;<B>Minimum total deduction per student account.</b>
-					</td>							
-				</tr>	
-				<tr>
-					<td class=gray align="right">
-						$<% = formatNumber((((CDBL(decHours_Student) + cdbl(decHours_Planning))/cdbl(intMin_Students))*cdbl(curInstructionRate))+pGSCost,2) %>
-					</td>		
-					<td class=gray>
-						&nbsp;<B>Maximum total deduction per student account.</b>
-					</td>							
-				</tr>			
- <%
+<tr>
+    <td colspan="2">
+        <font class="svplain11"><b><i>Class Costs</i></b> </font><font class="svplain11">(Teachers
+            Time) </font>
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        <% = formatNumber(decHours_Student,1) %>
+    </td>
+    <td class="gray">
+        &nbsp;Number of teacher hours with student.
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        <% = formatNumber(decHours_Planning,1) %>
+    </td>
+    <td class="gray">
+        &nbsp;Number of hours for teacher planning.
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        <% = formatNumber((CDBL(decHours_Student) + cdbl(decHours_Planning)),1) %>
+    </td>
+    <td class="gray">
+        &nbsp;<b>Total teacher hours.</b>
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        <% = formatNumber((CDBL(decHours_Student) + cdbl(decHours_Planning))/intMax_Students,1)%>
+    </td>
+    <td class="gray">
+        &nbsp;Minimum number of hours to be charged to each student.
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        <% = formatNumber((CDBL(decHours_Student) + cdbl(decHours_Planning))/intMin_Students,1)%>
+    </td>
+    <td class="gray">
+        &nbsp;Maximum number of hours to be charged to each student.
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        $<% = curInstructionRate %>
+    </td>
+    <td class="gray">
+        &nbsp;Teachers hourly rate.
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        $<% = formatNumber(((CDBL(decHours_Student) + cdbl(decHours_Planning))/intMax_Students)*curInstructionRate,2) %>
+    </td>
+    <td class="gray">
+        &nbsp;Minimum total teacher cost per student.
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        $<% = formatNumber(((CDBL(decHours_Student) + cdbl(decHours_Planning))/cdbl(intMin_Students))*cdbl(curInstructionRate),2) %>
+    </td>
+    <td class="gray">
+        &nbsp;Maximum total teacher cost per student.
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        $<% = pGSCost %>
+    </td>
+    <td class="gray">
+        &nbsp;Total miscellaneous costs per student.
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        $<% = formatNumber((((CDBL(decHours_Student) + cdbl(decHours_Planning))/intMax_Students)*curInstructionRate)+pGSCost,2) %>
+    </td>
+    <td class="gray">
+        &nbsp;<b>Minimum total deduction per student account.</b>
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        $<% = formatNumber((((CDBL(decHours_Student) + cdbl(decHours_Planning))/cdbl(intMin_Students))*cdbl(curInstructionRate))+pGSCost,2) %>
+    </td>
+    <td class="gray">
+        &nbsp;<b>Maximum total deduction per student account.</b>
+    </td>
+</tr>
+<%
  end function
  
  function vbfVendorFields
@@ -883,164 +871,167 @@ Server.Execute(Application.Value("strWebRoot") & "Includes/footer.asp")
 	end if
 	rsInfo.Close
 	
- %>				
-				<tr>	
-					<Td colspan=2>
-						<font class=svplain11>
-							<b><i>Vendor Class Costs</I></B> 
-						</font>
-					</td>
-				</tr>
-				<tr>
-					<td class=gray align=right>
-						<% = decNum_Units %>
-					<td class=gray>
-						&nbsp;<% = strChargeList %> at
-					</td>							
-				</tr>		
-				<tr>
-					<td class=gray align=right>
-						$<% = formatNumber(curCharge_Amount,2) %>
-					</td>		
-					<td class=gray onChange="jfChanged();">
-						&nbsp;Cost per unit.
-					</td>							
-				</tr>					
-				<tr>
-					<td class=gray align=right>
-						$<% = formatNumber(cdbl(decNum_Units) * cdbl(curCharge_Amount),2) %>
-					</td>		
-					<td class=gray>
-						&nbsp;<B>Contract Amount.</b>
-					</td>							
-				</tr>	
-			 </table>
-			 <br>
-			 <table ID="Table10">
-				<tr>	
-					<Td colspan=2>
-						<font class=svplain11>
-							<b><i>Vendor Contract Information</I></B> 
-						</font>
-					</td>
-				</tr>
-				<tr>
-					<td class=gray colspan=2>
-						Description of Service Vendor is Providing				
-					</td>
-				</tr>
-				<tr>
-					<td colspan=2 class=svplain10>
-						<% = szService_desc %>
-					</td>
-				</tr>
-				<tr>
-					<td class=gray>
-						&nbsp;Is Service to be provided <BR>
-						&nbsp;on District premises? 
-						<input disabled type=checkbox <% if bolOn_Premises then Response.Write " checked " %> name="bolOn_Premises" value="TRUE" onChange="jfChanged();" ID=Checkbox <% if bolon_premises then response.write " checked " %>1><b>Yes</b>&nbsp;
-					</td>
-					<td class=gray>
-						&nbsp;Is Service to be provided <BR>
-						&nbsp;using District equipment or supplies? 
-						<input disabled type=checkbox <% if bolDistrict_Equip then Response.Write " checked " %> name="bolDistrict_Equip" value="TRUE" onChange="jfChanged();" ID=Checkbox <% if boldistrict_equip then response.write " checked " %>1><b>Yes</b>&nbsp;
-					</td>										
-				</tr>	
-				<tr>
-					<td class=svplain10>
-						If yes indicate where?					
-					</td>
-					<td class=svplain10>
-						If yes indicate which equipment and supplies.				
-					</td>
-				</tr>
-				<tr>
-					<td class=svplain10>
-						<% = szPremises%>
-					</td>
-					<td align=center class=svplain10>
-						<% = szEquip_List %>
-					</td>
-				</tr>
-				<tr>
-					<td class=gray colspan=2>
-						&nbsp;Will the District pay Contractor for Service updon satisfactory completion
-						<br>&nbsp;and acceptance of ALL work required uder this contract? 
-						<input disabled type=checkbox <% if bolPay_On_Completion then Response.Write " checked " %> name="bolPay_On_Completion" value="TRUE" ID=Checkbox <% if bolpay_on_completion then response.write " checked " %>1><b>Yes</b>&nbsp;
-					</td>
-				</tr>
-				<tr>
-					<td class=svplain10 colspan=2>
-						If NO indicate when (partial) payment(s) to be made. 				
-					</td>
-				</tr>
-				<tr>
-					<td colspan=2 class=svplain10>
-						<% = szPay_Details %>
-					</td>
-				</tr>
- <%
+ %>
+<tr>
+    <td colspan="2">
+        <font class="svplain11"><b><i>Vendor Class Costs</i></b> </font>
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        <% = decNum_Units %>
+    <td class="gray">
+        &nbsp;<% = strChargeList %>
+        at
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        $<% = formatNumber(curCharge_Amount,2) %>
+    </td>
+    <td class="gray" onchange="jfChanged();">
+        &nbsp;Cost per unit.
+    </td>
+</tr>
+<tr>
+    <td class="gray" align="right">
+        $<% = formatNumber(cdbl(decNum_Units) * cdbl(curCharge_Amount),2) %>
+    </td>
+    <td class="gray">
+        &nbsp;<b>Contract Amount.</b>
+    </td>
+</tr>
+</table>
+<br>
+<table id="Table10">
+    <tr>
+        <td colspan="2">
+            <font class="svplain11"><b><i>Vendor Contract Information</i></b> </font>
+        </td>
+    </tr>
+    <tr>
+        <td class="gray" colspan="2">
+            Description of Service Vendor is Providing
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" class="svplain10">
+            <% = szService_desc %>
+        </td>
+    </tr>
+    <tr>
+        <td class="gray">
+            &nbsp;Is Service to be provided
+            <br>
+            &nbsp;on District premises?
+            <input disabled type="checkbox" <% if bolOn_Premises then Response.Write " checked " %>
+                name="bolOn_Premises" value="TRUE" onchange="jfChanged();" id="Checkbox" <% if bolon_premises then response.write " checked " %>1><b>Yes</b>&nbsp;
+        </td>
+        <td class="gray">
+            &nbsp;Is Service to be provided
+            <br>
+            &nbsp;using District equipment or supplies?
+            <input disabled type="checkbox" <% if bolDistrict_Equip then Response.Write " checked " %>
+                name="bolDistrict_Equip" value="TRUE" onchange="jfChanged();" id="Checkbox" <% if boldistrict_equip then response.write " checked " %>1><b>Yes</b>&nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td class="svplain10">
+            If yes indicate where?
+        </td>
+        <td class="svplain10">
+            If yes indicate which equipment and supplies.
+        </td>
+    </tr>
+    <tr>
+        <td class="svplain10">
+            <% = szPremises%>
+        </td>
+        <td align="center" class="svplain10">
+            <% = szEquip_List %>
+        </td>
+    </tr>
+    <tr>
+        <td class="gray" colspan="2">
+            &nbsp;Will the District pay Contractor for Service updon satisfactory completion
+            <br>
+            &nbsp;and acceptance of ALL work required uder this contract?
+            <input disabled type="checkbox" <% if bolPay_On_Completion then Response.Write " checked " %>
+                name="bolPay_On_Completion" value="TRUE" id="Checkbox" <% if bolpay_on_completion then response.write " checked " %>1><b>Yes</b>&nbsp;
+        </td>
+    </tr>
+    <tr>
+        <td class="svplain10" colspan="2">
+            If NO indicate when (partial) payment(s) to be made.
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2" class="svplain10">
+            <% = szPay_Details %>
+        </td>
+    </tr>
+    <%
  end function
  
  function vbfInstructorFields
 %>
-			<table ID="Table8" style="width:100%;">
-					<tr>
-						<td class=gray nowrap>
-							&nbsp;Registration Deadline
-						</td>
-						<td class=gray nowrap>
-							&nbsp;Min # Students
-						</td>	
-						<td class=gray nowrap>
-							&nbsp;Max # Students
-						</td>	
-						<td class=gray nowrap>
-							&nbsp;Grade&nbsp;
-						</td>		
-						<td class=gray  style="width:100%;">
-							&nbsp;to Grade&nbsp;
-						</td>																
-					</tr>
-					<tr>
-						<td class=svplain10 nowrap align=center>
-						<% = monthReg & "/" & dayReg & "/" & yearReg %>
-						</td>	
-						<td align=center class=svplain10 nowrap>
-						<% = intMin_Students%>
-						</td>	
-						<td align=center class=svplain10 nowrap>
-							<% = intMax_Students%>
-						</td>	
-						<td align=center class=svplain10 nowrap>
-							<% = sGrade_Level%>
-						</td>			
-						<td  class=svplain10>
-							&nbsp;&nbsp;&nbsp;&nbsp;<%= sGrade_Level2 %>
-						</td>								
-					</tr>
-				</table>
-				<table ID="Table11"  style="width:100%;">				
-					<tr>
-						<td class=gray nowrap>
-							&nbsp;Class Start Date
-						</td>
-						<td class=gray nowrap>
-							&nbsp;Class End Date
-						</td>	
-						<td class=gray align=left  style="width:100%;">
-							&nbsp;Meets Every
-						</td>																
-					</tr>
-					<tr>
-						<td valign=top class=svplain10 nowrap>
-							<% = monthStart & "/" & dayStart & "/" & yearStart %>
-						</td>				
-						<td valign=top class=svplain10 nowrap >
-							<% = monthEnd & "/" & dayEnd & "/" & yearEnd %>	
-						</td>				
-						<td class=svplain10 >
-							<% 	
+    <table id="Table8" style="width: 100%;">
+        <tr>
+            <td class="gray" nowrap>
+                &nbsp;Registration Deadline
+            </td>
+            <td class="gray" nowrap>
+                &nbsp;Min # Students
+            </td>
+            <td class="gray" nowrap>
+                &nbsp;Max # Students
+            </td>
+            <td class="gray" nowrap>
+                &nbsp;Grade&nbsp;
+            </td>
+            <td class="gray" style="width: 100%;">
+                &nbsp;to Grade&nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td class="svplain10" nowrap align="center">
+                <% = monthReg & "/" & dayReg & "/" & yearReg %>
+            </td>
+            <td align="center" class="svplain10" nowrap>
+                <% = intMin_Students%>
+            </td>
+            <td align="center" class="svplain10" nowrap>
+                <% = intMax_Students%>
+            </td>
+            <td align="center" class="svplain10" nowrap>
+                <% = sGrade_Level%>
+            </td>
+            <td class="svplain10">
+                &nbsp;&nbsp;&nbsp;&nbsp;<%= sGrade_Level2 %>
+            </td>
+        </tr>
+    </table>
+    <table id="Table11" style="width: 100%;">
+        <tr>
+            <td class="gray" nowrap>
+                &nbsp;Class Start Date
+            </td>
+            <td class="gray" nowrap>
+                &nbsp;Class End Date
+            </td>
+            <td class="gray" align="left" style="width: 100%;">
+                &nbsp;Meets Every
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" class="svplain10" nowrap>
+                <% = monthStart & "/" & dayStart & "/" & yearStart %>
+            </td>
+            <td valign="top" class="svplain10" nowrap>
+                <% = monthEnd & "/" & dayEnd & "/" & yearEnd %>
+            </td>
+            <td class="svplain10">
+                <% 	
 								if szDays_Meet_On <> "" then						
 									dim sqlDays
 									sqlDays = "select strText from common_lists where intList_ID = 4 and strValue='" & szDays_Meet_On & "'"
@@ -1057,34 +1048,36 @@ Server.Execute(Application.Value("strWebRoot") & "Includes/footer.asp")
 									rsInfo.Close
 								end if		
 							%>
-						</td>
-					</tr>
-				</table>		
-				<table ID="Table12"  style="width:100%;">				
-					<tr>
-						<td class=gray nowrap>
-								&nbsp;Class Start Time
-						</td>
-						<td class=gray nowrap>
-							&nbsp;Class End Time
-						</td>		
-						<td class=gray  style="width:100%;">
-							&nbsp;Schedule Comments
-						</td>													
-					</tr>
-					<tr>
-						<td valign=top class=svplain10 align=center nowrap>
-							<% = hourStart%>:<% = minuteStart %> <% =amPmStart %>
-						</td>	
-						<td valign=top class=svplain10 align=center nowrap>
-							<%= hourEnd %>:<% = minuteEnd %> <% = amPmEnd %>	
-						</td>	
-						<td  class=svplain10>
-							<% = szSchedule_Comments%>					
-						</td>	
-					</tr>
-				</table>
-<%
+            </td>
+        </tr>
+    </table>
+    <table id="Table12" style="width: 100%;">
+        <tr>
+            <td class="gray" nowrap>
+                &nbsp;Class Start Time
+            </td>
+            <td class="gray" nowrap>
+                &nbsp;Class End Time
+            </td>
+            <td class="gray" style="width: 100%;">
+                &nbsp;Schedule Comments
+            </td>
+        </tr>
+        <tr>
+            <td valign="top" class="svplain10" align="center" nowrap>
+                <% = hourStart%>:<% = minuteStart %>
+                <% =amPmStart %>
+            </td>
+            <td valign="top" class="svplain10" align="center" nowrap>
+                <%= hourEnd %>:<% = minuteEnd %>
+                <% = amPmEnd %>
+            </td>
+            <td class="svplain10">
+                <% = szSchedule_Comments%>
+            </td>
+        </tr>
+    </table>
+    <%
 end function
 
 function vbfGuardianFields
@@ -1096,56 +1089,56 @@ function vbfGuardianFields
 		intMax_Students = 1
 	end if
 %>
-			<table ID="Table13">
-				<tr>
-					<td class=gray>
-						&nbsp;Min # Students &nbsp;
-					</td>	
-					<td class=gray>
-						&nbsp;Max # Students &nbsp;
-					</td>	
-					<td class=gray>
-						&nbsp;Class Duration &nbsp;
-					</td>		
-						
-					<td class=gray>
-						&nbsp;Session Length &nbsp;
-					</td>																
-				</tr>
-				<tr>					
-					<td align=center class=svplain10 >
-						<% = intMin_Students%>
-					</td>	
-					<td align=center class=svplain10 >
-						<% = intMax_Students%>
-					</td>	
-					<td class=svplain10 align=center>
-						<% = szDuration_Name %>
-					</td>								
-					<td valign=top align=center class=svplain10 >
-						<% = intSession_Minutes%> minutes
-					</td>	
-				</tr>
-			</table>		
-			<table ID="Table14">				
-				<tr>
-					<td class=gray class=svplain10 >
-						&nbsp;Meets Every
-					</td>	
-					<td class=gray  class=svplain10 >
-						&nbsp;Comments
-					</td>													
-				</tr>
-				<tr>
-					<td class=svplain10 align=center>
-						<% = szDays_Meet_On %>
-					</td>			
-					<td align=center class=svplain10 >
-						<% = szSchedule_Comments %> 
-					</td>	
-				</tr>
-			</table>
-<%
+    <table id="Table13">
+        <tr>
+            <td class="gray">
+                &nbsp;Min # Students &nbsp;
+            </td>
+            <td class="gray">
+                &nbsp;Max # Students &nbsp;
+            </td>
+            <td class="gray">
+                &nbsp;Class Duration &nbsp;
+            </td>
+            <td class="gray">
+                &nbsp;Session Length &nbsp;
+            </td>
+        </tr>
+        <tr>
+            <td align="center" class="svplain10">
+                <% = intMin_Students%>
+            </td>
+            <td align="center" class="svplain10">
+                <% = intMax_Students%>
+            </td>
+            <td class="svplain10" align="center">
+                <% = szDuration_Name %>
+            </td>
+            <td valign="top" align="center" class="svplain10">
+                <% = intSession_Minutes%>
+                minutes
+            </td>
+        </tr>
+    </table>
+    <table id="Table14">
+        <tr>
+            <td class="gray" class="svplain10">
+                &nbsp;Meets Every
+            </td>
+            <td class="gray" class="svplain10">
+                &nbsp;Comments
+            </td>
+        </tr>
+        <tr>
+            <td class="svplain10" align="center">
+                <% = szDays_Meet_On %>
+            </td>
+            <td align="center" class="svplain10">
+                <% = szSchedule_Comments %>
+            </td>
+        </tr>
+    </table>
+    <%
 end function
 
 function vbfPrintILP(intILP_ID)
@@ -1260,284 +1253,324 @@ if sintSchool_Year = "" then
 	sintSchool_Year = session.Value("intSchool_Year")
 end if
 %>
-<table width=100% ID="Table15" cellpadding=2 cellspacing=2>
-	<% = vbfFormHeader("ILP (Individual Learning Plan) #" & intClass_ID) %>										
-	<tr>
-		<td colspan=2>
-<% if request("ILP_TYPE") & "" = "" then %>		
-			<table ID="Table17">
-				<tr>		
-					<% if strStudentName <> "" then %>	
-					<td class=gray align=center>
-						&nbsp;Date Enrolled
-					</td>	
-					<td class=gray>		
-						&nbsp;Student
-					</td>
-					<% end if %>	
-					<td class=gray>
-							&nbsp;Instructor
-					</td>								
-					<td class=gray align=center>
-							&nbsp;Class Name&nbsp;
-					</td>
-					<td class=gray align=center>
-							&nbsp;School Yr&nbsp;
-					</td>			
-					<td class=gray  align=center title="Number of hours this course contributes to core hours.">
-							&nbsp;Course Hrs&nbsp;
-					</td>																
-				</tr>
-				<tr>								
-					<% if strStudentName <> "" then %>	
-					<td class=svplain10 valign=middle align=center>
-						<% = formatDateTime(dtCreate,2) %>	
-					</td>		
-					<td class=svplain10>
-						&nbsp;<% = strStudentName %>&nbsp;
-					</td>
-					<% end if %>	
-					<td class=svplain10 valign=middle>
-							&nbsp;<% = TaughtBy %>&nbsp;
-					</td>						
-					<td class=svplain10>
-							&nbsp;<% = szClass_Name %>&nbsp;
-					</td>
-					<td class=svplain10 valign=middle align=center>
-						<%= sintSchool_Year %>
-					</td>
-					<td align=center class=svplain10 valign=middle>
-						<% = decCourse_Hours %>			
-					</td>											
-				</tr>
-			</table>
-<% end if %>			
-			<table ID="Table18">
-				<tr>
-					<td class=gray>
-							&nbsp;&nbsp;<B>1. Description of the course including methods, curriculum and supplies needed ...</B>
-					</td>									
-				</tr>
-				
-				<tr>
-					<td class=svplain10>
-						<%=szCurriculum_Desc%>
-					</td>
-				</tr>
-			</table>	
-			<table ID="Table19">
-				<tr>
-					<td class=gray>
-							<table cellpadding=3 cellspacing=0 class=gray2 ID="Table38">
-								<tr>
-									<td valign=top><b>2.</b></td>
-									<td>
-										<b>The student will learn ... </b><br>
-											(a minimum of 2 examples)
-									</td>
-								</tr>
-							</table>
-					</td>
-					<td>&nbsp;</td>
-					<td class=gray>
-							<table cellpadding=3 cellspacing=0 class=gray2 ID="Table39">
-								<tr>
-									<td valign=top><b>3.</b></td>
-									<td>
-										<b>Student will be involved in these <BR>activities/assignments ... </B>
-									</td>
-								</tr>
-							</table>
-					</td>									
-				</tr>
-				<tr>
-					<td class=svplain10 valign=top>
-                    <%Dim re
+    <table width="100%" id="Table15" cellpadding="2" cellspacing="2">
+        <% = vbfFormHeader("ILP (Individual Learning Plan) #" & intClass_ID) %>
+        <tr>
+            <td colspan="2">
+                <% if request("ILP_TYPE") & "" = "" then %>
+                <table id="Table17">
+                    <tr>
+                        <% if strStudentName <> "" then %>
+                        <td class="gray" align="center">
+                            &nbsp;Date Enrolled
+                        </td>
+                        <td class="gray">
+                            &nbsp;Student
+                        </td>
+                        <% end if %>
+                        <td class="gray">
+                            &nbsp;Instructor
+                        </td>
+                        <td class="gray" align="center">
+                            &nbsp;Class Name&nbsp;
+                        </td>
+                        <td class="gray" align="center">
+                            &nbsp;School Yr&nbsp;
+                        </td>
+                        <td class="gray" align="center" title="Number of hours this course contributes to core hours.">
+                            &nbsp;Course Hrs&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <% if strStudentName <> "" then %>
+                        <td class="svplain10" valign="middle" align="center">
+                            <% = formatDateTime(dtCreate,2) %>
+                        </td>
+                        <td class="svplain10">
+                            &nbsp;<% = strStudentName %>&nbsp;
+                        </td>
+                        <% end if %>
+                        <td class="svplain10" valign="middle">
+                            &nbsp;<% = TaughtBy %>&nbsp;
+                        </td>
+                        <td class="svplain10">
+                            &nbsp;<% = szClass_Name %>&nbsp;
+                        </td>
+                        <td class="svplain10" valign="middle" align="center">
+                            <%= sintSchool_Year %>
+                        </td>
+                        <td align="center" class="svplain10" valign="middle">
+                            <% = decCourse_Hours %>
+                        </td>
+                    </tr>
+                </table>
+                <% end if %>
+                <table id="Table18">
+                    <tr>
+                        <td class="gray">
+                            &nbsp;&nbsp;<b>1. Description of the course including methods, curriculum and supplies
+                                needed ...</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="svplain10">
+                            <%=szCurriculum_Desc%>
+                        </td>
+                    </tr>
+                </table>
+                <table id="Table19">
+                    <tr>
+                        <td class="gray">
+                            <table cellpadding="3" cellspacing="0" class="gray2" id="Table38">
+                                <tr>
+                                    <td valign="top">
+                                        <b>2.</b>
+                                    </td>
+                                    <td><b>Standards: Common core or GLE</b>
+                                        <!--<b>The student will learn ... </b>
+                                        <br>
+                                        (a minimum of 2 examples)-->
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <!--<td>
+                            &nbsp;
+                        </td>-->
+                        <td class="gray">
+                            <table cellpadding="3" cellspacing="0" class="gray2" id="Table39">
+                                <tr>
+                                    <td valign="top">
+                                        <b>3.</b>
+                                    </td>
+                                    <td>
+                                        <b>Student will be involved in these
+                                            <br>
+                                            activities/assignments ... </b>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="svplain10" valign="top">
+                            <%=szTeacher_Role%>
+                        <%If False Then %>
+                    <%End If %>
+                        </td>
+                        <!--<td>
+                            &nbsp;
+                        </td>-->
+                        <td class="svplain10" valign="top">
+                            <%=szRequirements%>
+                        </td>
+                    </tr>
+                </table>
+                <br>
+                <table id="Table20">
+                    <!--<tr>
+                        <td colspan="3">
+                            <font class="svplain11"><b><i>Roles</i></b> </font>
+                        </td>
+                    </tr>-->
+                    <tr>
+                        <td class="gray">
+                            &nbsp;<b>4. Materials, Resources</b>
+                        </td>
+                        <td class="gray">
+                            &nbsp;<b>5. Role of Parent/Teacher/Vendor/any additional responsibilities of the student</b>
+                        </td>
+                        <!--<td class="gray">
+                            <table cellpadding="3" cellspacing="0" class="gray2" border="0">
+                                <tr>
+                                    <td valign="top">
+                                        <b>6.</b>
+                                    </td>
+                                    <td>
+                                        <b>Role of Parent/Teacher/Vendor</b>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>-->
+                    </tr>
+                    <tr>
+                        <td class="svplain10" valign="top">
+                            <%=szStudent_Role%>
+                        </td>
+                        <td class="svplain10" valign="top">
+                            <%=szParent_Role%>
+                        </td>
+                        <!--<td class="svplain10" valign="top">
+                            <%=szTeacher_Role%>
+                        </td>-->
+                    </tr>
+                </table>
+                <table id="Table21">
+                    <tr>
+                        <td colspan="3">
+                            <font class="svplain11"><b><i>Evaluation and Grading</i></b> </font>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="gray" valign="top">
+                            <nobr>&nbsp;<input type=checkbox name="bolPass_Fail" <% if bolPass_Fail&"" <> "" and bolPass_Fail <> 0 then response.Write(" checked ")%> ID="Checkbox1" disabled>Pass/Fail&nbsp;</nobr>
+                        </td>
+                        <td class="gray">
+                            &nbsp;<input type="checkbox" name="bolGrading_Scale" <% if bolGradingScale &"" <> "" then response.Write(" checked ")%>
+                                id="Checkbox2" disabled>Grading Scale
+                        </td>
+                        <td class="gray">
+                            &nbsp;<input type="checkbox" name="bolOther_Grading" <% if szOther_Grading&"" <> "" then response.Write(" checked ")%>
+                                id="Checkbox3" disabled>Other
+                        </td>
+                    </tr>
+                    <tr>
+                    <td>&nbsp;</td>
+                        <td colspan="1">
+                    <% if bolGradingScale &"" <> "" then %>
+                            <table id="Table22">
+                                <tr>
+                                    <td class="gray" nowrap>
+                                        &nbsp;A =
+                                    </td>
+                                    <td nowrap class="svplain">
+                                        90% to 100%
+                                    </td>
+                                    <td class="gray" nowrap>
+                                        &nbsp;B =
+                                    </td>
+                                    <td nowrap class="svplain">
+                                        80% to 89%
+                                    </td>
+                                    <td class="gray" nowrap>
+                                        &nbsp;C =
+                                    </td>
+                                    <td nowrap class="svplain">
+                                        70% to 79%
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="gray" nowrap>
+                                        &nbsp;D =
+                                    </td>
+                                    <td nowrap class="svplain">
+                                        60% to 69%
+                                    </td>
+                                    <td class="gray" nowrap>
+                                        &nbsp;F =
+                                    </td>
+                                    <td nowrap class="svplain">
+                                        0% to 59%
+                                    </td>
+                                    <td nowrap class="svplain" colspan="2">
+                                        &nbsp;
+                                    </td>
+                                </tr>
+                            </table>
+                    <% end if %>
+                        </td>
+                        <td class="svplain8" colspan="3">
+                    <% if szOther_Grading <> "" then%>
+                    <!--<tr>-->
+                            <b>6. Explain:</b><br>
+                            <%=szOther_Grading%>
+                   <!-- </tr>-->
+                    <% end if %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="gray" colspan="3">
+                            <table cellpadding="3" cellspacing="0" class="gray2" id="Table41">
+                                <tr>
+                                    <td valign="top">
+                                        <b>7.</b>
+                                    </td>
+                                    <td>
+                                        <b>What will be evaluated? </b>(worksheets, tests, class participation, daily work,
+                                        logs, attendance, etc.)<br>
+                                        <b>How will student be evaluated?</b> (# of projects, work correction, logs, informal/formal
+                                        evaluations, portfolios, oral presentations, etc.)
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" colspan="3" class="svplain10">
+                            <% = szEvaluation %>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="gray" colspan="3">
+                            <table cellpadding="3" cellspacing="0" class="gray2" id="Table41">
+                                <tr>
+                                    <td valign="top">
+                                        <b>8.</b>
+                                    </td>
+                                    <td>
+                                        <b>Course Syllabus: work out a timeline (scope and sequence) of all major topics to be covered.
+                                        <b>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="top" colspan="3" class="svplain10">
+                            <%Dim re
                     Set re=New RegExp
                     re.Pattern="[<]tbody[>]"
                     re.IgnoreCase=True
                     If re.Test(szGoals) then %>
-						<table class="svplain10"><%=szGoals%></table>
-                    <%Else %>
-                    <%=szGoals %>
-                    <%End If %>
-					</td>
-					<td>&nbsp;</td>
-					<td class=svplain10 valign=top>
-						<%=szRequirements%>
-					</td>
-				</tr>				
-			</table>
-			<br>
-			<table ID="Table20">
-				<tr>	
-					<Td colspan=3>
-						<font class=svplain11>
-							<b><i>Roles</I></B> 
-						</font>
-					</td>
-				</tr>
-				<tr>
-					<td class=gray>
-							&nbsp;<b>4. Role of ASD Teacher</B>
-					</td>
-					<td class=gray>
-							&nbsp;<b>5. Role of Student</B>
-					</td>		
-					<td class=gray>
-							<table cellpadding=3 cellspacing=0 class=gray2 border=0>
-								<tr>
-									<td valign=top><b>6.</b></td>
-									<td>
-										<b>Role of Parent/Teacher/Vendor</b>
-									</td>
-								</tr>
-							</table>
-					</td>												
-				</tr>
-				<tr>
-					<td class=svplain10 valign=top>
-						<%=szTeacher_Role%>
-					</td>
-					<td class=svplain10 valign=top>
-						<%=szStudent_Role%>
-					</td>
-					<td class=svplain10 valign=top>
-						<%=szParent_Role%>
-					</td>
-				</tr>				
-			</table>	
-			
-			<table ID="Table21">
-				<tr>	
-					<Td colspan=3>
-						<font class=svplain11>
-							<b><i>Evaluation and Grading</I></B> 
-						</font>
-					</td>				
-				</tr>
-				<tr>
-					<td class=gray valign=top>
-						<nobr>&nbsp;<input type=checkbox name="bolPass_Fail" <% if bolPass_Fail&"" <> "" and bolPass_Fail <> 0 then response.Write(" checked ")%> ID="Checkbox1" disabled>Pass/Fail&nbsp;</nobr>
-					</td>
-					<td class=gray>
-						&nbsp;<input type=checkbox name="bolGrading_Scale" <% if bolGradingScale &"" <> "" then response.Write(" checked ")%> ID="Checkbox2" disabled>Grading Scale 
-					</td>	
-					<td class=gray>
-						&nbsp;<input type=checkbox name="bolOther_Grading" <% if szOther_Grading&"" <> "" then response.Write(" checked ")%> ID="Checkbox3" disabled>Other
-					</td>										
-				</tr>
-				<% if bolGradingScale &"" <> "" then %>
-				<tr>					
-					<td colspan=3>					
-						<table ID="Table22">
-							<tr>
-								<td class=gray nowrap>
-									&nbsp;A = 
-								</td>
-								<td nowrap class="svplain">
-									90% to 100%
-								</td>
-								<td class=gray nowrap>
-									&nbsp;B = 
-								</td>
-								<td nowrap class="svplain">
-									80% to 89%
-								</td>	
-								<td class=gray nowrap>
-									&nbsp;C = 
-								</td>
-								<td nowrap class="svplain">
-									70% to 79%
-								</td>
-							</tr>
-							<tr>
-								<td class=gray nowrap>
-									&nbsp;D = 
-								</td>
-								<td nowrap class="svplain">
-									60% to 69%
-								</td>	
-								<td class=gray nowrap>
-									&nbsp;F = 
-								</td>
-								<td nowrap class="svplain">
-									0% to 59%
-								</td>	
-								<td nowrap class="svplain" colspan=2>
-									&nbsp;
-								</td>								
-							</tr>
-						</table>
-					</td>
-				</tr>
-					<% end if %>
-					<% if szOther_Grading <> "" then%>
-				<tr>
-					<td class=svplain8 colspan=3>
-						<b>7. Explain:</b><br>
-						<%=szOther_Grading%>
-					</td>
-				</tr>
-					<% end if %>
-				<tr>
-					<td class=gray colspan=3>
-							<table cellpadding=3 cellspacing=0 class=gray2 ID="Table41">
-								<tr>
-									<td valign=top><b>8.</b></td>
-									<td>
-										<b>What will be evaluated? 
-										</b>(worksheets, tests, class participation, daily work, logs, attendance, etc.)<br>
-										<b>How will student be evaluated?</b> (# of projects, work correction, logs, informal/formal evaluations,  portfolios, oral presentations, etc.)
-									</td>
-								</tr>
-							</table>
-					</td>
-				</tr>
-				<tr>
-					<td valign=top colspan=3 class=svplain10>
-						<% = szEvaluation %>
-					</td>
-				</tr>	
-				<% if szILP_Additions <> "" then %>
-				<tr>
-					<td colspan=3>
-						<br>
-					</td>
-				</tr>
-				<tr>
-					<td class=gray colspan=3>
-						&nbsp;<b>ILP Additions</b>
-					</td>					
-				</tr>	
-				<tr>
-					<td class=svplain10 colspan=3>
-						<% = szILP_Additions %>
-					</td>					
-				</tr>	
-				<% end if %>	
-				<% if Teacher_Additions <> "" then %>
-				<tr>
-					<td colspan=3>
-						<br>
-					</td>
-				</tr>
-				<tr>
-					<td class=gray colspan=3>
-						&nbsp;<b>Instructor Additions</b>
-					</td>					
-				</tr>	
-				<tr>
-					<td class=svplain10 colspan=3>
-						<% = Teacher_Additions %>
-					</td>					
-				</tr>	
-				<% end if %>	
-			</table>
-		</td>
-	</tr>
-</table>
-<%
+                            <table class="svplain10">
+                                <%=szGoals%></table>
+                            <%Else %>
+                            <pre>
+<%=szGoals %>
+                            </pre>
+                            <%End If %>
+                        </td>
+                    </tr>
+
+                    <% if szILP_Additions <> "" then %>
+                    <tr>
+                        <td colspan="3">
+                            <br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="gray" colspan="3">
+                            &nbsp;<b>ILP Additions</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="svplain10" colspan="3">
+                            <% = szILP_Additions %>
+                        </td>
+                    </tr>
+                    <% end if %>
+                    <% if Teacher_Additions <> "" then %>
+                    <tr>
+                        <td colspan="3">
+                            <br>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="gray" colspan="3">
+                            &nbsp;<b>Instructor Additions</b>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="svplain10" colspan="3">
+                            <% = Teacher_Additions %>
+                        </td>
+                    </tr>
+                    <% end if %>
+                </table>
+            </td>
+        </tr>
+    </table>
+    <%
 end function
 
 function vbfGoodsServices()
@@ -1642,64 +1675,71 @@ function vbfGoodsServices()
 	end if
 	if request("strAction") = "" then response.Write "<p></p>"
 %>
-<table width=100% ID="Table25" cellpadding=2 cellspacing=2>
-	<tr>
-		<td align=left>
-			<img src="<% = Application("strImageRoot")%>fpcsLogo.gif">
-		</td>
-		<td align=right class=svplain10 width=100%>
-			<% = Application.Contents("SchoolAddress") %>
-		</td>
-	</tr>
-	<tr class=yellowHeader>	
-		<Td colspan=2>
-			<table align=right ID="Table26"><tr><td align=right><font face=arial size=2 color=white><% = date()%></font></td></tr></table>
-			&nbsp;<b>Goods and Services  #<%=intClass_ID%></b>									
-		</td>					
-	</tr>
-	<tr>
-		<td class=svplain10>
-			<% = strFor %>
-		</td>
-	</tr>
-<%
+    <table width="100%" id="Table25" cellpadding="2" cellspacing="2">
+        <tr>
+            <td align="left">
+                <img src="<% = Application("strImageRoot")%>fpcsLogo.gif">
+            </td>
+            <td align="right" class="svplain10" width="100%">
+                <% = Application.Contents("SchoolAddress") %>
+            </td>
+        </tr>
+        <tr class="yellowHeader">
+            <td colspan="2">
+                <table align="right" id="Table26">
+                    <tr>
+                        <td align="right">
+                            <font face="arial" size="2" color="white">
+                                <% = date()%></font>
+                        </td>
+                    </tr>
+                </table>
+                &nbsp;<b>Goods and Services #<%=intClass_ID%></b>
+            </td>
+        </tr>
+        <tr>
+            <td class="svplain10">
+                <% = strFor %>
+            </td>
+        </tr>
+        <%
 if rsItems.RecordCount < 1 then
 %>
-<table ID="Table23">
-	<tr>
-		<Td class=gray>
-			&nbsp;No Goods or Services have been added to this class.
-		</td>
-	</tr>
-</table>
-<%
+        <table id="Table23">
+            <tr>
+                <td class="gray">
+                    &nbsp;No Goods or Services have been added to this class.
+                </td>
+            </tr>
+        </table>
+        <%
 else
 %>
-<table cellpadding=3 ID="Table24" border=1 cellspacing=0>
-	<tr>
-		<td class=svplain10 align=center>
-			<b>Category</b>
-		</td>
-		<Td class=svplain10 align=center>
-			<b>Vendor</b>
-		</td>		
-		<Td class=svplain10 align=center>
-			<b>Name</b>
-		</td>
-		<td class=svplain10 align=center title="Consumable Item">
-			<b>Cons</b>
-		</td>
-		<Td class=svplain10 align=center>
-			<b>Dates</b>
-		</td>
-		<td class=svplain10 align=center>
-			<b>Total</b>
-		</td>
-		<td class=svplain10 align=center>
-			<b>Status</b>
-		</td>
-	</tr>	
-<%
+        <table cellpadding="3" id="Table24" border="1" cellspacing="0">
+            <tr>
+                <td class="svplain10" align="center">
+                    <b>Category</b>
+                </td>
+                <td class="svplain10" align="center">
+                    <b>Vendor</b>
+                </td>
+                <td class="svplain10" align="center">
+                    <b>Name</b>
+                </td>
+                <td class="svplain10" align="center" title="Consumable Item">
+                    <b>Cons</b>
+                </td>
+                <td class="svplain10" align="center">
+                    <b>Dates</b>
+                </td>
+                <td class="svplain10" align="center">
+                    <b>Total</b>
+                </td>
+                <td class="svplain10" align="center">
+                    <b>Status</b>
+                </td>
+            </tr>
+            <%
 	dim dblGrandTotal
 	dim dblTotal
 		
@@ -1722,63 +1762,62 @@ else
 		end if
 		
 %>
-	<tr>
-		<td class=<% = strClass %> align=center  title="<% = rsItems("grp_name") %>">
-			&nbsp;<% = rsItems("item_name") %>
-		</td>
-		<Td class=<% = strClass %> align=center>
-			&nbsp;<% = rsItems("szVendor_Name") %>
-		</td>		
-		<Td class=<% = strClass %> align=center>
-			&nbsp;<% =  rsItems("iName") %>
-		</td>
-		<td class=<% = strClass %> align=center>
-			&nbsp;<% = rsItems("Consumable") %>
-		</td>
-		<Td class=<% = strClass %> align=center>
-			&nbsp;<% = rsItems("Dates") %>
-		</td>
-		<td class=<% = strClass %> align=right>
-			&nbsp;<% 
+            <tr>
+                <td class="<% = strClass %>" align="center" title="<% = rsItems("grp_name") %>">
+                    &nbsp;<% = rsItems("item_name") %>
+                </td>
+                <td class="<% = strClass %>" align="center">
+                    &nbsp;<% = rsItems("szVendor_Name") %>
+                </td>
+                <td class="<% = strClass %>" align="center">
+                    &nbsp;<% =  rsItems("iName") %>
+                </td>
+                <td class="<% = strClass %>" align="center">
+                    &nbsp;<% = rsItems("Consumable") %>
+                </td>
+                <td class="<% = strClass %>" align="center">
+                    &nbsp;<% = rsItems("Dates") %>
+                </td>
+                <td class="<% = strClass %>" align="right">
+                    &nbsp;<% 
 				' Exclude item in grand total if item has been denied
 				if strClass <> "grayStrike" then
 					dblGrandTotal = dblGrandTotal + rsItems("Total")
 				end if
 			    response.Write "$" & rsItems("Total")
 			%>
-		</td>	
-		<td class=svplain10 align=center title="<% = rsItems("szDeny_Reason") %>">
-			&nbsp;<% = strDeleteBt %>
-		</td>	
-	</tr>
-<%
+                </td>
+                <td class="svplain10" align="center" title="<% = rsItems("szDeny_Reason") %>">
+                    &nbsp;<% = strDeleteBt %>
+                </td>
+            </tr>
+            <%
 		rsItems.MoveNext
 	loop
 %>
-	<tr>
-		<td colspan=5 class=svplain10 align=right>
-			<B>Grand Total:</b>
-		</td>
-		<td class=svplain10 align=right>
-			$<% = dblGrandTotal %>
-		</td>
-		<td class=svplain10 colspan=2>
-			&nbsp;
-		</td>		
-	</tr>
-</table>
-<BR>
-<table>
-<% if HideSigs = "" then %>
-	<tr>
-		<td colspan=10>
-			
-		</td>
-	</tr>
-<% end if %>
-</table>	
-<br>
-<%
+            <tr>
+                <td colspan="5" class="svplain10" align="right">
+                    <b>Grand Total:</b>
+                </td>
+                <td class="svplain10" align="right">
+                    $<% = dblGrandTotal %>
+                </td>
+                <td class="svplain10" colspan="2">
+                    &nbsp;
+                </td>
+            </tr>
+        </table>
+        <br>
+        <table>
+            <% if HideSigs = "" then %>
+            <tr>
+                <td colspan="10">
+                </td>
+            </tr>
+            <% end if %>
+        </table>
+        <br>
+        <%
 end if
 rsItems.Close
 set rsItems = nothing
@@ -1787,21 +1826,28 @@ end function
 
 function vbfFormHeader(pText)
 %>
-	<tr>
-		<td align=left>
-			<img src="<% = Application("strImageRoot")%>fpcsLogo.gif">
-		</td>
-		<td align=right class=svplain10 width=100% nowrap>
-			<% = Application.Contents("SchoolAddress") %>
-		</td>
-	</tr>
-	<tr class=yellowHeader>	
-		<Td colspan=2>
-			<table align=right ID="Table27"><tr><td align=right><font face=arial size=2 color=white><% = date()%></font></td></tr></table>
-			&nbsp;<b><% = pText %></b>											
-		</td>					
-	</tr>
-<%
+        <tr>
+            <td align="left">
+                <img src="<% = Application("strImageRoot")%>fpcsLogo.gif">
+            </td>
+            <td align="right" class="svplain10" width="100%" nowrap>
+                <% = Application.Contents("SchoolAddress") %>
+            </td>
+        </tr>
+        <tr class="yellowHeader">
+            <td colspan="2">
+                <table align="right" id="Table27">
+                    <tr>
+                        <td align="right">
+                            <font face="arial" size="2" color="white">
+                                <% = date()%></font>
+                        </td>
+                    </tr>
+                </table>
+                &nbsp;<b><% = pText %></b>
+            </td>
+        </tr>
+        <%
 end function
 
 function vbfStudentPacket
@@ -1861,21 +1907,23 @@ function vbfStudentPacket
 
 	if oBudget.FamilyId & "" = "" or oBudget.StudentGrade & "" = ""then		
 	%>
-		<table cellspacing=0 cellpadding=4 width=85% ID="Table34">
-			<tr>
-					<td class=svplain10>
-						<% if oBudget.FamilyId & "" = "" then %>
-						<b>This student does not belong to a family in the Student Information System.</b>
-						<br>An Administrator will need to add the student to a family before work on the packet can begin.		
-						<% else %>
-						<b>A grade has not been selected for this student.</b><br>
-						Before work can begin on the packet you will need to go to the student profile and enter the students' current 
-						grade.
-						<%end if%>
-					</td>
-				</tr>
-			</table>
-	<%		
+        <table cellspacing="0" cellpadding="4" width="85%" id="Table34">
+            <tr>
+                <td class="svplain10">
+                    <% if oBudget.FamilyId & "" = "" then %>
+                    <b>This student does not belong to a family in the Student Information System.</b>
+                    <br>
+                    An Administrator will need to add the student to a family before work on the packet
+                    can begin.
+                    <% else %>
+                    <b>A grade has not been selected for this student.</b><br>
+                    Before work can begin on the packet you will need to go to the student profile and
+                    enter the students' current grade.
+                    <%end if%>
+                </td>
+            </tr>
+        </table>
+        <%		
 		set oBudget = nothing
 		response.End
 	elseif isNumeric(oBudget.EnrollmentId) and isNumeric(oBudget.IepId) then
@@ -1883,19 +1931,16 @@ function vbfStudentPacket
 		if not isNumeric(oBudget.SponsorID)  then Sponsor = "No Sponsor Selected": SponsorEmail=""
 	elseif false then 
 		%>
-			<table cellspacing=0 cellpadding=4 width=85% ID="Table35">
-				<tr>
-					<td class=svplain10>
-						<b>Before you can plan any courses you must update
-						your students information for SY <% = session.Contents("intSchool_Year")%>.
-						To do this click on the 'Family Manager' link on the menu above
-						follow the instructions found on that page.</b>
-						
-						</b>
-					</td>
-				</tr>
-			</table>
-		<%
+        <table cellspacing="0" cellpadding="4" width="85%" id="Table35">
+            <tr>
+                <td class="svplain10">
+                    <b>Before you can plan any courses you must update your students information for SY
+                        <% = session.Contents("intSchool_Year")%>. To do this click on the 'Family Manager'
+                        link on the menu above follow the instructions found on that page.</b> </b>
+                </td>
+            </tr>
+        </table>
+        <%
 				
 		set oBudget = nothing
 		response.End
@@ -1910,115 +1955,132 @@ function vbfStudentPacket
 		end if
 	end if
 %>
-<form name="main" action="<%=Application("strSSLWebRoot")%>forms/packet/packet.asp" method="post" ID="Form2">
-<input type="hidden" name="intStudent_ID" value="<%=intStudent_ID%>" ID="Hidden1">
-<input type="hidden" name="bolHighSchool" value="<%=bolHighSchool%>" ID="Hidden7">
-<input type="hidden" name="courseTitleData" value="" ID="Hidden9">
-<input type=hidden name="simpleHeader" value="<% = request("simpleHeader") %>" ID="Hidden10">
-<input type=hidden name="lastIndex" value="" ID="Hidden11">
-<input type="hidden" name="ClassName" value="" ID="Hidden12">
-<table style="width:640px;"  ID="Table40">
-	<tr>
-		<td style="width:100%;">
-			<table style="width:100%;" ID="Table42">
-				<% = vbfFormHeader("<font face=arial size=2 color=white><b> Student Packet/Budget for " & oBudget.StudentName & " </b> &nbsp;&nbsp;Grade: " &  oBudget.StudentGrade & "</font>") %>
-			</table>
-		</td>
-	</tr>		
-	<tr>
-		<td  style="Width:100%;">
-			<table ID="Table44" style="Width:100%;">
-				<tr>
-					<td  valign="top"  style="Width:50%;">										
-						<table ID="Table45" style="Width:100%;">
-							<tr>
-								<td valign='top'  style='height:100%;'>
-									<table ID="Table46" cellspacing='1' cellpadding='4' style='height:100%;Width:100%;'>
-										<tr>	
-											<td class="TableHeader" align=center>
-												<b>Progress<br>Chart</b>
-											</td>
-											<td class="TableHeader"  align="center">					
-												<b>Enrollment</b>			
-											</td>
-											<td class="TableHeader" align="center">
-												<b>Core<BR>Units</b>
-											</td>
-											<td class="TableHeader" align="center">
-												<b>Elective<BR>Units</b>
-											</td>
-											<td class="TableHeader" align="center">
-												<b>Class<BR>Time</b>
-											</td>
-											<td class="TableHeader" align="center">
-												<b>Contract<BR>Hrs</b>
-											</td>
-										</tr>								
-										<tr>
-											<td class="TableHeader" align="center">
-												<b>Goal</b>
-											</td>
-											<td class="TableCell" valign=middle align="center" nowrap>												
-													<% if oBudget.PercentEnrolledLocked <> "" then 
+        <form name="main" action="<%=Application("strSSLWebRoot")%>forms/packet/packet.asp"
+        method="post" id="Form2">
+        <input type="hidden" name="intStudent_ID" value="<%=intStudent_ID%>" id="Hidden1">
+        <input type="hidden" name="bolHighSchool" value="<%=bolHighSchool%>" id="Hidden7">
+        <input type="hidden" name="courseTitleData" value="" id="Hidden9">
+        <input type="hidden" name="simpleHeader" value="<% = request("simpleHeader") %>"
+            id="Hidden10">
+        <input type="hidden" name="lastIndex" value="" id="Hidden11">
+        <input type="hidden" name="ClassName" value="" id="Hidden12">
+        <table style="width: 640px;" id="Table40">
+            <tr>
+                <td style="width: 100%;">
+                    <table style="width: 100%;" id="Table42">
+                        <% = vbfFormHeader("<font face=arial size=2 color=white><b> Student Packet/Budget for " & oBudget.StudentName & " </b> &nbsp;&nbsp;Grade: " &  oBudget.StudentGrade & "</font>") %>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td style="width: 100%;">
+                    <table id="Table44" style="width: 100%;">
+                        <tr>
+                            <td valign="top" style="width: 50%;">
+                                <table id="Table45" style="width: 100%;">
+                                    <tr>
+                                        <td valign='top' style='height: 100%;'>
+                                            <table id="Table46" cellspacing='1' cellpadding='4' style='height: 100%; width: 100%;'>
+                                                <tr>
+                                                    <td class="TableHeader" align="center">
+                                                        <b>Progress<br>
+                                                            Chart</b>
+                                                    </td>
+                                                    <td class="TableHeader" align="center">
+                                                        <b>Enrollment</b>
+                                                    </td>
+                                                    <td class="TableHeader" align="center">
+                                                        <b>Core<br>
+                                                            Units</b>
+                                                    </td>
+                                                    <td class="TableHeader" align="center">
+                                                        <b>Elective<br>
+                                                            Units</b>
+                                                    </td>
+                                                    <td class="TableHeader" align="center">
+                                                        <b>Class<br>
+                                                            Time</b>
+                                                    </td>
+                                                    <td class="TableHeader" align="center">
+                                                        <b>Contract<br>
+                                                            Hrs</b>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="TableHeader" align="center">
+                                                        <b>Goal</b>
+                                                    </td>
+                                                    <td class="TableCell" valign="middle" align="center" nowrap>
+                                                        <% if oBudget.PercentEnrolledLocked <> "" then 
 																response.Write oBudget.PercentEnrolledLocked
 															else
 																response.Write oBudget.PlannedEnrollment
 															end if%>%
-											</td>
-											<td class="TableCell" align="center" colspan="2">
-												<% = oBudget.GoalCoreCredits %> Core / 
-												<% = oBudget.GoalCoreCredits + oBudget.GoalElectiveCredits %> Total
-											</td>
-											<td class="TableCell" align="center">
-												<% = oBudget.GoalClassTime %>
-											</td>
-											<td class="TableCell" align="center">
-												<% = oBudget.GoalContractHours %>
-											</td>									
-										</tr>	
-										<tr>
-											<td class="TableHeader" align="center">
-												<b>Achieved</b>
-											</td>
-											<td class="<% 
+                                                    </td>
+                                                    <td class="TableCell" align="center" colspan="2">
+                                                        <% = oBudget.GoalCoreCredits %>
+                                                        Core /
+                                                        <% = oBudget.GoalCoreCredits + oBudget.GoalElectiveCredits %>
+                                                        Total
+                                                    </td>
+                                                    <td class="TableCell" align="center">
+                                                        <% = oBudget.GoalClassTime %>
+                                                    </td>
+                                                    <td class="TableCell" align="center">
+                                                        <% = oBudget.GoalContractHours %>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="TableHeader" align="center">
+                                                        <b>Achieved</b>
+                                                    </td>
+                                                    <td class="<% 
 												if oBudget.ActualEnrollment < oBudget.PlannedEnrollment then 
 													response.Write "ErrorCell" 													
 												else 
 													response.Write "TableCell" 
 												end if
-													   %>" valign=middle  align="center">
-												<b><% = oBudget.ActualEnrollment %>%</b>
-											</td>
-											<td class="<%
+													   %>"
+                                                        valign="middle" align="center">
+                                                        <b>
+                                                            <% = oBudget.ActualEnrollment %>%</b>
+                                                    </td>
+                                                    <td class="<%
 												if oBudget.CoreUnits < oBudget.GoalCoreCredits then 
 													response.Write "ErrorCell" 
 													packetHelper = packetHelper & "<li>" & round(oBudget.GoalCoreCredits - oBudget.CoreUnits,1) & " more Core Units</li>"
 												else 
 													response.Write "TableCell" 
 												end if
-													   %>" align="center">
-												<b><% = round(oBudget.CoreUnits,1) %></b>
-											</td>
-											<td class="<%
+													   %>"
+                                                        align="center">
+                                                        <b>
+                                                            <% = round(oBudget.CoreUnits,1) %></b>
+                                                    </td>
+                                                    <td class="<%
 												if oBudget.CoreUnits < oBudget.GoalCoreCredits or (oBudget.ElectiveUnits + oBudget.CoreUnits) < (oBudget.GoalCoreCredits + oBudget.GoalElectiveCredits)  then 
 													response.Write "ErrorCell" 
 													packetHelper = packetHelper  & "<li>" & round((oBudget.GoalCoreCredits+ oBudget.GoalElectiveCredits) - (oBudget.ElectiveUnits + oBudget.CoreUnits),1) & " more Units overall</li>"
 												else 
 													response.Write "TableCell" 
 												end if
-												%>" align="center">
-												<b><% = round(oBudget.ElectiveUnits,1) %></b>
-											</td>
-											<td class="<%
+												%>"
+                                                        align="center">
+                                                        <b>
+                                                            <% = round(oBudget.ElectiveUnits,1) %></b>
+                                                    </td>
+                                                    <td class="<%
 												if oBudget.TotalHours < oBudget.GoalClassTime then 
 													response.Write "ErrorCell" 
 												else 
 													response.Write "TableCell" 
 												end if
-													  %>" align="center">
-												<b><% = oBudget.TotalHours %></b>
-											</td>
-											<td class="<%
+													  %>"
+                                                        align="center">
+                                                        <b>
+                                                            <% = oBudget.TotalHours %></b>
+                                                    </td>
+                                                    <td class="<%
 												if oBudget.ContractHours < oBudget.GoalContractHours then 
 													response.Write "ErrorCell" 
 													packetHelper = packetHelper  & "<li>" & oBudget.GoalContractHours - oBudget.ContractHours & " more Contract Hours</li>"
@@ -2029,72 +2091,77 @@ function vbfStudentPacket
 												'if packetHelper <> "" then 
 												'	packetHelper = left(packetHelper,len(packetHelper)-1)												
 												'end if
-													  %>" align="center">
-												<b><% = round(oBudget.ContractHours,1) %></b>
-											</td>									
-										</tr>																															
-									</table>
-								</td>
-							</tr>
-						</table>
-					</td>
-					<% 
+													  %>"
+                                                        align="center">
+                                                        <b>
+                                                            <% = round(oBudget.ContractHours,1) %></b>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                            <% 
                     'oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId,session.Contents("intSchool_Year") 
                     oBudget.PopulateFamilyBudgetInfoApplication("cnnFPCS"), oBudget.FamilyId,session.Contents("intSchool_Year") 
                     %>
-					<td valign="top" style="Width:50%;">
-						<table cellpadding="4" style="Width:100%;" ID="Table47">
-							<tr>
-								<td class="TableHeader" align="center">
-									<b>*Family Elective<BR>Spending Limits </b>
-								</td>
-								<td class="TableHeader" align="center">
-									<B>Family Budget<BR>Limit</b>
-								</td>
-								<td class="TableHeader" align="center">
-									<B>Family Amount<BR>Budgeted</b>
-								</td>
-							</tr>
-							<tr>
-								<td class="TableHeader">
-									<B>Family Budget</b>
-								</td>
-								<td class="TableCell" align="right">
-									$<% = formatNumber(oBudget.FamilyBudgetFunding,2) %>
-								</td>
-								<td class="TableCell" align="right">
-									$<% = formatNumber(oBudget.FamilyElectiveBudget,2) %>
-								</td>
-							</tr>
-							<tr>
-								<td colspan="3" class="svplain7">
-									<b>*</b> Each family can not spend more than 50% of their students combined 
-									budgets on Music, Art and/or P.E. classes.
-								</td>
-							</tr>
-						</table>
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td>
-			<table ID="Table48" cellspacing="2" >				
-				<tr >					
-					<td bgcolor=white colspan="11" >
-						<span class="svplain10"><b>Sponsor Teacher:</b>&nbsp;<% = oBudget.SponsorName%>&nbsp;</span>															
-					</td>
-					<td class=TableHeader align=center>
-						Budget
-					</td>
-					<td class=TableHeader align=center>
-						Spent
-					</td>
-				</tr>
-				<tr >
-					<td rowspan=4 colspan=8 class="svplain8" valign="bottom">	
-					<%
+                            <td valign="top" style="width: 50%;">
+                                <table cellpadding="4" style="width: 100%;" id="Table47">
+                                    <tr>
+                                        <td class="TableHeader" align="center">
+                                            <b>*Family Elective<br>
+                                                Spending Limits </b>
+                                        </td>
+                                        <td class="TableHeader" align="center">
+                                            <b>Family Budget<br>
+                                                Limit</b>
+                                        </td>
+                                        <td class="TableHeader" align="center">
+                                            <b>Family Amount<br>
+                                                Budgeted</b>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td class="TableHeader">
+                                            <b>Family Budget</b>
+                                        </td>
+                                        <td class="TableCell" align="right">
+                                            $<% = formatNumber(oBudget.FamilyBudgetFunding,2) %>
+                                        </td>
+                                        <td class="TableCell" align="right">
+                                            $<% = formatNumber(oBudget.FamilyElectiveBudget,2) %>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="3" class="svplain7">
+                                            <b>*</b> Each family can not spend more than 50% of their students combined budgets
+                                            on Music, Art and/or P.E. classes.
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <table id="Table48" cellspacing="2">
+                        <tr>
+                            <td bgcolor="white" colspan="11">
+                                <span class="svplain10"><b>Sponsor Teacher:</b>&nbsp;<% = oBudget.SponsorName%>&nbsp;</span>
+                            </td>
+                            <td class="TableHeader" align="center">
+                                Budget
+                            </td>
+                            <td class="TableHeader" align="center">
+                                Spent
+                            </td>
+                        </tr>
+                        <tr>
+                            <td rowspan="4" colspan="8" class="svplain8" valign="bottom">
+                                <%
 							if oBudget.TSTestingSigned < 0 then
 								packetHelper = packetHelper & "<li>ASD Testing Agreement must be signed.  " & _
 											   "</li>"
@@ -2116,106 +2183,108 @@ function vbfStudentPacket
 													
 							If packetHelper <> "" then
 						%>
-						<table class="svplain8" ID="Table49">
-							<tr>
-								<td style='width:140px;' class="TableHeader">
-									&nbsp;<b>Packet Helper</b>
-								</td>
-								<td>
-									Items still needed to complete this packet ... <ul>
-									<% = packetHelper %>  
-									<li>Course Signatures
-									</li></ul> 	
-								</td>
-							</tr>
-						</table>
-						<%			
+                                <table class="svplain8" id="Table49">
+                                    <tr>
+                                        <td style='width: 140px;' class="TableHeader">
+                                            &nbsp;<b>Packet Helper</b>
+                                        </td>
+                                        <td>
+                                            Items still needed to complete this packet ...
+                                            <ul>
+                                                <% = packetHelper %>
+                                                <li>Course Signatures </li>
+                                            </ul>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <%			
 							elseif oBudget.AdminPacketSigned then
 						%>
-						<table class="svplain8" ID="Table50">
-							<tr>
-								<td style='width:140px;' class="TableHeaderGreen" >
-									&nbsp;<b>Packet Helper</b>
-								</td>
-								<td>
-									<B>Congratulations! This packet has been SIGNED and APPROVED.</B>
-								</td>
-							</tr>
-						</table>
-						<%			
+                                <table class="svplain8" id="Table50">
+                                    <tr>
+                                        <td style='width: 140px;' class="TableHeaderGreen">
+                                            &nbsp;<b>Packet Helper</b>
+                                        </td>
+                                        <td>
+                                            <b>Congratulations! This packet has been SIGNED and APPROVED.</b>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <%			
 							else
 						%>
-						<table class="svplain8" ID="Table51">
-							<tr>
-								<td style='width:140px;' class="TableHeaderBlue" >
-									&nbsp;<b>Packet Helper</b>
-								</td>
-								<td>
-									Almost there. Be sure all parties have signed off on each course. The final step will be completed after the entire Packet has been approved by the Academic Advisor.
-								</td>
-							</tr>
-						</table>
-						<%
+                                <table class="svplain8" id="Table51">
+                                    <tr>
+                                        <td style='width: 140px;' class="TableHeaderBlue">
+                                            &nbsp;<b>Packet Helper</b>
+                                        </td>
+                                        <td>
+                                            Almost there. Be sure all parties have signed off on each course. The final step
+                                            will be completed after the entire Packet has been approved by the Academic Advisor.
+                                        </td>
+                                    </tr>
+                                </table>
+                                <%
 							end if
 						%>
-						<br>						
-					</td>
-					<td align=right class="svplain8"  colspan="2">
-						Beginning Balance:	
-					</td>
-					<td bgcolor=white style="width:0%;">
-						&nbsp;
-					</td>
-					<td class=TableCell align=right>
-						$<%=formatNumber(oBudget.BasePlannedFunding,2)%>
-					</td>
-					<td class=TableCell align=right>
-						$<%=formatNumber(oBudget.BaseActualFunding,2)%>
-					</td>
-				</tr>			
-				<tr >
-					<td align=right class="svplain8"  colspan="2">
-						Budget Transfer Deposits:	
-					</td>
-					<td bgcolor=white style="width:0%;">
-						&nbsp;
-					</td>
-					<td class=TableCell align=right>
-						<nobr>$<%=formatNumber(oBudget.Deposits,2)%></nobr>
-					</td>
-					<td class=TableCell align=right>
-						<nobr>$<%=formatNumber(oBudget.Deposits,2)%></nobr>
-					</td>
-				</tr>
-				<tr >
-					<td align=right class="svplain8" colspan="2">
-						Budget Transfer Withdrawals:	
-					</td>
-					<td bgcolor=white  style="width:0%;">
-						&nbsp;
-					</td>
-					<td class=TableCell align=right>
-						<nobr>- $<%=formatNumber(oBudget.Withdrawls,2)%></nobr>
-					</td>
-					<td class=TableCell align=right>
-						<nobr>- $<%=formatNumber(oBudget.Withdrawls,2)%></nobr>
-					</td>
-				</tr>
-				<tr >
-					<td align=right class="svplain8" nowrap colspan="2">
-						Available Remaining Funds:
-					</td>
-					<td bgcolor=white  style="width:0%;">
-						&nbsp;
-					</td>
-					<td class=TableCell align=right>
-						<nobr>$<%=formatNumber(myBudgetBalance,2)%></nobr>
-					</td>
-					<td class=TableCell align=right>
-						<nobr>$<%=formatNumber(myActualBalance,2)%></nobr>
-					</td>
-				</tr>
-<%
+                                <br>
+                            </td>
+                            <td align="right" class="svplain8" colspan="2">
+                                Beginning Balance:
+                            </td>
+                            <td bgcolor="white" style="width: 0%;">
+                                &nbsp;
+                            </td>
+                            <td class="TableCell" align="right">
+                                $<%=formatNumber(oBudget.BasePlannedFunding,2)%>
+                            </td>
+                            <td class="TableCell" align="right">
+                                $<%=formatNumber(oBudget.BaseActualFunding,2)%>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right" class="svplain8" colspan="2">
+                                Budget Transfer Deposits:
+                            </td>
+                            <td bgcolor="white" style="width: 0%;">
+                                &nbsp;
+                            </td>
+                            <td class="TableCell" align="right">
+                                <nobr>$<%=formatNumber(oBudget.Deposits,2)%></nobr>
+                            </td>
+                            <td class="TableCell" align="right">
+                                <nobr>$<%=formatNumber(oBudget.Deposits,2)%></nobr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right" class="svplain8" colspan="2">
+                                Budget Transfer Withdrawals:
+                            </td>
+                            <td bgcolor="white" style="width: 0%;">
+                                &nbsp;
+                            </td>
+                            <td class="TableCell" align="right">
+                                <nobr>- $<%=formatNumber(oBudget.Withdrawls,2)%></nobr>
+                            </td>
+                            <td class="TableCell" align="right">
+                                <nobr>- $<%=formatNumber(oBudget.Withdrawls,2)%></nobr>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td align="right" class="svplain8" nowrap colspan="2">
+                                Available Remaining Funds:
+                            </td>
+                            <td bgcolor="white" style="width: 0%;">
+                                &nbsp;
+                            </td>
+                            <td class="TableCell" align="right">
+                                <nobr>$<%=formatNumber(myBudgetBalance,2)%></nobr>
+                            </td>
+                            <td class="TableCell" align="right">
+                                <nobr>$<%=formatNumber(myActualBalance,2)%></nobr>
+                            </td>
+                        </tr>
+                        <%
 
 	'''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 	' Get student Information
@@ -2277,18 +2346,18 @@ intPreviousID = 0
 
 if rsBudget.RecordCount < 1 then
 %>
-				<tr>
-					<td colspan="13" align="center" class="svplain10">
-						<br><b>
-						No courses have been planned yet. To get started click the 'Plan New Course' button 
-						above.</b> 
-					</td>
-				</tr>
-			</table>
-		</td>
-	</tr>
-</table>
-<%
+                        <tr>
+                            <td colspan="13" align="center" class="svplain10">
+                                <br>
+                                <b>No courses have been planned yet. To get started click the 'Plan New Course' button
+                                    above.</b>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+        </table>
+        <%
 	rsBudget.Close
 	set rsBudget = nothing
 	set oBudget = nothing
@@ -2384,25 +2453,26 @@ do while not rsBudget.EOF
 			myClassName = replace(replace(rsBudget("szClass_Name"),"'","\'"),"""","")
 		end if
 		'response.Write szClass_Name & "<<<"
-%>	
-				<tr >
-					<td colspan="11" style="width:100%;">	
-						<table style="width:100%;" cellpadding='2' cellspacing='1' ID="Table2">
-							<tr class="<% = strClassHeader %>" <% if mDivcount > 1 then response.Write "id=""div" & mDivCount & """"%>>
-								<td align=left style="width:50%;">
-									&nbsp;<b>Course Title</b>
-								</td>
-								<td align='center' style="width:30%;">
-									<b>Subject</b>
-								</td>
-								<td align='center' nowrap style="width:0%;">
-									&nbsp;<b>Hrs</b>&nbsp;
-								</td>	
-							</tr>
-							<tr>
-								<td valign="middle"  class="<% = strClassHeader%>" style="width:50%;padding-left:8px;">
-									 <b><% = ucase(myClassName) %>
-									<% if rsBudget("szASD_COURSE_ID") & "" <> "" and rsBudget("txtCourseNbr") & "" <> "" then
+%>
+        <tr>
+            <td colspan="11" style="width: 100%;">
+                <table style="width: 100%;" cellpadding='2' cellspacing='1' id="Table2">
+                    <tr class="<% = strClassHeader %>" <% if mDivcount > 1 then response.Write "id=""div" & mDivCount & """"%>>
+                        <td align="left" style="width: 50%;">
+                            &nbsp;<b>Course Title</b>
+                        </td>
+                        <td align='center' style="width: 30%;">
+                            <b>Subject</b>
+                        </td>
+                        <td align='center' nowrap style="width: 0%;">
+                            &nbsp;<b>Hrs</b>&nbsp;
+                        </td>
+                    </tr>
+                    <tr>
+                        <td valign="middle" class="<% = strClassHeader%>" style="width: 50%; padding-left: 8px;">
+                            <b>
+                                <% = ucase(myClassName) %>
+                                <% if rsBudget("szASD_COURSE_ID") & "" <> "" and rsBudget("txtCourseNbr") & "" <> "" then
 											if rsBudget("szASD_COURSE_ID") & "" <> "" then
 												response.Write ": " & rsBudget("szASD_COURSE_ID")
 											else	
@@ -2410,107 +2480,112 @@ do while not rsBudget.EOF
 											end if
 										end if
 									%>
-									 </b>
-								</td>
-								<td class="TableCell" valign="top" style="width:30%;">
-									 <% = rsBudget("szSubject_Name") %>
-								</td>
-								<td class="TableCell" align='center' valign="top" style="width:0%;">
-									 <% = intHours %>
-								</td>																						
-							</tr>
-							<% 
+                            </b>
+                        </td>
+                        <td class="TableCell" valign="top" style="width: 30%;">
+                            <% = rsBudget("szSubject_Name") %>
+                        </td>
+                        <td class="TableCell" align='center' valign="top" style="width: 0%;">
+                            <% = intHours %>
+                        </td>
+                    </tr>
+                    <% 
 							mDivCount = mDivCount + 1
 							strBList = strBList & mDivCount & ","
 							strSmallList = mDivCount & ","
 							%>
-							<tr id="div<% = mDivCount%>">
-								<td colspan="3">
-									<% if  rsBudget("intILP_ID") & "" <> "" then  %>
-									<table style="width:100%;"  cellspacing=1  cellpadding=0 ID="Table16">
-										<tr class="svplain">
-											<td  valign="middle" rowspan="2" align="center" class="TableCell" valign="middle"  style="width:130px;" >
-												<nobr><b>Course Signatures</b></nobr>
-											</td>
-											<td align="center">
-												Guardian
-											</td>
-											<td align="center">
-												Sponsor<% if rsBudget("intInstructor_ID") & ""  = oBudget.SponsorId & "" then response.Write "/Instructor <input type='hidden' name='IsInstruct" & rsBudget("intILP_ID") & "' value='1'>" %>
-											</td>
-											<% if rsBudget("intInstructor_ID") & "" <> "" and rsBudget("intInstructor_ID") & "" <> oBudget.SponsorId & "" THEN %>
-											<td align="center">
-												Instructor
-											</td>
-											<% end if %>
-											<td align="center">
-												Admin
-											</td>
-										</tr>
-										<tr class="svplain">
-											<td align="center">
-												<% if rsBudget("GuardianStatusId") & "" = "" then%>
-														not signed
-												<% else %>
-														<span title="signed on: <% = rsBudget("GuardianStatusDate")%>"><% = rsBudget("GuardianUser")%></span>
-												<% end if %>
-											</td>
-											<td valign="middle" align="center">
-											<% 
+                    <tr id="div<% = mDivCount%>">
+                        <td colspan="3">
+                            <% if  rsBudget("intILP_ID") & "" <> "" then  %>
+                            <table style="width: 100%;" cellspacing="1" cellpadding="0" id="Table16">
+                                <tr class="svplain">
+                                    <td valign="middle" rowspan="2" align="center" class="TableCell" valign="middle"
+                                        style="width: 130px;">
+                                        <nobr><b>Course Signatures</b></nobr>
+                                    </td>
+                                    <td align="center">
+                                        Guardian
+                                    </td>
+                                    <td align="center">
+                                        Sponsor<% if rsBudget("intInstructor_ID") & ""  = oBudget.SponsorId & "" then response.Write "/Instructor <input type='hidden' name='IsInstruct" & rsBudget("intILP_ID") & "' value='1'>" %>
+                                    </td>
+                                    <% if rsBudget("intInstructor_ID") & "" <> "" and rsBudget("intInstructor_ID") & "" <> oBudget.SponsorId & "" THEN %>
+                                    <td align="center">
+                                        Instructor
+                                    </td>
+                                    <% end if %>
+                                    <td align="center">
+                                        Admin
+                                    </td>
+                                </tr>
+                                <tr class="svplain">
+                                    <td align="center">
+                                        <% if rsBudget("GuardianStatusId") & "" = "" then%>
+                                        not signed
+                                        <% else %>
+                                        <span title="signed on: <% = rsBudget("GuardianStatusDate")%>">
+                                            <% = rsBudget("GuardianUser")%></span>
+                                        <% end if %>
+                                    </td>
+                                    <td valign="middle" align="center">
+                                        <% 
 												if rsBudget("SponsorStatusId") & ""  = "1" then %>
-													<span title="signed on: <% = rsBudget("SponsorStatusDate")%>"><% = rsBudget("SponsorUser")%></span>
-												<% else
+                                        <span title="signed on: <% = rsBudget("SponsorStatusDate")%>">
+                                            <% = rsBudget("SponsorUser")%></span>
+                                        <% else
 													response.Write InterpretStatus(rsBudget("SponsorStatusId"))
 												end if%>
-											</td>
-											<% if rsBudget("intInstructor_ID") & "" <> "" and rsBudget("intInstructor_ID") & "" <> oBudget.SponsorId & "" THEN %>
-											<td valign="middle" align="center">
-												<% 												
+                                    </td>
+                                    <% if rsBudget("intInstructor_ID") & "" <> "" and rsBudget("intInstructor_ID") & "" <> oBudget.SponsorId & "" THEN %>
+                                    <td valign="middle" align="center">
+                                        <% 												
 													if rsBudget("InstructorStatusId") & ""  = "1" then %>
-													<span title="signed on: <% = rsBudget("InstructorStatusDate")%>"><% = rsBudget("InstructorUser")%></span>
-													<% else
+                                        <span title="signed on: <% = rsBudget("InstructorStatusDate")%>">
+                                            <% = rsBudget("InstructorUser")%></span>
+                                        <% else
 														response.Write InterpretStatus(rsBudget("InstructorStatusId"))
 													end if%>
-											</td>
-											<% end if %>
-											<td valign="middle" align="center">
-												<% if rsBudget("intInstructor_ID") & "" <> "" and rsBudget("intContract_Status_ID") & "" = "5" then 
+                                    </td>
+                                    <% end if %>
+                                    <td valign="middle" align="center">
+                                        <% if rsBudget("intInstructor_ID") & "" <> "" and rsBudget("intContract_Status_ID") & "" = "5" then 
 													' This is ASD course is pre-approved via the principal class approval admin
 												%>
-												<span title="signed on: <% = rsBudget("dtApproved")%>"><% = rsBudget("AdminUser2")%></span>
-												<% elseif rsBudget("AdminStatusId") & "" = "1" then 
+                                        <span title="signed on: <% = rsBudget("dtApproved")%>">
+                                            <% = rsBudget("AdminUser2")%></span>
+                                        <% elseif rsBudget("AdminStatusId") & "" = "1" then 
 													' Signed Schedule
 												%>
-												<span title="signed on: <% = rsBudget("AdminStatusDate")%>"><% = rsBudget("AdminUser") %></span>
-												<% else 
+                                        <span title="signed on: <% = rsBudget("AdminStatusDate")%>">
+                                            <% = rsBudget("AdminUser") %></span>
+                                        <% else 
 													response.Write InterpretStatus(rsBudget("AdminStatusId"))												
 												 end if %>
-											</td>
-										</tr>
-									</table>
-									<% end if ' ends if ilp_ID <> "" %>
-								</td>
-							</tr>
-							<% 
+                                    </td>
+                                </tr>
+                            </table>
+                            <% end if ' ends if ilp_ID <> "" %>
+                        </td>
+                    </tr>
+                    <% 
 							mDivCount = mDivCount + 1
 							strBList = strBList & mDivCount & ","
 							strSmallList = strSmallList & mDivCount & ","
 							' We need to know if a Sponsor or Admin has set the course status to Must Amend
 							if rsBudget("AdminStatusId") & "" = "2" or rsBudget("SponsorStatusId") & "" = "2" then
 								%>
-								<input type="hidden" name="MustAmend<% = rsBudget("intILP_ID")%>" value="1" ID="Hidden2">
-								<%
+                    <input type="hidden" name="MustAmend<% = rsBudget("intILP_ID")%>" value="1" id="Hidden2">
+                    <%
 							end if 
 							
 							%>
-							
-							<tr id="div<% = mDivCount%>">
-								<td colspan="3" style="width:100%;">
-									<table style="width:100%;" cellpadding=0 cellspacing=1 ID="Table28">		
-										<% if rsBudget("intILP_ID") & "" <> "" then %>								
-										<tr>	
-											<td  valign="top" style="width:100%;" align="center">
-												<% 
+                    <tr id="div<% = mDivCount%>">
+                        <td colspan="3" style="width: 100%;">
+                            <table style="width: 100%;" cellpadding="0" cellspacing="1" id="Table28">
+                                <% if rsBudget("intILP_ID") & "" <> "" then %>
+                                <tr>
+                                    <td valign="top" style="width: 100%;" align="center">
+                                        <% 
 													select case ucase(session.Contents("strRole"))
 														case "ADMIN"
 															roleComments = rsBudget("szAdmin_Comments")
@@ -2554,71 +2629,71 @@ do while not rsBudget.EOF
 																									
 													strCommentTable = "<table cellpadding='2' style='width:100%;'>" & strCommentTable & "</table>"																			
 												%>
-												<% = strCommentTable %>	
-											</td>																
-										</tr>
-										<% else
+                                        <% = strCommentTable %>
+                                    </td>
+                                </tr>
+                                <% else
 											response.write "<tr >" & _
 														   "<td  class='TableCell' style='width:130px;background-color:#F0F0F0;' align='center' valign='middle'>&nbsp;<b>Course Helper</b></td>" & _
 														   "<td class='TableCell' >" & CourseHelper & "</td></tr>"
 										 end if %>
-									</table>
-								</td>
-							</tr>														
-						</table>				
-						<nobr>										
-					</td>
-					<td  class="ltGray" colspan="2"  style="width:0%;">
-						&nbsp;
-					</td>
-				</tr>	
-				<% 
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+                <nobr>
+            </td>
+            <td class="ltGray" colspan="2" style="width: 0%;">
+                &nbsp;
+            </td>
+        </tr>
+        <% 
 					mDivCount = mDivCount + 1
 					strBList = strBList & mDivCount & ","	
 					strSmallList = strSmallList & mDivCount & ","
-				%>			
-				<tr id="div<% = mDivCount%>">						
-					<td class="TableSubHeader" align="center">
-						Budget Item
-					</td>
-					<td class="TableSubHeader" align="center">
-						Status
-					</td>
-					<td class="TableSubHeader"  style="width:100%;" >
-						Description
-					</td>
-					<td class="TableSubHeader" align="center">
-						QTY
-					</td>
-					<td class="TableSubHeader" align="center">
-						Unit Cost
-					</td>
-					<td class="TableSubHeader" align="center" title="Shipping and Handling">
-						S/H
-					</td>
-					<td class="TableSubHeader" align="center" title="(QTY * Unit Cost) + S/H">
-						Budget Total
-					</td>
-					<td class="TableSubHeader" align="center" title="Sum of all line items (charged expeneses) entered by the office for a specific budget.">
-						Actual Charges
-					</td>
-					<td style="width:0%;" class="TableSubHeader" align="center" title="Adjustments are needed to handle over expendatures and to release unused budgeted funds once the budget is closed.">
-						Budget Adjust
-					</td>
-					<td  style="width:0%;" class="TableSubHeader" align="center" title="(Budget Total - Actual Charges) + Budget Adjust">
-						Budget Balance
-					</td>
-					<td  class="ltGray"  style="width:0%;">
-						&nbsp;
-					</td>
-					<td  class="ltGray">
-						&nbsp;
-					</td>
-					<td  class="ltGray">
-						&nbsp;
-					</td>
-				</tr>						
-<%
+				%>
+        <tr id="div<% = mDivCount%>">
+            <td class="TableSubHeader" align="center">
+                Budget Item
+            </td>
+            <td class="TableSubHeader" align="center">
+                Status
+            </td>
+            <td class="TableSubHeader" style="width: 100%;">
+                Description
+            </td>
+            <td class="TableSubHeader" align="center">
+                QTY
+            </td>
+            <td class="TableSubHeader" align="center">
+                Unit Cost
+            </td>
+            <td class="TableSubHeader" align="center" title="Shipping and Handling">
+                S/H
+            </td>
+            <td class="TableSubHeader" align="center" title="(QTY * Unit Cost) + S/H">
+                Budget Total
+            </td>
+            <td class="TableSubHeader" align="center" title="Sum of all line items (charged expeneses) entered by the office for a specific budget.">
+                Actual Charges
+            </td>
+            <td style="width: 0%;" class="TableSubHeader" align="center" title="Adjustments are needed to handle over expendatures and to release unused budgeted funds once the budget is closed.">
+                Budget Adjust
+            </td>
+            <td style="width: 0%;" class="TableSubHeader" align="center" title="(Budget Total - Actual Charges) + Budget Adjust">
+                Budget Balance
+            </td>
+            <td class="ltGray" style="width: 0%;">
+                &nbsp;
+            </td>
+            <td class="ltGray">
+                &nbsp;
+            </td>
+            <td class="ltGray">
+                &nbsp;
+            </td>
+        </tr>
+        <%
 		'Set alternating row color
 		call vbsAlternateColor
 		strClass = "TableCell"  ' default class setting
@@ -2629,50 +2704,50 @@ do while not rsBudget.EOF
 			strSmallList = strSmallList & mDivCount & ","
 			dblClassCharge = round(cdbl(rsBudget("TeacherCostPerStudent")),2)
 			dblClassBudget = round(cdbl(rsBudget("TeacherCostPerStudent")),2)
-				%>	
-
-				<tr id="div<%=mDivCount%>">
-					<td class="<% = strClass %>">
-						Instruction
-					</td>
-					<td class="<% = strClass %>"  align="center">
-						n/a
-					</td>
-					<td class="<% = strClass %>"  style="width:100%;" >
-						Instruction by: <% = rsBudget("teacherName") %> 
-					</td>
-					<td class="<% = strClass %>" align="center" nowrap>
-						<%= round(rsBudget("HoursChargedPerStudent"),3)%>
-					</td>
-					<td class="<% = strClass %>" align="right" title="Teachers Hourly Rate" nowrap>
-						$<%= formatNumber(round(rsBudget("HourlyRateTaxBen"),3),3)%>
-					</td>
-					<td class="<% = strClass %>" align="center">
-						n/a
-					</td>
-					<td class="<% = strClass %>" align="right" nowrap>
-						$<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-					</td>
-					<td class="<% = strClass %>" align="right" nowrap>
-						$<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-					</td>
-					<td  style="width:0%;" class="<% = strClass %>" align="right" nowrap>
-						$0.00
-					</td>
-					<td  style="width:0%;" class="<% = strClass %>" align="right" nowrap>
-						$0.00
-					</td>
-					<td  class="ltGray" style="width:0%;">
-						&nbsp;
-					</td>
-					<td class="<% = strClass %>" align="right" nowrap>
-						-$<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-					</td>
-					<td class="<% = strClass %>" align="right" nowrap>
-						-$<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-					</td>
-				</tr>
-	<% end if 			
+				%>
+        <tr id="div<%=mDivCount%>">
+            <td class="<% = strClass %>">
+                Instruction
+            </td>
+            <td class="<% = strClass %>" align="center">
+                n/a
+            </td>
+            <td class="<% = strClass %>" style="width: 100%;">
+                Instruction by:
+                <% = rsBudget("teacherName") %>
+            </td>
+            <td class="<% = strClass %>" align="center" nowrap>
+                <%= round(rsBudget("HoursChargedPerStudent"),3)%>
+            </td>
+            <td class="<% = strClass %>" align="right" title="Teachers Hourly Rate" nowrap>
+                $<%= formatNumber(round(rsBudget("HourlyRateTaxBen"),3),3)%>
+            </td>
+            <td class="<% = strClass %>" align="center">
+                n/a
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap>
+                $<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap>
+                $<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
+            </td>
+            <td style="width: 0%;" class="<% = strClass %>" align="right" nowrap>
+                $0.00
+            </td>
+            <td style="width: 0%;" class="<% = strClass %>" align="right" nowrap>
+                $0.00
+            </td>
+            <td class="ltGray" style="width: 0%;">
+                &nbsp;
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap>
+                -$<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap>
+                -$<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
+            </td>
+        </tr>
+        <% end if 			
 	end if ' end first time through a given course
 			
 	if rsBudget("intOrdered_Item_ID") & "" <> "" then 
@@ -2718,76 +2793,76 @@ do while not rsBudget.EOF
 		end if
 		
 		' Print row with budget info		
-%>																		
-				<tr id="div<% = mDivCount %>">
-					<td class=<% = strClass %>>
-						<% = rsBudget("szName") %>
-					</td>
-					<td class="<% = strClass %>" align="center">
-						<% = bStatus %>
-					</td>
-					<td class=<% = strClass %>  style="width:100%;" >
-						<% response.Write oHtml.ToolTip(strItemType & rsBudget("oiDesc") & strReason, _
+%>
+        <tr id="div<% = mDivCount %>">
+            <td class="<% = strClass %>">
+                <% = rsBudget("szName") %>
+            </td>
+            <td class="<% = strClass %>" align="center">
+                <% = bStatus %>
+            </td>
+            <td class="<% = strClass %>" style="width: 100%;">
+                <% response.Write oHtml.ToolTip(strItemType & rsBudget("oiDesc") & strReason, _
 							  "<table cellpadding='2'><tr><td class='svplain8' valign='top'><b>Vendor Name:</b></td><td class='svplain8' nowrap>" & rsBudget("szVendor_Name") & "</td></tr>" & _
 													 "<tr><td class='svplain8' nowrap><b>Phone Number:</b></td><td class='svplain8' nowrap>" & oFunc.Reformat(rsBudget("szVendor_Phone") , Array("(", 3, ") ", 3, "-", 4)) & "</td></tr>" & _
 													 "<tr><td class='svplain8' nowrap><b>Fax Number:</b></td><td class='svplain8' nowrap>" & oFunc.Reformat(rsBudget("szVendor_Fax") , Array("(", 3, ") ", 3, "-", 4))  & "</td></tr>" & _
 													 "<tr><td class='svplain8' nowrap><b>Vendor Email:</b></td><td class='svplain8' nowrap>" & rsBudget("szVendor_Email") & "</td></tr>" & _
 													 "<tr><td class='svplain8' nowrap><b>Budget Created:</b></td><td class='svplain8' nowrap>" & rsBudget("oiCreate") & "</td></tr></table>", _
 													 false, "",false,"tooltip","","",false,false)%>&nbsp;
-					</td>
-					<td class=<% = strClass %> align="center" nowrap>
-						<% = rsBudget("intQTY") %>
-					</td>
-					<td class=<% = strClass %> align=right nowrap>
-						$<% = formatNumber(rsBudget("curUnit_Price"),2) %>
-					</td>
-					<td class=<% = strClass %> align=right nowrap title="Shipping and Handling">
-						&nbsp;$<% = dblShipping %>
-					</td>
-					<td class=<% = strClass %> align=right nowrap title="(QTY * Unit Cost) + S/H">
-						$<% = dblBudgetCost %>
-					</td>
-					<td class=<% = strClass %> align=right nowrap title="Sum of all line items (charged expeneses) entered by the office for a specific budget.">
-						$<% = formatNumber(liInfo(1),2)%>
-					</td>
-					<td  style="width:0%;" class=<% = strClass %> align=right nowrap title="Adjustments are needed to handle over expendatures and to release unused budgeted funds once the budget is closed.">
-						$<% = formatNumber(liInfo(2),2) %>
-					</td>
-					<td  style="width:0%;" class=<% = strClass %> align=right nowrap title="(Budget Total - Actual Charges) + Budget Adjust">
-						$<% = formatNumber((dblBudgetCost - cdbl(liInfo(1))) + cdbl(liInfo(2)),2)%>
-					</td>
-					<td bgcolor=white style="width:0%;">
-						&nbsp;
-					</td>
-					<td class="<% = strClass %>" align="right" nowrap title="Budget Total - Budget Adjust">
-						-$<% = dblAdjBudget %>
-					</td>
-					<td class="<% = strClass %>" align="right" nowrap title="Actual Charges">
-						-$<% = dblCharge %>
-					</td>
-				</tr>
-				<% = liInfo(0) %>
-<%
+            </td>
+            <td class="<% = strClass %>" align="center" nowrap>
+                <% = rsBudget("intQTY") %>
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap>
+                $<% = formatNumber(rsBudget("curUnit_Price"),2) %>
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap title="Shipping and Handling">
+                &nbsp;$<% = dblShipping %>
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap title="(QTY * Unit Cost) + S/H">
+                $<% = dblBudgetCost %>
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap title="Sum of all line items (charged expeneses) entered by the office for a specific budget.">
+                $<% = formatNumber(liInfo(1),2)%>
+            </td>
+            <td style="width: 0%;" class="<% = strClass %>" align="right" nowrap title="Adjustments are needed to handle over expendatures and to release unused budgeted funds once the budget is closed.">
+                $<% = formatNumber(liInfo(2),2) %>
+            </td>
+            <td style="width: 0%;" class="<% = strClass %>" align="right" nowrap title="(Budget Total - Actual Charges) + Budget Adjust">
+                $<% = formatNumber((dblBudgetCost - cdbl(liInfo(1))) + cdbl(liInfo(2)),2)%>
+            </td>
+            <td bgcolor="white" style="width: 0%;">
+                &nbsp;
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap title="Budget Total - Budget Adjust">
+                -$<% = dblAdjBudget %>
+            </td>
+            <td class="<% = strClass %>" align="right" nowrap title="Actual Charges">
+                -$<% = dblCharge %>
+            </td>
+        </tr>
+        <% = liInfo(0) %>
+        <%
 	else
 	mDivCount = mDivCount + 1
 	strBList = strBList & mDivCount & ","
 	strSmallList = strSmallList & mDivCount & ","
 %>
-				<tr bgcolor="<% = strColor%>" id="div<%=mDivCount%>">
-					<td class=svplain10 colspan=10>
-						No Goods or Services have been budgeted for this course.	
-					</td>
-					<td bgcolor=white style="width:0%;">
-						&nbsp;&nbsp;&nbsp;
-					</td>
-					<td  class="ltGray">
-						&nbsp;
-					</td>
-					<td  class="ltGray">
-						&nbsp;
-					</td>
-				</tr>
-<%
+        <tr bgcolor="<% = strColor%>" id="div<%=mDivCount%>">
+            <td class="svplain10" colspan="10">
+                No Goods or Services have been budgeted for this course.
+            </td>
+            <td bgcolor="white" style="width: 0%;">
+                &nbsp;&nbsp;&nbsp;
+            </td>
+            <td class="ltGray">
+                &nbsp;
+            </td>
+            <td class="ltGray">
+                &nbsp;
+            </td>
+        </tr>
+        <%
 	end if 
 	rsBudget.MoveNext
 loop	
@@ -2799,41 +2874,40 @@ if rsBudget.RecordCount > 0 then
 	dblTargetBalance = dblTargetBalance - dblTotalBudget
 	dblActualBalance = dblActualBalance - dblTotalCharge
 %>
+        <tr bgcolor="<% = strColor%>">
+            <td class="svplain10" colspan="10" align="right">
+                Available Remaining Funds:
+            </td>
+            <td bgcolor="white" style="width: 0%;">
+                &nbsp;&nbsp;&nbsp;
+            </td>
+            <td class="TableHeader" align="right">
+                $<%=formatNumber(dblTargetBalance,2)%>
+                <input type="hidden" name="budgetBalance" value="<%=formatNumber(dblTargetBalance,2)%>"
+                    id="Hidden3">
+            </td>
+            <td class="TableHeader" align="right">
+                $<%=formatNumber(dblActualBalance,2)%>
+            </td>
+        </tr>
+        <script language="javascript">
+            function jfToggleBudget(pMe) {
+                jfToggle('<%=strBList%>', '');
 
-			  <tr bgcolor="<% = strColor%>">
-					<td class=svplain10 colspan="10" align=right>
-						Available Remaining Funds:	
-					</td>
-					<td bgcolor=white  style="width:0%;">
-						&nbsp;&nbsp;&nbsp;
-					</td>
-					<td class="TableHeader" align=right>
-						$<%=formatNumber(dblTargetBalance,2)%>
-						<input type=hidden name="budgetBalance" value="<%=formatNumber(dblTargetBalance,2)%>" ID="Hidden3">
-					</td>
-					<td class="TableHeader" align=right>
-						$<%=formatNumber(dblActualBalance,2)%>
-					</td>
-				</tr>
-<script language=javascript>
-	function jfToggleBudget(pMe){
-		jfToggle('<%=strBList%>','');		
-		
-		if (pMe.value == "Show Detail") {
-			pMe.value = "Hide Detail";
-		}else{
-			pMe.value = "Show Detail";
-		}
-	}	
-</script>				
-<%
+                if (pMe.value == "Show Detail") {
+                    pMe.value = "Hide Detail";
+                } else {
+                    pMe.value = "Show Detail";
+                }
+            }	
+</script>
+        <%
 end if
 
 set rsBudget = nothing					
-%>							
-			</table>
-		</td>
-	</tr>
+%>
+    </table>
+    </td> </tr>
 </table>
 </form>
 <%
@@ -2862,40 +2936,40 @@ sub vbsShowTotals()
 	strDivList = strDivList & mDivCount & ","
 	strSmallList = strSmallList & mDivCount & ","
 %>
-				<tr class=svplain10 bgcolor="<% = strColor%>" >
-					<td colspan="10" align="right" class="svplain10">		
-						<b>Course Totals:</b>								
-					</td>
-					<td bgcolor=white  style="width:0%;">
-						&nbsp;&nbsp;&nbsp;
-					</td>
-					<td class=TableHeader align=right>
-						<nobr>
+<tr class="svplain10" bgcolor="<% = strColor%>">
+    <td colspan="10" align="right" class="svplain10">
+        <b>Course Totals:</b>
+    </td>
+    <td bgcolor="white" style="width: 0%;">
+        &nbsp;&nbsp;&nbsp;
+    </td>
+    <td class="TableHeader" align="right">
+        <nobr>
 						<% if instr(1,dblBudgetCost,"-") > 0 then
 								response.Write "+ $" & formatNumber(replace(dblClassBudget,"-",""),2)
 						   else
 								response.Write "- $" & formatNumber(dblClassBudget,2)
 						   end if						
 						%></nobr>
-					</td>
-					<td class=TableHeader align=right>
-						<nobr>
+    </td>
+    <td class="TableHeader" align="right">
+        <nobr>
 						<% if instr(1,dblActualCost,"-") > 0 then
 								response.Write "+ $" & formatNumber(replace(dblClassCharge,"-",""),2)
 						   else
 								response.Write "- $" & formatNumber(dblClassCharge,2)
 						   end if						
 						%></nobr>
-					</td>
-				</tr>	
+    </td>
+</tr>
 <%
 		
-%>				
-				<tr bgcolor=white id="div<% = mDivCount%>">
-					<td colspan="13">
-						&nbsp;
-					</td>
-				</tr>	
+%>
+<tr bgcolor="white" id="div<% = mDivCount%>">
+    <td colspan="13">
+        &nbsp;
+    </td>
+</tr>
 <%
 	'response.Write dblTotalCharge & " - " &  dblClassCharge
 	dblTotalCharge = cdbl(dblTotalCharge) + cdbl(dblClassCharge)
@@ -3094,30 +3168,31 @@ end function
 function vbfTestingForm(pStudentName)
 	if pStudentName = "" then pStudentName = "________________________"
 %>
-	<table style="width:100%;">
-<%
+<table style="width: 100%;">
+    <%
 		vbfFormHeader("ASD Required Testing Agreement")											
 %>
-		<tr class=svplain11>
-			<td colspan=2>
-				All students enrolled in FPCS are required to participate in 
-				the applicable Anchorage School District mandatory testing listed below.
-				<br><br>				
-			</td>
-		</tr>
-		<tr>
-			<td colspan=2>
-				<% = strTestTable %>
-				<font class="svplain8">
-				Times and locations to be announced later.  
-				Sponsor teachers will have access to test results. 
-				<br><br>
-				</font>
-			</td>
-		</tr>
-		<tr>
-			<td>
-<pre style="FONT-FAMILY:Veranda,Tahoma;FONT-SIZE:10pt;FONT-WEIGHT: bolder;">
+    <tr class="svplain11">
+        <td colspan="2">
+            All students enrolled in FPCS are required to participate in the applicable Anchorage
+            School District mandatory testing listed below.
+            <br>
+            <br>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            <% = strTestTable %>
+            <font class="svplain8">Times and locations to be announced later. Sponsor teachers will
+                have access to test results.
+                <br>
+                <br>
+            </font>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <pre style="font-family: Veranda,Tahoma; font-size: 10pt; font-weight: bolder;">
 By signing below I agree that <% = pStudentName %> will participate
 in all Anchorage School District required testing.
 
@@ -3133,9 +3208,9 @@ Guardian Signature
 ________________________________________________
 Print Guardian Name	
 </pre>
-			</td>
-		</tr>
-	</table>
+        </td>
+    </tr>
+</table>
 <%
 end function
 
@@ -3190,35 +3265,41 @@ end function
 function vbfProgressForm(pStudentName)
 	if pStudentName = "" then pStudentName = "________________________"
 %>
-	<table width=100% ID="Table36">
-		<tr>
-			<td align=left>
-				<img src="<% = Application("strImageRoot")%>fpcsLogo.gif">
-			</td>
-			<td align=right class=svplain10 nowrap>
-				<% = Application.Contents("SchoolAddress") %>
-			</td>
-		</tr>
-		<tr class=yellowHeader>	
-			<Td colspan=2>
-				<table align=right ID="Table37"><tr><td align=right><font face=arial size=2 color=white><% = date()%></font></td></tr></table>
-				&nbsp;<b>Mandatory Student Progress Reports Agreement</b>											
-			</td>					
-		</tr>
-		<tr class=svplain11>
-			<td colspan=2>
-				Parent/sponsor teacher communication is a critical component of our 
-				charter school.  Mandatory progress reports of all courses are to be 
-				completed and turned in to the FPCS office at a minimum of twice a year.  
-				Reports are to be submitted between Nov. 29 to Dec. 10 and March 7 to 
-				March 18.<br><br>
-				Signatures of parents and sponsor teacher are required.<br>			
-			</td>
-		</tr>
-		
-		<tr>
-			<td>
-<pre style="FONT-FAMILY:Veranda,Tahoma;FONT-SIZE:10pt;FONT-WEIGHT: bolder;">
+<table width="100%" id="Table36">
+    <tr>
+        <td align="left">
+            <img src="<% = Application("strImageRoot")%>fpcsLogo.gif">
+        </td>
+        <td align="right" class="svplain10" nowrap>
+            <% = Application.Contents("SchoolAddress") %>
+        </td>
+    </tr>
+    <tr class="yellowHeader">
+        <td colspan="2">
+            <table align="right" id="Table37">
+                <tr>
+                    <td align="right">
+                        <font face="arial" size="2" color="white">
+                            <% = date()%></font>
+                    </td>
+                </tr>
+            </table>
+            &nbsp;<b>Mandatory Student Progress Reports Agreement</b>
+        </td>
+    </tr>
+    <tr class="svplain11">
+        <td colspan="2">
+            Parent/sponsor teacher communication is a critical component of our charter school.
+            Mandatory progress reports of all courses are to be completed and turned in to the
+            FPCS office at a minimum of twice a year. Reports are to be submitted between Nov.
+            29 to Dec. 10 and March 7 to March 18.<br>
+            <br>
+            Signatures of parents and sponsor teacher are required.<br>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <pre style="font-family: Veranda,Tahoma; font-size: 10pt; font-weight: bolder;">
 I am aware that progress report forms for <% = pStudentName %> 
 will be available on-line in the printable forms link of the 
 Student On-line System.
@@ -3235,9 +3316,9 @@ Guardian Signature
 ________________________________________________  Date:___________
 Sponsor Teacher Signature 
 </pre>
-			</td>
-		</tr>
-	</table>
+        </td>
+    </tr>
+</table>
 <%
 end function
 
@@ -3251,9 +3332,9 @@ function Philiosophy(pStudentID)
 	rsP.CursorLocation = 3
 	rsP.Open sql,Application("cnnFPCS")'oFunc.FPCScnn
 	%>
-	<table style='width:100%' >
-		<% = vbfFormHeader("ILP Philosophy for " & oFunc.StudentInfo(pStudentID,3)) %>
-	<%
+<table style='width: 100%'>
+    <% = vbfFormHeader("ILP Philosophy for " & oFunc.StudentInfo(pStudentID,3)) %>
+    <%
 	if rsP.RecordCount > 0 then
 		response.Write "<tr><td class='svplain8' colspan='2'><BR>" & rsP(0) & "</td></tr>"
 	else
@@ -3269,8 +3350,8 @@ end function
 
 function VendorServiceReport()	
 %>
-<table style="width:650px;height:100%;" ID="Table3">		
-<%
+    <table style="width: 650px; height: 100%;" id="Table3">
+        <%
 
 dim strWhere
 if request("hdnVendors") <> "" then 
@@ -3358,18 +3439,18 @@ sql = "SELECT tblVendors.szVendor_Name, tblSTUDENT.szLAST_NAME, tblSTUDENT.szFIR
 				szPO_Number = ""
 			end if
 					
-%>		
-					<td class="svplain8">
-						<% = rs("szCourse_Title") & rs("txtCourseTitle") %>
-					</td>
-					<td class="svplain8">
-						<% = rs("szLAST_NAME") & ", " & rs("szFIRST_NAME")  %>
-					</td>
-					<td class="svplain8" align="right">
-						$<% = formatNumber(rs("total"),2) %>
-					</td>
-				</tr>
-<%			
+%>
+        <td class="svplain8">
+            <% = rs("szCourse_Title") & rs("txtCourseTitle") %>
+        </td>
+        <td class="svplain8">
+            <% = rs("szLAST_NAME") & ", " & rs("szFIRST_NAME")  %>
+        </td>
+        <td class="svplain8" align="right">
+            $<% = formatNumber(rs("total"),2) %>
+        </td>
+        </tr>
+        <%			
 				if szPO_Number = "" then
 					sql = "select szPO_Number " & _
 						   " FROM tblLINE_ITEMS LEFT OUTER JOIN " & _
@@ -3413,9 +3494,8 @@ sql = "SELECT tblVendors.szVendor_Name, tblSTUDENT.szLAST_NAME, tblSTUDENT.szFIR
 		next 					
 	end if
 %>
-			</table>
-		</td>
-	</tr>
+    </table>
+    </td> </tr>
 </table>
 <%
 	rs.Close
@@ -3425,59 +3505,60 @@ end function
 
 function vbsTableHeader(pName)
 %>
-	<tr>
-		<td valign="top">
-			<table>
-				<% = vbfFormHeader("Vendor Service Status Report for School Year " & oFunc.SchoolYearRange) %>
-			</table>
-		</td>
-	</tr>
-	<tr>
-		<td  valign="top">
-			<table ID="Table32" style="width:650px;">	
-				<tr>
-					<td class="TableCell" style="width:30%;">
-						Vendor Name
-					</td>
-					<td class="TableCell" style="width:30%;">
-						Course Name
-					</td>
-					<td class="TableCell" style="width:30%;">
-						Student Name
-					</td>
-					<td class="TableCell" style="width:10%;">
-						Budget
-					</td>	
-				</tr>
-				<tr>	
-					<td class="svplain8" rowspan="100" valign="top">
-						<b><% = pName %></b><br><br>						
-					</td>					
-								
-<%
+<tr>
+    <td valign="top">
+        <table>
+            <% = vbfFormHeader("Vendor Service Status Report for School Year " & oFunc.SchoolYearRange) %>
+        </table>
+    </td>
+</tr>
+<tr>
+    <td valign="top">
+        <table id="Table32" style="width: 650px;">
+            <tr>
+                <td class="TableCell" style="width: 30%;">
+                    Vendor Name
+                </td>
+                <td class="TableCell" style="width: 30%;">
+                    Course Name
+                </td>
+                <td class="TableCell" style="width: 30%;">
+                    Student Name
+                </td>
+                <td class="TableCell" style="width: 10%;">
+                    Budget
+                </td>
+            </tr>
+            <tr>
+                <td class="svplain8" rowspan="100" valign="top">
+                    <b>
+                        <% = pName %></b><br>
+                    <br>
+                </td>
+                <%
 end function
 
 function vbfPONumber(pNum)
 %>
-				<tr>
-					<td class="svplain8" align="left">
-						<table border=1 cellspacing=0 ID="Table33" bordercolor="#c0c0c0">
-							<tr>
-								<td class="svplain8">
-									PO#:</b>
-									<% if pNum <> "" then 
+            <tr>
+                <td class="svplain8" align="left">
+                    <table border="1" cellspacing="0" id="Table33" bordercolor="#c0c0c0">
+                        <tr>
+                            <td class="svplain8">
+                                PO#:</b>
+                                <% if pNum <> "" then 
 										response.Write "&nbsp;" & pNum
 									   else
-									%>									
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-									<%
+									%>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                <%
 									  end if
 									%>
-								</td>
-							</tr>
-						</table>
-					</td>	
-<%
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+                <%
 end function 
 %>
+        

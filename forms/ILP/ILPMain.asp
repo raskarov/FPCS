@@ -719,7 +719,7 @@ Server.Execute(Application.Value("strWebRoot") & "includes/simpleHeader.asp")
                 <tr>
                 <%'If False Then %>
                     <td valign="top" class="svplain8">
-					<% if not bolLock then %>
+					<% if true then' not bolLock %>
 						<textarea name="szGoals" style="width:100%;" rows=4 wrap=virtual onFocus="this.rows=12;" onBlur="this.rows=4;" onKeyDown="jfMaxSize(7000,this);" ID="Textarea2"><%=szGoals%></textarea>
 					<% else 
                     Dim re

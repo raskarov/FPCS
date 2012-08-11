@@ -33,7 +33,7 @@ var domLib_isSafari = domLib_userAgent.indexOf('safari') != -1;
 var domLib_isKonq = domLib_userAgent.indexOf('konqueror') != -1;
 // Both konqueror and safari use the khtml rendering engine
 var domLib_isKHTML = (domLib_isKonq || domLib_isSafari || domLib_userAgent.indexOf('khtml') != -1);
-var domLib_isIE = (!domLib_isKHTML && !domLib_isOpera && (domLib_userAgent.indexOf('msie 5') != -1 || domLib_userAgent.indexOf('msie 6') != -1 || domLib_userAgent.indexOf('msie 7') != -1));
+var domLib_isIE = (!domLib_isKHTML && !domLib_isOpera && (domLib_userAgent.indexOf('msie 5') != -1 || domLib_userAgent.indexOf('msie 6') != -1 || domLib_userAgent.indexOf('msie 7') != -1 || domLib_userAgent.indexOf('msie ') != -1));
 var domLib_isIE5up = domLib_isIE;
 var domLib_isIE50 = (domLib_isIE && domLib_userAgent.indexOf('msie 5.0') != -1);
 var domLib_isIE55 = (domLib_isIE && domLib_userAgent.indexOf('msie 5.5') != -1);
