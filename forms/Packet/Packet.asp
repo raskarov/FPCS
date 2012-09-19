@@ -1,5 +1,7 @@
 <%@  language="VBScript" %>
 <%
+Response.LCID=1033
+
 
 '''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
 'Name:		packet.asp
@@ -33,6 +35,8 @@ dim strDateField
 dim bStatus				' budgeted item status
 dim strItemType			' tells user if item is requiestion or reimbursement
 dim oHtml
+
+Dim dblGlobalReserve    'Global Reserve for the current School Year
 
 mLablelCount = 0
 mDivCount = 0		
@@ -74,7 +78,8 @@ if request("intStudent_ID") <> "" then
 		end if
 	end if
 	
-	oBudget.PopulateStudentFunding oFunc.FPCScnn,intStudent_ID,session.Contents("intSchool_Year")
+	oBudget.PopulateStudentFunding Application("cnnFPCS"),intStudent_ID,session.Contents("intSchool_Year")
+	'oBudget.PopulateStudentFunding oFunc.FPCScnn,intStudent_ID,session.Contents("intSchool_Year")
 	
 	dblDeposits = oBudget.Deposits
 	dblWithdraw = oBudget.Withdrawls
@@ -83,6 +88,18 @@ if request("intStudent_ID") <> "" then
 	intEnroll_Info_ID = oBudget.EnrollInfoId	
 	myBudgetBalance = oBudget.BudgetBalance
 	myActualBalance = oBudget.ActualBalance
+
+    Dim sqlGR
+    sqlGR="select curFund_Amount from dbo.tblFunding where szGrade='G' and intSchool_Year=" & session.Contents("intSchool_Year")
+    Dim rsGR
+    Set rsGR = Server.CreateObject("ADODB.RecordSet")
+    rsGR.CursorLocation = 3
+	rsGR.Open sqlGR, Application("cnnFPCS")'
+    If Not rsGR.EOF and Not rsGR.BOF Then
+    dblGlobalReserve = rsGR("curFund_Amount")
+    End If
+    rsGR.Close
+    Set rsGR = Nothing
 else
 	'terminate page since page was improperly called.
 	response.Write "<html><body><H1>Page improperly called.</h1></body></html>"
@@ -100,6 +117,10 @@ end if
 
 if request("strAlertList") <> "" then	
 	call vbsUpdateAlerts(request("strAlertList"), "bolSponsorAlert", "Alert")
+end if
+
+if request("strNewSystemList") <> "" then	
+	call vbsUpdateNewSystem(request("strNewSystemList"), "InNewSystem", "InNewSystem")
 end if
 
 if request("strParentList") <> "" then	
@@ -123,11 +144,11 @@ if oBudget.FamilyId & "" = "" or oBudget.StudentGrade & "" = ""then
         <td class="svplain10">
             <% if oBudget.FamilyId & "" = "" then %>
             <b>This student does not belong to a family in the Student Information System.</b>
-            <br>
+            <br/>
             An Administrator will need to add the student to a family before work on the packet
             can begin.
             <% else %>
-            <b>A grade has not been selected for this student.</b><br>
+            <b>A grade has not been selected for this student.</b><br/>
             Before work can begin on the packet you will need to go to the student profile and
             enter the students' current grade.
             <%end if%>
@@ -216,7 +237,7 @@ if request("print") <> "" or request("simpleHeader") <> "" then
 </script>
 
 <input name="btPrint" type="button" value="Print This Page" class="btPrint" onclick="jfPrint();"
-    id="Button1">
+    id="Button1"/>
 <%
 	end if
 else
@@ -227,10 +248,10 @@ end if
 ' Print top section of worksheet
 %>
 
-<script language="javascript">	
+<script language="javascript" type="text/javascript">	
 	function jfOrder(ilpID){
 		SetPageScroll('<% = intStudent_id %>Packet');
-		var strURL = "<%=Application.Value("strWebRoot")%>forms/Requisitions/req1.asp?intStudent_ID=<%=intStudent_ID%>&intILP_ID=" + ilpID;
+		var strURL = '<%=Application.Value("strWebRoot")%>forms/Requisitions/req1.asp?intStudent_ID=<%=intStudent_ID%>&intILP_ID=' + ilpID;
 		costsWin = window.open(strURL,"costsWin","width=710,height=500,scrollbars=yes,resize=yes,resizable=yes");
 		costsWin.moveTo(0,0);
 		costsWin.focus();
@@ -259,10 +280,11 @@ end if
 			obj.innerHTML = sText;
 		}
 	}
-	
+	</script>
+    <script type="text/javascript">
 	function jfCallAction(id){
 		SetPageScroll('<% = intStudent_id %>Packet');
-		var strAction = eval("document.main.action"+id+".value;");
+		var strAction = eval('document.forms["main"].action'+id+".value;");
 		
 		if (strAction == "edit") {
 			jfOpen(id);
@@ -278,7 +300,7 @@ end if
 	function jfOpen(id){
 		// Opens up edit/add course window
 		var winSF;
-		var URL = "<%=Application.Value("strWebRoot")%>forms/packet/addCourse.asp?intStudent_ID=<%=intStudent_ID%>&GRADE=<%= oBudget.StudentGrade %>&bolHighSchool=<%=bolHighSchool%>&intShort_ILP_ID=" + id;
+		var URL = '<%=Application.Value("strWebRoot")%>forms/packet/addCourse.asp?intStudent_ID=<%=intStudent_ID%>&GRADE=<%= oBudget.StudentGrade %>&bolHighSchool=<%=bolHighSchool%>&intShort_ILP_ID=' + id;
 		winSF = window.open(URL,"winSF","width=640,height=250,scrollbars=yes,resizable=yes");
 		winSF.moveTo(0,0);
 		winSF.focus();
@@ -286,7 +308,7 @@ end if
 
 	function jfDelete(id){
 		SetPageScroll('<% = intStudent_id %>Packet');
-		window.location.href="<%=Application.Value("strWebRoot")%>forms/packet/packet.asp?bolDelete=true&intStudent_ID=<%=intStudent_ID%>&intShort_ILP_ID="+id+"<%=session.Contents("strSimpleHeader")%>";	
+		window.location.href='<%=Application.Value("strWebRoot")%>forms/packet/packet.asp?bolDelete=true&intStudent_ID=<%=intStudent_ID%>&intShort_ILP_ID='+id+'<%=session.Contents("strSimpleHeader")%>';	
 	}
 	
 	<%	 
@@ -298,32 +320,32 @@ end if
 	
 	function jfViewAnotherStudent(id){
 		SetPageScroll('<% = intStudent_id %>Packet');
-		var strURL = "<%=Application.Value("strWebRoot")%>forms/packet/packet.asp?intStudent_ID=" + id.value;
+		var strURL = '<%=Application.Value("strWebRoot")%>forms/packet/packet.asp?intStudent_ID=' + id.value;
 		window.location.href = strURL;
 	}
 	
 	function jfChangePercent(enrollId,percent){
 		SetPageScroll('<% = intStudent_id %>Packet');
-		var bolConfirm = confirm("Are you sure you want to change the 'Target Enrollment' percentage?");
+		var bolConfirm = window.confirm("Are you sure you want to change the 'Target Enrollment' percentage?");
 		if (bolConfirm){
-			var URL = "<%=Application.Value("strWebRoot")%>forms/packet/packet.asp?intStudent_ID=<%=intStudent_ID%>&";
+			var URL = '<%=Application.Value("strWebRoot")%>forms/packet/packet.asp?intStudent_ID=<%=intStudent_ID%>&';
 			URL += "intEnroll_Info_ID=" + enrollId;
 			URL += "&changePercent=true&intPercent_Enrolled_Fpcs=" + percent; 
 			window.location.href = URL;
 		}else{
 			// returns selection back to original value
-			document.main.intPercent_Enrolled_Fpcs.selectedIndex = document.main.lastIndex.value;
+			document.forms["main"].intPercent_Enrolled_Fpcs.selectedIndex = document.forms["main"].lastIndex.value;
 		}
 	}
 	
 	function jfGetIndex(obj){
 		// Stores original value
-		document.main.lastIndex.value = obj.selectedIndex;	
+		document.forms["main"].lastIndex.value = obj.selectedIndex;	
 	}
 	
 	function jfViewCosts(studentID,ilpID,classID){
 		SetPageScroll('<% = intStudent_id %>Packet');
-		var strURL = "<%=Application.Value("strWebRoot")%>forms/Requisitions/req1.asp?intClass_ID="+classID;
+		var strURL = '<%=Application.Value("strWebRoot")%>forms/Requisitions/req1.asp?intClass_ID=' + classID;
 		strURL += "&intStudent_ID=" + studentID + "&intILP_ID=" + ilpID;
 		costsWin = window.open(strURL,"costsWin","width=710,height=500,scrollbars=yes,resize=yes,resizable=yes");
 		costsWin.moveTo(0,0);
@@ -336,7 +358,7 @@ end if
 		var strURL;
 		var strILP;
 				
-		strURL = "<%=Application.Value("strWebRoot")%>forms/ILP/ilpMain.asp?isPopUp=yes&intILP_ID=" + ilp_id + "&intClass_id=" + class_ID;
+		strURL = '<%=Application.Value("strWebRoot")%>forms/ILP/ilpMain.asp?isPopUp=yes&intILP_ID=' + ilp_id + "&intClass_id=" + class_ID;
 		strURL += "&szClass_Name=" + class_name;
 		strURL += "&intVendor_ID=" + vendor;
 		strURL += "&strTeacherName=" + teacherName;
@@ -348,7 +370,7 @@ end if
 	
 	function jfContractSchedule(class_id,instructor_id,instruct_type,intContract_Guardian_ID,intGuardian_ID,intVendor_ID) {
 		var classWin;
-		var strURL = "<%=Application.Value("strWebRoot")%>forms/teachers/classAdmin.asp?bolInWindow=true&isPopUp=yes<%=strDisabled%>&intClass_id="+class_id;
+		var strURL = '<%=Application.Value("strWebRoot")%>forms/teachers/classAdmin.asp?bolInWindow=true&isPopUp=yes<%=strDisabled%>&intClass_id='+class_id;
 		strURL += "&intInstructor_id="+instructor_id+"&intInstruct_Type_ID="+instruct_type;
 		strURL += "&intContract_Guardian_ID="+intContract_Guardian_ID;
 		strURL += "<% = strHideGoodService %>&intGuardian_id="+intGuardian_ID;
@@ -364,7 +386,7 @@ end if
 		answer = confirm("Are you sure you want to delete this class? (All Goods and Services and the ILP for this class will be deleted as well)");
 		if (answer) {
 			var winDel;
-			winDel = window.open("<%=Application.Value("strWebRoot")%>forms/teachers/deleteClass.asp?intILP_id="+ilp_id+"<% =session.Contents("strSimpleHeader")%>","winDel","width=200,height=200,scrollbars=yes,resizable=yes");
+			winDel = window.open('<%=Application.Value("strWebRoot")%>forms/teachers/deleteClass.asp?intILP_id='+ilp_id+'<% =session.Contents("strSimpleHeader")%>',"winDel","width=200,height=200,scrollbars=yes,resizable=yes");
 			winDel.moveTo(0,0);
 			winDel.focus();			
 		}
@@ -372,7 +394,7 @@ end if
 	
 	function jfViewRoll(class_id) {
 		var winRoll;
-		winRoll = window.open("<%=Application.Value("strWebRoot")%>Reports/studentsInClass.asp?intClass_id="+class_id,"winRoll","width=640,height=480,scrollbars=yes,resizable=yes");
+		winRoll = window.open('<%=Application.Value("strWebRoot")%>Reports/studentsInClass.asp?intClass_id='+class_id,"winRoll","width=640,height=480,scrollbars=yes,resizable=yes");
 		winRoll.moveTo(0,0);
 		winRoll.focus();					
 	}
@@ -380,13 +402,14 @@ end if
 	function jfAddClass(studentID,shortID){
 		// Opens ilp1.asp that will create a class 
 		SetPageScroll('<% = intStudent_id %>Packet');
-		var URL = "<%=Application.Value("strWebRoot")%>forms/ilp/ILP1.asp?intStudent_ID="+studentID+"&intShort_ILP_ID="+shortID;
+		var URL = '<%=Application.Value("strWebRoot")%>forms/ilp/ILP1.asp?intStudent_ID='+studentID+"&intShort_ILP_ID="+shortID;
 		window.location.href = URL;
 	}
 	
 	
 	function jfChangeSponsor(studentID){
-		window.location.href = "<%=Application.Value("strWebRoot")%>forms/packet/addSponsorTeacher.asp?intStudent_ID=" + studentID;
+		//window.location.href = '<%=Application.Value("strWebRoot")%>forms/packet/addSponsorTeacher.asp?intStudent_ID=' + studentID;
+		window.location.href = 'addSponsorTeacher.asp?intStudent_ID=' + studentID;
 	}
 	
 	function jfShowComments(acom,scom){
@@ -398,30 +421,40 @@ end if
 	function jfSponsorAlert(pID){
 		// Tracks the sponsor alert list so we will know which 
 		// courses to turn the alert on/off for.
-		var sList = document.main.strAlertList;
+		var sList = document.forms["main"].strAlertList;
 		
 		if (sList.value.indexOf(","+pID+",") == -1 ) {
 			sList.value = sList.value + pID + ",";			
 		}
 		SetPageScroll('<% = intStudent_id %>Packet');
-		document.main.submit();
+		document.forms["main"].submit();
 	}
-	
+	function jfNewSystemAlert(pID){
+		// Tracks the sponsor alert list so we will know which 
+		// courses to turn the alert on/off for.
+		var sList = document.forms["main"].strNewSystemList;
+		
+		if (sList.value.indexOf(","+pID+",") == -1 ) {
+			sList.value = sList.value + pID + ",";			
+		}
+		SetPageScroll('<% = intStudent_id %>Packet');
+		document.forms["main"].submit();
+	}
 	function jfParentAlert(pID){
 		// Tracks the sponsor alert list so we will know which 
 		// courses to turn the alert on/off for.
-		var sList = document.main.strParentList;
+		var sList = document.forms["main"].strParentList;
 		
 		if (sList.value.indexOf(","+pID+",") == -1 ) {
 			sList.value = sList.value + pID + ",";			
 		}
 		SetPageScroll('<% = intStudent_id %>Packet');
-		document.main.submit();
+		document.forms["main"].submit();
 	}
 	
 	function jfILPStatus(pID,pClassName,pObj){
-		var sList = document.main.strILPList;
-		var sClassName = document.main.ClassName;
+		var sList = document.forms["main"].strILPList;
+		var sClassName = document.forms["main"].ClassName;
 		
 		if (sList.value.indexOf(","+pID+",") == -1 ) {
 			sList.value = sList.value + pID + ",";
@@ -444,7 +477,7 @@ end if
 	
 	function jfUpdateStatus(myVal,ilp_id){
 		SetPageScroll('<% = intStudent_id %>Packet');
-		var URL = "<%=Application.Value("strWebRoot")%>forms/packet/packet.asp?bolChangeStatus=true&bolApproved="+myVal.value;
+		var URL = '<%=Application.Value("strWebRoot")%>forms/packet/packet.asp?bolChangeStatus=true&bolApproved='+myVal.value;
 		URL += "&intILP_ID="+ilp_id+"&intStudent_ID=<%=intStudent_ID%>"
 		window.location.href = URL;
 	}
@@ -455,7 +488,7 @@ end if
 		strURL = "&intStudent_ID=<%=Request("intStudent_id")%>";
 		<% end if %>		
 		//var winPrintPacket = window.open("<%=Application.Value("strWebRoot")%>forms/PrintableForms/allPrintable.asp?strAction=S" + strURL,"winPrintPacket","width=700,height=500,scrollbars=yes,resize=yes,resizable=yes");
-		var winPrintPacket = window.open("<%=Application.Value("strWebRoot")%>forms/PrintableForms/printPacket2.asp?strAction=S" + strURL,"winPrintPacket","width=700,height=500,scrollbars=yes,resize=yes,resizable=yes");
+		var winPrintPacket = window.open('<%=Application.Value("strWebRoot")%>forms/PrintableForms/printPacket2.asp?strAction=S' + strURL,"winPrintPacket","width=700,height=500,scrollbars=yes,resize=yes,resizable=yes");
 		winPrintPacket.moveTo(0,0);
 		winPrintPacket.focus();
 	}
@@ -463,13 +496,13 @@ end if
 	function ConfirmSignatures(){
 	jfCheckBudget();
 		SetPageScroll('<% = intStudent_id %>Packet');
-		if (document.main.ClassName.value != ''){
-			var bConfirm = confirm("You are about to sign a digital signature for the following courses ...\n" + document.main.ClassName.value.replace(/\,/gi,'\n') + "Once signed these courses can not be unsigned. Do you want to continue?");
+		if (document.forms["main"].ClassName.value != ''){
+			var bConfirm = confirm("You are about to sign a digital signature for the following courses ...\n" + document.forms["main"].ClassName.value.replace(/\,/gi,'\n') + "Once signed these courses can not be unsigned. Do you want to continue?");
 			if (bConfirm == true){
-				document.main.submit();		
+				document.forms["main"].submit();		
 			}	
 		}else{
-			document.main.submit();	
+			document.forms["main"].submit();	
 		}
 	}
 		function jfCheckBudget(){
@@ -492,13 +525,13 @@ end if
 
 <form name="main" action="<%=Application("strSSLWebRoot")%>forms/packet/packet.asp"
 method="post" id="Form1">
-<input type="hidden" name="intStudent_ID" value="<%=intStudent_ID%>" id="Hidden2">
-<input type="hidden" name="bolHighSchool" value="<%=bolHighSchool%>" id="Hidden3">
-<input type="hidden" name="courseTitleData" value="" id="Hidden4">
+<input type="hidden" name="intStudent_ID" value="<%=intStudent_ID%>" id="Hidden2"/>
+<input type="hidden" name="bolHighSchool" value="<%=bolHighSchool%>" id="Hidden3"/>
+<input type="hidden" name="courseTitleData" value="" id="Hidden4"/>
 <input type="hidden" name="simpleHeader" value="<% = request("simpleHeader") %>"
-    id="Hidden5">
-<input type="hidden" name="lastIndex" value="" id="Hidden6">
-<input type="hidden" name="ClassName" value="">
+    id="Hidden5"/>
+<input type="hidden" name="lastIndex" value="" id="Hidden6"/>
+<input type="hidden" name="ClassName" value=""/>
 <table width="100%" id="Table3">
     <tr>
         <td class="yellowHeader">
@@ -536,9 +569,9 @@ method="post" id="Form1">
 				"ORDER BY OrderID "
 		dim rsNeeded
 		set rsNeeded = server.CreateObject("ADODB.RECORDSET")
-		rsNeeded.Open sql, oFunc.FPCScnn
+		rsNeeded.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 		
-		strMoreConditional = "<table><tr><td class='svplain8'>Common reasons for Conditional Enrollment: (items still needed in red)<BR>" & _
+		strMoreConditional = "<table><tr><td class='svplain8'>Common reasons for Conditional Enrollment: (items still needed in red)<br/>" & _
 			"<ul>" 
 		
 		do while not rsNeeded.EOF
@@ -561,12 +594,12 @@ method="post" id="Form1">
     %>
     <tr>
         <td colspan="13" class="svplain10" bgcolor='#ff8080'>
-            <br>
-            <b>Please Note: </b>This student is currently <b>Conditionally Enrolled</b>.<br>
+            <br/>
+            <b>Please Note: </b>This student is currently <b>Conditionally Enrolled</b>.<br/>
             Spending has been locked until the Conditional Enrollment status is lifted.
             <% response.Write oHtml.ToolTip("<a href='#' class='svplain10'>Click HERE to find out more.</a>",strMoreConditional,true,"Addition Enrollment Status Information",false,"tooltip","250px","",false,true) %>
-            <br>
-            <br>
+            <br/>
+            <br/>
         </td>
     </tr>
     <% end if %>
@@ -582,17 +615,18 @@ method="post" id="Form1">
                             <!--<input type="button" value="Plan New Course" class="NavLink" onclick="jfOpen('');"
                                 name="Button2" id="Button4">-->
                             <input type="button" value="Hide Detail" class="NavLink" onclick="jfToggleBudget(this);"
-                                name="Button2" id="Button5">
+                                name="Button2" id="Button5"/>
                             <input type="button" value="Print Packet" onclick="jfPrintPacket();" class="NavLink"
-                                id="Button6" name="Button6">
+                                id="Button6" name="Button6"/>
                             <%
 							end if
                             %>
-                            <input type="hidden" name="strILPList" value="," id="Hidden7">
-                            <input type="hidden" name="strAlertList" value=",">
-                            <input type="hidden" name="strParentList" value="," id="Hidden9">
+                            <input type="hidden" name="strILPList" value="," id="Hidden7"/>
+                            <input type="hidden" name="strAlertList" value=","/>
+							<input type="hidden" name="strNewSystemList" value=","/>
+                            <input type="hidden" name="strParentList" value="," id="Hidden9"/>
                             <input type="button" value="Save Status & Comments" onclick="ConfirmSignatures();"
-                                class="NavSave" style="width: 165px;" id="Submit1" name="Submit1">
+                                class="NavSave" style="width: 165px;" id="Submit1" name="Submit1"/>
                         </font>
                     </td>
                 </tr>
@@ -610,26 +644,26 @@ method="post" id="Form1">
                                     <table id="Table5" cellspacing='1' cellpadding='4' style='height: 100%;'>
                                         <tr>
                                             <td class="TableHeader" align="center">
-                                                <b>Progress<br>
+                                                <b>Progress<br/>
                                                     Chart</b>
                                             </td>
                                             <td class="gray" align="center">
                                                 <b>Enrollment</b>
                                             </td>
                                             <td class="gray" align="center">
-                                                <b>Core<br>
+                                                <b>Core<br/>
                                                     Units</b>
                                             </td>
                                             <td class="gray" align="center">
-                                                <b>Elective<br>
+                                                <b>Elective<br/>
                                                     Units</b>
                                             </td>
                                             <td class="gray" align="center">
-                                                <b>ILP<br>
+                                                <b>ILP<br/>
                                                     Hrs</b>
                                             </td>
                                             <td class="gray" align="center">
-                                                <b>Contract<br>
+                                                <b>Contract<br/>
                                                     Hrs</b>
                                             </td>
                                         </tr>
@@ -646,9 +680,9 @@ method="post" id="Form1">
 																response.Write oBudget.PlannedEnrollment
 															end if%>%
                                                 <input type="hidden" name="intPercent_Enrolled_Fpcs" value="<%=oBudget.PlannedEnrollment%>"
-                                                    id="Hidden1">
+                                                    id="Hidden1"/>
                                                 <% else %>
-                                                &nbsp;<select name="intPercent_Enrolled_Fpcs" style="font: arial; font-size=10;"
+                                                &nbsp;<select name="intPercent_Enrolled_Fpcs" style="font: arial; font-size:10px;"
                                                     onclick="jfGetIndex(this);" onchange="jfChangePercent('<% = intEnroll_Info_ID %>',this.value);"
                                                     id="Select1">
                                                     <%
@@ -658,11 +692,11 @@ method="post" id="Form1">
                                                 <% end if %>
                                                 <% if ucase(session.Contents("strRole")) = "ADMIN" then %>
 
-                                                <script language="javascript">
+                                                <script language="javascript" type="text/javascript">
 													function jfLock(){
-														var intSel = document.main.intPercent_Enrolled_Fpcs.selectedIndex;
-														var intLevel = document.main.intPercent_Enrolled_Fpcs.options[intSel].value;
-														var URL = "<%=Application.Value("strWebRoot")%>forms/Packet/Packet.asp?";
+														var intSel = document.forms["main"].intPercent_Enrolled_Fpcs.selectedIndex;
+														var intLevel = document.forms["main"].intPercent_Enrolled_Fpcs.options[intSel].value;
+														var URL = '<%=Application.Value("strWebRoot")%>forms/Packet/Packet.asp?';
 														URL += "intStudent_ID=<%=intStudent_ID%>&intPercent_Enrolled_Fpcs="+intLevel;
 														URL += "&bolLock=true&intEnroll_Info_ID=<%=intEnroll_Info_ID%>";
 														window.location.href = URL;
@@ -670,10 +704,10 @@ method="post" id="Form1">
                                                 </script>
 
                                                 <input type="button" class="btSmallGray" value="lock" onclick="jfLock();" title="Lock enrollment level so level can never excede locked level."
-                                                    name="Button2" id="Button2">
+                                                    name="Button2" id="Button2"/>
                                                 <% end if %>
                                                 <% if oBudget.PercentEnrolledLocked <> "" then %>
-                                                <img src="<%=Application("strImageRoot")%>lock.gif" title="Enrollment level has been locked at <% = oBudget.PercentEnrolledLocked%>%">
+                                                <img src="<%=Application("strImageRoot")%>lock.gif" title="Enrollment level has been locked at <% = oBudget.PercentEnrolledLocked%>%"/>
                                                 <% end if %>
                                             </td>
                                             <td class="TableCell" align="center" colspan="2">
@@ -756,14 +790,20 @@ method="post" id="Form1">
                             </tr>
                         </table>
                     </td>
-                    <% oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId, session.Contents("intSchool_Year") %>
-                    <% oBudget.PopulateIndividualBudgetInfo oFunc.FpcsCnn, intStudent_ID,session.Contents("intSchool_Year") %>
+                    <% 
+                    oBudget.PopulateFamilyBudgetInfo Application("cnnFPCS"), oBudget.FamilyId, session.Contents("intSchool_Year") 
+                    'oBudget.PopulateFamilyBudgetInfo oFunc.FpcsCnn, oBudget.FamilyId, session.Contents("intSchool_Year") 
+                    %>
+                    <% 
+                    oBudget.PopulateIndividualBudgetInfo Application("cnnFPCS"), intStudent_ID,session.Contents("intSchool_Year") 
+                    'oBudget.PopulateIndividualBudgetInfo oFunc.FpcsCnn, intStudent_ID,session.Contents("intSchool_Year") 
+                    %>
                     <td valign="top">
                     <%'JD 052611 change family budget to refer to individual budget %>
                         <table cellpadding="4" style="width: 400px;">
                             <tr>
                                 <td class="TableHeader" align="center" nowrap>
-                                    <b>*Individual Elective<br>
+                                    <b>*Individual Elective<br/>
                                         Spending Limits </b>
                                 </td>
                                 <td class="gray" align="center">
@@ -773,8 +813,12 @@ method="post" id="Form1">
                                     <b>Amount Budgeted</b>
                                 </td>
                                 <td class="gray" align="center">
-                                    <b>Elective<br>
+                                    <b>Elective<br/>
                                         Balance</b>
+                                </td>
+                                <td class="gray" align="center">
+                                    <b>Global<br/>
+                                        Reserve</b>
                                 </td>
                             </tr>
                             <tr>
@@ -805,6 +849,9 @@ method="post" id="Form1">
 									   '    response.Write "<span class='sverror'>$" & formatNumber(oBudget.AvailableElectiveBudget,2) & "</span>"	
 									   'end if
                                     %>
+                                </td>
+                                <td class="TableCell" align="right">
+                                    $<% = formatNumber(dblGlobalReserve,2) %>
                                 </td>
                             </tr>
                             <tr>
@@ -920,7 +967,7 @@ method="post" id="Form1">
                         <%
 							end if
                         %>
-                        <br>
+                        <br/>
                         <% response.Write oHtml.ToolTip("<a href='#' class='svplain8'>Course Color Key</a>",strColorTable,true,"Course Color Key",false,"tooltip","250px","",false,true) %>
                     </td>
                     <td align="right" class="svplain8" nowrap colspan="3">
@@ -988,7 +1035,7 @@ method="post" id="Form1">
                         &nbsp;
                     </td>
                     <td class="gray" align="right">
-                        <nobr>$<%=formatNumber(myBudgetBalance,2)%></nobr>
+                        <nobr>$<%=formatNumber(myBudgetBalance-dblGlobalReserve,2)%></nobr>
                     </td>
                     <% 'JD 041111: Take out the Spent Column %>
                     <% 'JD 052511: Return the Spent Column %>
@@ -1123,7 +1170,7 @@ sql = "SELECT     ISF.szCourse_Title  " & _
 ", ISF.intShort_ILP_ID   "
 set rsBudget = server.CreateObject("ADODB.RECORDSET")
 rsBudget.CursorLocation = 3
-rsBudget.Open sql,oFunc.FPCScnn
+rsBudget.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 
 intPreviousID = 0
 
@@ -1131,7 +1178,7 @@ if rsBudget.RecordCount < 1 then
                 %>
                 <tr>
                     <td colspan="20" align="center" class="svplain10">
-                        <br>
+                        <br/>
                         <b>No courses have been planned yet. To get started click the 'Plan New Course' button
                             above.</b>
                     </td>
@@ -1498,7 +1545,7 @@ do while not rsBudget.EOF
                         <tr>
                             <td class="TableCell" valign="middle" align="center" style="background-color: #E9E9FF;
                                 color: #404040; width: 130px;" nowrap>
-                                <b>ILP Comments</b><br>
+                                <b>ILP Comments</b><br/>
                                 <table cellpadding="0" cellspacing="0">
                                     <tr>
                                         <td class="svplain8">
@@ -1518,13 +1565,13 @@ do while not rsBudget.EOF
                                                 onclick="jfParentAlert('<% = rsBudget("intILP_ID")%>');" id="Checkbox3">
                                         </td>
                                     </tr>
-				    <tr>
+									<tr>
                                         <td class="svplain8">
-                                            In new system&nbsp;
+                                            In Zangle&nbsp;
                                         </td>
                                         <td>
-                                            <input type="checkbox" name="InNewSystem<% = rsBudget("intILP_ID")%>" value="1" <% if rsBudget("InNewSystem") then response.Write " checked " %>
-                                                onclick="jfParentAlert('<% = rsBudget("intILP_ID")%>');" id="Checkbox4">
+                                            <input type="checkbox" name="InNewSystem<% = rsBudget("intShort_ILP_ID")%>" value="1" <% if rsBudget("InNewSystem") then response.Write " checked " %>
+                                                onclick="jfNewSystemAlert('<% = rsBudget("intShort_ILP_ID")%>');" id="Checkbox4">
                                         </td>
                                     </tr>
                                 </table>
@@ -1659,7 +1706,7 @@ do while not rsBudget.EOF
 			strSmallList = strSmallList & mDivCount & ","
 			'JD calculate with instructor flat rate
 			'JD edit 052611 fix script error
-			if Session.Contents("intSchool_Year") < 2012 then
+			if Session.Contents("intSchool_Year") < 2013 then
     			dblClassCharge = round(cdbl(rsBudget("TeacherCostPerStudent")),2)
 		    	dblClassBudget = round(cdbl(rsBudget("TeacherCostPerStudent")),2)
 			else
@@ -1687,7 +1734,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right" title="Teachers Hourly Rate">
         <%'JD Change to the Instructor flat rate
 						'$ formatNumber(round(rsBudget("HourlyRateTaxBen"),3),3)%>
-		<%if Session.Contents("intSchool_Year") < 2012 then %>
+		<%if Session.Contents("intSchool_Year") < 2013 then %>
 		    $<%= formatNumber(round(rsBudget("HourlyRateTaxBen"),3),3)%>
 		<%else %>
             $<%= formatNumber(round(rsBudget("InstructorFlatRate"),3),3)%>
@@ -1699,7 +1746,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right">
         <%'JD Change to the instructor flat rate
 						'$formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-	    <%if Session.Contents("intSchool_Year") < 2012 then %>
+	    <%if Session.Contents("intSchool_Year") < 2013 then %>
 		    $<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),3),3)%>
 		<%else %>
             $<%= formatNumber(round(rsBudget("FlatRateByHours"),3),3)%>
@@ -1708,7 +1755,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right">
         <%'JD Change to the instructor flat rate
 						'$formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-	    <%if Session.Contents("intSchool_Year") < 2012 then %>
+	    <%if Session.Contents("intSchool_Year") < 2013 then %>
 		    $<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),3),3)%>
 		<%else %>
             $<%= formatNumber(round(rsBudget("FlatRateByHours"),3),3)%>
@@ -1726,7 +1773,7 @@ do while not rsBudget.EOF
     <td class="<% = strClass %>" align="right" nowrap>
         <%'JD Change to the instructor flat rate
 						'-$formatNumber(round(rsBudget("TeacherCostPerStudent"),2),2)%>
-		<%if Session.Contents("intSchool_Year") < 2012 then %>
+		<%if Session.Contents("intSchool_Year") < 2013 then %>
 		    -$<%= formatNumber(round(rsBudget("TeacherCostPerStudent"),3),3)%>
 		<%else %>
             -$<%= formatNumber(round(rsBudget("FlatRateByHours"),3),3)%>
@@ -1756,7 +1803,8 @@ do while not rsBudget.EOF
 			
 		dblBudgetCost = formatNumber(rsBudget("Total"),2)
 		'Get Line Item info
-		liInfo = LineItemInfo(rsBudget("intOrdered_Item_ID"),dblBudgetCost, rsBudget("bolClosed"), oFunc.FPCScnn,strClass)
+		liInfo = LineItemInfo(rsBudget("intOrdered_Item_ID"),dblBudgetCost, rsBudget("bolClosed"), Application("cnnFPCS"),strClass)
+		'liInfo = LineItemInfo(rsBudget("intOrdered_Item_ID"),dblBudgetCost, rsBudget("bolClosed"), oFunc.FPCScnn,strClass)
 		bStatus = GetBudgetStatus(rsBudget("intItem_Group_ID"),rsBudget("bolApproved"),liInfo(4),rsBudget("bolReimburse"),rsBudget("CheckedOutInventoryID"))		
 		
 		dblCharge = formatNumber(liInfo(1),2)
@@ -1774,7 +1822,7 @@ do while not rsBudget.EOF
 		end if
 		
 		if rsBudget("szDeny_Reason") <> "" then
-			strReason = "<BR><b>Comment:</b> " & rsBudget("szDeny_Reason")
+			strReason = "<br/><b>Comment:</b> " & rsBudget("szDeny_Reason")
 		else
 			strReason = ""
 		end if
@@ -1892,7 +1940,7 @@ if rsBudget.RecordCount > 0 then
     </td>
    <td class="Gray" align="right">
         <%'formatNumber(dblTargetBalance,2)%>
-        $<%=formatNumber(myBudgetBalance,2)%>
+        $<%=formatNumber(myBudgetBalance-dblGlobalReserve,2)%>
         <input type="hidden" name="budgetBalance" value="<%=formatNumber(dblTargetBalance,2)%>"
             id="Hidden8">
     </td>
@@ -2062,7 +2110,7 @@ function LineItemInfo(pOrderedID,pBudget,pClosed,pCn,pCellClass)
 		if rs("szCheck_Number") & "" <> "" then
 			szCheck_Number = "Check #: " & rs("szCheck_Number")
 			if rs("szLine_Item_desc") & "" <> "" then
-				szCheck_Number = "<BR>" & szCheck_Number
+				szCheck_Number = "<br/>" & szCheck_Number
 			end if
 		else
 			szCheck_Number = ""
@@ -2112,7 +2160,7 @@ sub vbsDelete(id,pStudent_ID)
 	set rs = server.CreateObject("ADODB.Recordset")
 	rs.CursorLocation = 3
 	sql = "Select * from tblILP_Short_Form where intShort_ILP_ID = " & id
-	rs.Open sql,oFunc.FPCScnn
+	rs.Open sql, Application("cnnFPCS")'oFunc.FPCScnn
 	
 	if rs.RecordCount > 0 then
 		' Now delete the Short Form
@@ -2168,7 +2216,29 @@ sub vbsUpdateAlerts(pAlertList,pType,pFieldName)
 		next
 	end if
 end sub
-
+sub vbsUpdateNewSystem(pAlertList,pType,pFieldName)
+	' This sub updates the Sponsor Alert Status
+	arList = split(pAlertList,",")	
+	if isArray(arList) then
+		dim update, myVal
+		for i = 0 to ubound(arList)		
+			if arList(i) <> "" then
+				if request(pFieldName & arList(i)) & "" <> "" then
+					myVal = 1
+				else
+					myVal = 0
+				end if
+				
+				update = "update tblILP_SHORT_FORM set " & pType & " = " & myVal & "," & _
+					     "szUser_Modify = '" & session.Contents("strUserId") & "', " & _
+					     "dtModify = CURRENT_TIMESTAMP " & _
+					     "where intShort_ILP_ID = " & arList(i) & _
+					     " and intStudent_ID = " & request("intStudent_ID")
+				oFunc.ExecuteCN(update)
+			end if
+		next
+	end if
+end sub
 sub vbsIlpStatus(pIlpId)
 	' update ILP Status and comments based on user Role
 	dim update, myStatus
