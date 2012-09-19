@@ -1008,6 +1008,7 @@ method="post" id="Form1">
 sql = "SELECT     ISF.szCourse_Title  " & _
 ", POS.txtCourseTitle  " & _
 ", ISF.intShort_ILP_ID  " & _
+", ISF.InNewSystem  " & _
 ", I.szName  " & _
 ", tblILP.intILP_ID  " & _
 ", tblILP.bolApproved AS aStatus  " & _
@@ -1515,6 +1516,15 @@ do while not rsBudget.EOF
                                         <td>
                                             <input type="checkbox" name="ParentAlert<% = rsBudget("intILP_ID")%>" value="1" <% if rsBudget("bolParentAlert") then response.Write " checked " %>
                                                 onclick="jfParentAlert('<% = rsBudget("intILP_ID")%>');" id="Checkbox3">
+                                        </td>
+                                    </tr>
+				    <tr>
+                                        <td class="svplain8">
+                                            In new system&nbsp;
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" name="InNewSystem<% = rsBudget("intILP_ID")%>" value="1" <% if rsBudget("InNewSystem") then response.Write " checked " %>
+                                                onclick="jfParentAlert('<% = rsBudget("intILP_ID")%>');" id="Checkbox4">
                                         </td>
                                     </tr>
                                 </table>
